@@ -1,0 +1,28 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLe9sApTp4tu0…)
+
+foto/01-kamna-v-obyvaku-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-living-room-with-a-fire-place-in-the-middle-of-it-QA7cVisCbs0
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/02-kamna-800|1600.webp  (1600×1200)
+  stránka: https://unsplash.com/photos/black-wood-burner-near-brown-brick-wall-1LtwLstsQXI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán nápis na kamnech
+
+foto/03-ohen-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/black-wood-burner-391995/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/04-pokoj-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/cozy-living-room-with-fireplace-and-large-windows-vNecZJJQRLE
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/05-krb-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-living-room-filled-with-furniture-and-a-fire-place-Qry84CsaA9o
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/06-otevrena-kamna-800|1600.webp  (1600×1067)
+  stránka: https://www.pexels.com/photo/wood-burning-stove-on-corner-side-of-a-house-8096682/
+  licence: Pexels License (https://www.pexels.com/license/)

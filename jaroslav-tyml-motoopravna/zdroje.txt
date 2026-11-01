@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLf1fg0CVxPxC…)
+
+foto/01-karburator-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-person-holding-a-car-engine-NIV7xNUGMbM
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/02-rozvody-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/close-up-of-industrial-machine-engine-components-40046211/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/03-motor-800|1600.webp  (1600×1078)
+  stránka: https://www.pexels.com/photo/close-up-shot-of-a-motorcycle-engine-5111324/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/04-vika-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/close-up-shot-of-a-motorcycle-engine-5111316/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/05-garaz-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/rustic-garage-workshop-with-vintage-tools-35069742/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazán nápis a cedulka
+
+foto/06-sani-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/silver-carburetor-1410448/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazán nápis na karburátoru

@@ -1,0 +1,28 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLeZu8yPAhwlt…)
+
+foto/01-odtah-800|1600.webp  (1600×916)
+  stránka: https://unsplash.com/photos/a-tow-truck-towing-a-car-on-the-road-HZ_6ktzQWZ0
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazány nápisy a SPZ
+
+foto/02-bourane-auto-800|1600.webp  (1520×1333)
+  stránka: https://unsplash.com/photos/a-red-car-is-on-a-flatbed-tow-truck-kE__1vnDxg4
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: oříznuto, rozmazáno logo na kole
+
+foto/03-retez-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/arm-of-a-mechanic-repairing-a-car-17429095/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazán štítek a hlava
+
+foto/04-vyprostovak-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-truck-with-a-bunch-of-items-in-the-back-of-it-9B0HRq7ILXw
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazány SPZ, nápisy a lidé v pozadí
+
+foto/05-stary-odtahovak-800|1600.webp  (1600×1200)
+  stránka: https://unsplash.com/photos/an-old-green-and-white-van-is-being-towed-by-a-tow-truck-ZjiJxBqFDEI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazány SPZ a znak

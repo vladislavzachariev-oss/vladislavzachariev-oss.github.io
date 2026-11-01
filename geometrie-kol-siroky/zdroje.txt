@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLc9rUo3iKHNW…)
+
+foto/01-zvedak-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/silver-car-on-hydraulic-lift-PwI7BA_J06k
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: zrcadleno, logo na kole rozmazáno
+
+foto/02-kufrik-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/black-and-brown-electronic-device-KWjgfKVzjrM
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-ruce-motor-800|1600.webp  (1600×1200)
+  stránka: https://unsplash.com/photos/hands-working-on-car-engine-Fd6osyVbtG4
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-dilna-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/modern-car-repair-shop-interior-with-vehicle-33814736/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: nápis a znak na autě rozmazány
+
+foto/05-vyfuk-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-man-working-on-a-cars-engine-with-a-wrench-nwSGKWYE9cM
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/06-klice-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/silver-and-black-round-coins-5Y8NrzPya-w
+  licence: Unsplash License (https://unsplash.com/license)

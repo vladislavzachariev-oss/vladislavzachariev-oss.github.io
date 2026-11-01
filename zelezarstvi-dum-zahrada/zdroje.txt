@@ -1,0 +1,28 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLcRuJ2X9cIPA…)
+
+foto/01-naradi-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/assorted-handheld-tools-in-tool-rack-t5YUoHW6zRo
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán nápis
+
+foto/02-vruty-800|1600.webp  (1600×1063)
+  stránka: https://unsplash.com/photos/gray-metal-nails-on-yellow-surface-JALUvPLUde8
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-srouby-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/gray-screw-bolt-lot-pvm5QvjFrJ8
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-kleste-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/three-black-handled-pliers-on-brown-surface-VdOO4_HFTWM
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/05-vruty-na-stole-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/screws-on-wooden-table-5583083/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/06-hrebiky-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/rusty-nails-in-a-bowl-7790669/
+  licence: Pexels License (https://www.pexels.com/license/)

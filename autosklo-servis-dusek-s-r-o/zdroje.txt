@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-broken-windshield-of-a-car-with-a-broken-windshield-oeA4k4u6AbI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: zrcadleno
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-rozbite-sklo-800|1600.webp  (1600×1041)
+  stránka: https://unsplash.com/photos/blue-car-with-white-snow-on-top-YH1KID3mTpY
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazána nálepka
+
+foto/03-palubni-deska-800|1600.webp  (1600×899)
+  stránka: https://unsplash.com/photos/detailer-cleaning-the-dashboard-of-a-classic-car-5SmPnmCjwcU
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-sterac-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/black-car-door-with-white-window-blinds-jVdFirJ0u4M
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán štítek skla
+
+foto/05-odraz-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/close-up-of-tree-shadow-on-car-windshield-5215657/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/06-sterac-detail-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/shallow-focus-photography-of-black-vehicle-wiper-2m6GjKScw20
+  licence: Unsplash License (https://unsplash.com/license)

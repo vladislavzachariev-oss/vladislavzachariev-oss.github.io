@@ -1,0 +1,28 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLdy71G_hxiTN…)
+
+foto/01-stare-klice-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/black-skeleton-keys-C1P4wHhQbjM
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/02-klice-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/a-person-holding-a-bunch-of-keys-in-their-hand-Ebj87ehFNNU
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-zamek-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-key-is-inserted-into-a-lock-mechanism-XsJaBZtwhp4
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-skrinka-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/colorful-locker-with-key-in-bright-red-door-33009524/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/05-dvere-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/blue-wooden-door-tVIv23vcuz4
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/06-bezpecnostni-dvere-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/deadlock-with-key-on-hole-279810/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazán nápis na kování

@@ -1,0 +1,24 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLdQQZm2J3l_L…)
+
+foto/01-rozvadec-800|1600.webp  (1600×1200)
+  stránka: https://unsplash.com/photos/electrician-testing-electrical-panel-with-multimeter-PkHf7BUWbtk
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: zrcadleno
+
+foto/02-draty-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/green-and-brown-bamboo-sticks-9vQG6v1md1s
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-multimetr-800|1600.webp  (1600×1202)
+  stránka: https://www.pexels.com/photo/close-up-of-multimeter-and-tools-on-table-38292956/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/04-kabely-800|1600.webp  (1600×1067)
+  stránka: https://www.pexels.com/photo/assorted-electrical-wires-11404176/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/05-vedeni-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/abundance-of-electricity-cables-17282155/
+  licence: Pexels License (https://www.pexels.com/license/)

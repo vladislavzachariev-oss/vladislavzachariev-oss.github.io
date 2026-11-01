@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×965)
+  stránka: https://www.pexels.com/photo/close-up-of-engine-block-in-workshop-setting-36598766/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazány odlité značky
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-soustruh-800|1600.webp  (1600×1065)
+  stránka: https://www.pexels.com/photo/a-water-washing-a-round-steel-machine-11951233/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazán štítek
+
+foto/03-valce-800|1600.webp  (1600×900)
+  stránka: https://unsplash.com/photos/a-close-up-of-an-engine-block-on-a-table-T7hcJdQu7qI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazány nápisy
+
+foto/04-klikova-hridel-800|1600.webp  (1600×1200)
+  stránka: https://www.pexels.com/photo/metal-mechanism-in-black-and-white-16077292/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/05-vacky-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/engine-cylinder-head-with-camshafts-7565172/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/06-hridel-800|1600.webp  (1600×1200)
+  stránka: https://unsplash.com/photos/a-close-up-of-a-machine-9O0SEYwycQk
+  licence: Unsplash License (https://unsplash.com/license)

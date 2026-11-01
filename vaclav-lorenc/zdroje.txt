@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1069)
+  stránka: https://unsplash.com/photos/two-men-sitting-inside-vehicle-LcSpQ36Q2us
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán výstražný štítek
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-jizda-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/two-men-driving-in-a-car-on-a-road-28336659/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava: rozmazáno zpětné zrcátko
+
+foto/03-volant-800|1600.webp  (1600×1071)
+  stránka: https://unsplash.com/photos/person-holding-car-steering-wheel-NYFUVvKYAdI
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-silnice-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/red-car-on-road-near-green-trees-during-daytime-4JZuOZJcUJk
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazána SPZ
+
+foto/05-vyhled-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/scenic-open-road-drive-at-dusk-37832995/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/06-hory-800|1600.webp  (1600×1062)
+  stránka: https://unsplash.com/photos/a-person-driving-a-car-on-a-road-with-mountains-in-the-background-uzkCTH1Jrj8
+  licence: Unsplash License (https://unsplash.com/license)
