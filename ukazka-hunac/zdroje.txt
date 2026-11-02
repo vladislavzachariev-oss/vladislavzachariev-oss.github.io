@@ -1,0 +1,26 @@
+Fotky v této ukázce (volná licence pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/person-holding-brown-long-coated-dog-11380178/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/01-strihani-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-small-white-dog-being-cut-with-a-pair-of-scissors-LpK2xddrElI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: zrcadleno
+
+foto/02-rucnik-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/brown-pomeranian-wearing-pink-towel-ZVdZw2p08y4
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-koupani-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/brown-long-coated-small-dog-qwIeh5M8bF8
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/05-jorksir-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/yorkshire-terrier-in-bath-6222967/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/06-cesani-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/close-up-photo-of-a-dog-being-groomed-6816850/
+  licence: Pexels License (https://www.pexels.com/license/)
