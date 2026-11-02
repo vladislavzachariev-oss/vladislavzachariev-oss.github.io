@@ -1,6 +1,6 @@
-Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+Fotka nahoře: z veřejného profilu firmy na Mapách Google, jen pro tuto ukázku (v hotovém webu ji nahradí vlastní fotka firmy). https://lh3.googleusercontent.com/grass-cs/AABkmLf1fg0CVxPxC…
 
-img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLf1fg0CVxPxC…)
+Ostatní fotky (volná licence pro komerční použití, bez nutnosti uvádět autora):
 
 foto/01-karburator-800|1600.webp  (1600×1066)
   stránka: https://unsplash.com/photos/a-person-holding-a-car-engine-NIV7xNUGMbM

@@ -1,6 +1,6 @@
-Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+Fotka nahoře: z veřejného profilu firmy na Mapách Google, jen pro tuto ukázku (v hotovém webu ji nahradí vlastní fotka firmy). https://lh3.googleusercontent.com/grass-cs/AABkmLdqGbriGWKjj…
 
-img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLdqGbriGWKjj…)
+Ostatní fotky (volná licence pro komerční použití, bez nutnosti uvádět autora):
 
 foto/01-modry-salek-800|1600.webp  (1600×1067)
   stránka: https://www.pexels.com/photo/cup-of-coffee-on-saucer-459489/

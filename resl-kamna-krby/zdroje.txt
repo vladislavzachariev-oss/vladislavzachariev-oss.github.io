@@ -1,6 +1,6 @@
-Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+Fotka nahoře: z veřejného profilu firmy na Mapách Google, jen pro tuto ukázku (v hotovém webu ji nahradí vlastní fotka firmy). https://lh3.googleusercontent.com/grass-cs/AABkmLe9sApTp4tu0…
 
-img/foto-*.jpg|webp  fotka z profilu firmy na Googlu (https://lh3.googleusercontent.com/grass-cs/AABkmLe9sApTp4tu0…)
+Ostatní fotky (volná licence pro komerční použití, bez nutnosti uvádět autora):
 
 foto/01-kamna-v-obyvaku-800|1600.webp  (1600×1066)
   stránka: https://unsplash.com/photos/a-living-room-with-a-fire-place-in-the-middle-of-it-QA7cVisCbs0
