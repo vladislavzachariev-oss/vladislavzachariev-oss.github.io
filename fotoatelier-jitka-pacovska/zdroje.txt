@@ -1,0 +1,29 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/a-photo-studio-with-a-pink-backdrop-and-a-yellow-chair-uekNxBHpUU8
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-svetla-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/two-studio-lights-with-fluorescent-bulbs-facing-left-bb5YXGFZgrg
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-bily-atelier-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/a-room-with-a-white-wall-and-a-white-ceiling-ofiPwqFV5HE
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-pozadi-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/black-folding-chair-on-canvas-pPxJTtxfV1A
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán nápis
+
+foto/05-zidle-800|1600.webp  (1600×1105)
+  stránka: https://unsplash.com/photos/black-video-camera-on-white-wooden-chairs-beside-photo-shooting-umbrella-6IqCA9-Q-QQ
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazány nápisy a láhev s logem
+
+foto/06-studio-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/black-and-white-music-stand-7L2h4zTYiNI
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazán nápis na zdi

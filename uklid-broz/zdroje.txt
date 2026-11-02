@@ -1,0 +1,26 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/person-holding-yellow-plastic-spray-bottle-__ZMnefoI3k
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-rukavice-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/hand-in-glove-holding-spray-bottle-ho-p7qLBewk
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/03-obyvak-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/living-room-L7EwHkq1B2s
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/04-okna-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/modern-interior-with-large-windows-overlooking-green-trees-BgDUcZ8K-ew
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/05-kuchyne-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/bright-modern-kitchen-with-white-cabinets-and-stainless-steel-appliances-nTqR3B3dp-Q
+  licence: Unsplash License (https://unsplash.com/license)
+
+foto/06-drez-800|1600.webp  (1600×1067)
+  stránka: https://unsplash.com/photos/gray-stainless-steel-faucet--iQYdCr4EpE
+  licence: Unsplash License (https://unsplash.com/license)

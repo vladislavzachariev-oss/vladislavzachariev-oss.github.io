@@ -1,0 +1,27 @@
+Fotky v této ukázce (všechny s volnou licencí pro komerční použití, bez nutnosti uvádět autora):
+
+foto/uvod-800|1600.webp  (1600×1068)
+  stránka: https://www.pexels.com/photo/steel-underground-heating-manifolds-7937299/
+  licence: Pexels License (https://www.pexels.com/license/)
+  úprava pro tuto stránku: barevně tónováno do barev firmy
+
+foto/02-potrubi-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/plumber-installs-pipe-fittings-6419128/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/03-cerpadlo-800|1600.webp  (1600×1068)
+  stránka: https://www.pexels.com/photo/steel-pipes-with-pressure-gauge-7937300/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/04-radiator-800|1600.webp  (1600×1066)
+  stránka: https://www.pexels.com/photo/professional-plumber-installing-a-radiator-pipe-29226620/
+  licence: Pexels License (https://www.pexels.com/license/)
+
+foto/05-kotelna-800|1600.webp  (1600×1064)
+  stránka: https://unsplash.com/photos/pipes-and-valves-in-a-room-with-orange-table-U0jpGKtMtWE
+  licence: Unsplash License (https://unsplash.com/license)
+  úprava: rozmazáno logo
+
+foto/06-topeni-800|1600.webp  (1600×1066)
+  stránka: https://unsplash.com/photos/white-radiator-heater-beside-brown-wooden-window-ihx1LdtnGXw
+  licence: Unsplash License (https://unsplash.com/license)
