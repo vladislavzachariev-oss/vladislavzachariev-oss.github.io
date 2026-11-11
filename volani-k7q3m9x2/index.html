@@ -69,6 +69,8 @@ ol.firmy{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .res button[aria-pressed="true"][data-v="termin"]{background:var(--amber);border-color:var(--amber);color:#161616}
 .res button[aria-pressed="true"][data-v="ne"]{background:var(--err);border-color:var(--err);color:var(--bg)}
 .res button[aria-pressed="true"][data-v="nezveda"]{background:var(--ink2);border-color:var(--ink2);color:var(--bg)}
+.f .smsk{font:600 .85rem var(--ff);border:1px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:8px;padding:5px 10px;cursor:pointer}
+#jmeno{font:inherit;font-size:.9rem;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-width:0;flex:1 1 160px}
 .f input.po{width:100%;font:inherit;font-size:.9rem;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .f .cas{font-size:.8rem;color:var(--mute)}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600}
@@ -122,7 +124,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem;paddi
 <h2>Malé ano</h2>
 <p>„Podíváte se na ukázku, třeba dnes večer, zabere to dvě minuty. Zítra Vám brnknu a řeknete jen ‚líbí‘, nebo ‚nelíbí‘. Platí?“</p>
 <p>Pak domluv den a část dne: „Hodí se zítra dopoledne, nebo odpoledne?“ Druhý hovor nejpozději do dvou dnů, pozdější termíny se častěji nevydaří.</p>
-<p><strong>Odkaz:</strong> SMS ani e-mail s nabídkou nesmíme posílat sami od sebe. Řekni: „Napište mi na tohle číslo SMS ‚pošlete‘ a hned Vám odkaz pošlu.“ Jeho SMS je souhlas. Krátký odkaz můžeš i nadiktovat.</p>
+<p><strong>Odkaz:</strong> SMS ani e-mail s nabídkou nesmíme posílat sami od sebe. Řekni: „Napište mi na tohle číslo SMS ‚pošlete‘ a hned Vám odkaz pošlu.“ Jeho SMS je souhlas. Krátký odkaz můžeš i nadiktovat. Když SMS přijde: v seznamu u firmy klepni na <strong>Text SMS</strong> (poprvé nahoře napiš své jméno a příjmení), text se zkopíruje, vlož ho do odpovědi na jeho SMS a pošli. Odpověz do hodiny, dokud si na hovor pamatuje.</p>
 <h2>Námitky (krátce, pak zpátky k malému ano)</h2>
 <ul>
 <li><strong>Nemám zájem.</strong> → „Rozumím. Můžu se jen zeptat proč? Máte už něco, nebo to teď nechcete řešit?“ Zapiš důvod. Podruhé ne = poděkuj a zavěs.</li>
@@ -161,6 +163,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem;paddi
     <div class="tools">
       <input type="search" id="hledat" placeholder="Hledat firmu, město, obor" aria-label="Hledat">
       <label><input type="checkbox" id="skryt"> Skrýt hotové</label>
+      <input id="jmeno" placeholder="Tvoje jméno a příjmení (do SMS)" autocomplete="name" aria-label="Tvoje jméno a příjmení do SMS">
       <button id="kopirovat">Zkopírovat dnešní zápis</button>
       <button id="vse" class="sec">Celý zápis</button>
     </div>
@@ -242,7 +245,7 @@ function kresli(){
       + '<div class="h"><span class="n">'+f.n+'.</span><span class="jm">'+esc(f.jmeno)+'</span></div>'
       + '<div class="kde">'+esc(f.misto)+(f.obor?" · "+esc(f.obor):"")+'</div>'
       + '<div class="akce"><a class="tel" href="tel:'+(tel.charAt(0)==="+"?tel:"+420"+tel)+'">'+esc(f.tel)+'</a>'
-      + (f.ukazka?'<a class="uk" href="'+esc(f.ukazka)+'" target="_blank" rel="noopener">ukázka</a>':'')
+      + (f.ukazka?'<a class="uk" href="'+esc(f.ukazka)+'" target="_blank" rel="noopener">ukázka</a><button type="button" class="smsk">Text SMS</button>':'')
       + (f.pozn?'<span class="pozn">'+esc(f.pozn)+'</span>':'')+'</div>'
       + '<div class="res">'+VYSL.map(function(v){return '<button type="button" data-v="'+v[0]+'" aria-pressed="'+(z.v===v[0])+'">'+v[1]+(v[0]==="nezveda"&&z.n?" ("+z.n+"×)":"")+'</button>'}).join("")+'</div>'
       + '<input class="po" placeholder="Poznámka: kdy znovu, důvod ne, SMS nebo e-mail" value="'+esc(z.p||"")+'" aria-label="Poznámka k '+esc(f.jmeno)+'">'
@@ -255,7 +258,20 @@ function kresli(){
 document.querySelector("nav").addEventListener("click",function(e){var b=e.target.closest("button"); if(b) ukaz(b.dataset.tab)});
 document.getElementById("hledat").addEventListener("input",kresli);
 document.getElementById("skryt").addEventListener("change",kresli);
+// the reply to a firm's „pošlete“ SMS: their consent, our link, signed by the caller (11. 11.)
+function smsText(f){
+  var j = document.getElementById("jmeno").value.trim();
+  return "Dobrý den, posílám slíbenou ukázku Vašeho webu: "+f.ukazka+"\nJe to jen ukázka, vzhled, barvy i texty se dají předělat podle Vás. Ozvu se, jak jsme se domluvili.\n"+j+", Whyte Lynx";
+}
+document.getElementById("jmeno").addEventListener("change",function(e){try{localStorage.setItem("wl-volani-jmeno",e.target.value.trim())}catch(x){}});
 document.getElementById("firmy").addEventListener("click",function(e){
+  var s = e.target.closest(".smsk");
+  if(s){
+    if(!document.getElementById("jmeno").value.trim()){ toast("Nahoře napiš své jméno a příjmení"); document.getElementById("jmeno").focus(); return; }
+    var k = s.closest(".f").dataset.k, f = (DATA[tab]||[]).filter(function(x){return key(tab,x)===k})[0];
+    if(f) kopirujText(smsText(f), "Zkopírováno, vlož to do odpovědi na jejich SMS");
+    return;
+  }
   var b = e.target.closest(".res button"); if(!b) return;
   var k = b.closest(".f").dataset.k, z = store[k]||{};
   if(b.dataset.v==="nezveda"){ z.n=(z.n||0)+1; z.v="nezveda"; }
@@ -279,16 +295,18 @@ function zapis(jenDnes){
   return (KDO[tab]+"\n"+radky.join("\n")).trim();
 }
 function toast(t){var el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){el.hidden=true},2200)}
-function kopiruj(jenDnes){
-  var t = zapis(jenDnes), ta = document.getElementById("zaloha");
+function kopirujText(t, hotovo){
+  var ta = document.getElementById("zaloha");
   ta.value = t; ta.hidden = false;
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t).then(function(){toast("Zkopírováno, vlož to Vladovi do zprávy")},function(){ta.select();toast("Označeno, zkopíruj ručně")});
+    navigator.clipboard.writeText(t).then(function(){toast(hotovo)},function(){ta.select();toast("Označeno, zkopíruj ručně")});
   } else { ta.select(); toast("Označeno, zkopíruj ručně"); }
 }
+function kopiruj(jenDnes){ kopirujText(zapis(jenDnes), "Zkopírováno, vlož to Vladovi do zprávy"); }
 document.getElementById("kopirovat").addEventListener("click",function(){kopiruj(true)});
 document.getElementById("vse").addEventListener("click",function(){kopiruj(false)});
 load();
+try{document.getElementById("jmeno").value = localStorage.getItem("wl-volani-jmeno")||""}catch(e){}
 sync();
 setInterval(function(){ if(document.visibilityState==="visible") sync(); }, 45000);
 document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") sync(); });
