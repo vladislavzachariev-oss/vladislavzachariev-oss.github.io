@@ -1,0 +1,60 @@
+/* Úvod v2 (J 13. 11. 2026): světlá stránka, nahoře věta a cena, pod ní tmavé okno s jízdou kolem auta.
+   Při posunu se okno roztáhne přes celou obrazovku a jízda pokračuje dovnitř. Vzor: lusion.co.
+   Okno je celoobrazovková vrstva oříznutá clip-path (žádné přepočty rozvržení), obraz kreslí stage.js na plátno. */
+.stage{position:relative;height:470vh;padding:0;background:var(--bg)}
+.stage-pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.stage-copy{position:relative;z-index:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.78fr);gap:clamp(24px,4vw,72px);align-items:end;padding-top:clamp(80px,12.5svh,118px);will-change:transform,opacity}
+.stage-copy .label{margin-bottom:12px}
+.stage-copy h1{font-size:clamp(34px,min(3.7vw,8svh),66px);max-width:24ch}
+.stage-side .lead{margin-top:0;font-size:clamp(15px,1.18vw,18px);line-height:1.5;max-width:500px}
+.stage-side .price-line{margin-top:10px;font-weight:600;color:var(--ink);font-size:clamp(15px,1.18vw,18px);line-height:1.45;max-width:500px}
+.stage-side .actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px}
+.stage-side .btn{min-height:46px;padding:0 22px;font-size:15px}
+
+.stage-view{position:absolute;inset:0;z-index:1;background:#000;color:#fff;clip-path:inset(var(--t,46%) var(--s,2.2%) var(--b,2.2%) var(--s,2.2%) round var(--r,22px));will-change:clip-path}
+.stage-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage-tag,.stage-hint{position:absolute;z-index:2;margin:0;bottom:calc(var(--b,16px) + 16px);font-size:13px;font-weight:500;letter-spacing:.01em;color:rgba(255,255,255,.74);will-change:opacity}
+.stage-tag{left:calc(var(--s,16px) + 20px)}
+.stage-hint{right:calc(var(--s,16px) + 20px);display:flex;align-items:center;gap:10px}
+.stage-hint i{width:1px;height:26px;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
+.stage-hint i::after{content:"";position:absolute;left:0;top:-100%;width:1px;height:100%;background:#fff;animation:stage-drip 1.8s cubic-bezier(.6,0,.3,1) infinite}
+@keyframes stage-drip{to{top:100%}}
+
+.stage-cap{position:absolute;z-index:2;opacity:0;visibility:hidden;will-change:opacity,transform;text-shadow:0 1px 26px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.5)}
+.stage-cap b{display:block;font-weight:650;font-stretch:92%;font-size:clamp(24px,min(3.1vw,5.6svh),48px);line-height:1.06;letter-spacing:-.03em;text-wrap:balance}
+.stage-cap span{display:block;margin:12px auto 0;font-size:clamp(15px,1.2vw,18px);line-height:1.5;color:rgba(255,255,255,.78)}
+.stage-cap .btn{margin-top:20px;background:#fff;color:#111;text-shadow:none}
+.stage-cap .btn:hover{background:#fff}
+/* venku je horní čtvrtina záběru černá (změřeno na snímcích 0–70), popisek tam auto nekryje; uvnitř jde popisek dolů na tmavý přechod */
+.stage-cap.t{left:0;right:0;top:clamp(84px,14.5svh,170px);text-align:center;padding:0 24px}
+.stage-cap.b{left:0;right:0;bottom:0;text-align:center;padding:24svh 24px clamp(34px,8svh,90px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.8) 70%)}
+
+/* lišta nad tmavým oknem: stejné barvy jako tmavý režim */
+.hdr.stage-on{--hdr:rgba(8,8,9,.5);--ink:#f2f1ee;--ink2:#d6d4ce;--mute:#a09d96;--line:rgba(255,255,255,.16);--ink-h:#fff;--on:#111;color:#f2f1ee}
+
+/* po úvodu následuje původní oddíl s telefonem; nadpis je tu h2 ve velikosti h1 */
+.hero .h1{max-width:16ch;font-size:clamp(34px,min(4.4vw,8svh),66px);letter-spacing:-.035em;line-height:1.1}
+
+@media(max-width:860px){
+  .stage{height:430vh}
+  .stage-copy{grid-template-columns:minmax(0,1fr);gap:12px;padding-top:84px}
+  .stage-copy h1{font-size:clamp(32px,9.2vw,44px);max-width:none}
+  .stage-side .lead{display:none}
+  .stage-side .price-line{margin-top:0;font-size:15px}
+  .stage-side .actions{display:none}
+  .stage-cap.t{top:clamp(84px,13svh,130px);padding:0 20px}
+  .stage-cap.b{padding-bottom:clamp(96px,14svh,130px)}
+  .stage-cap.b .btn{display:none}   /* dole už je lišta Zavolat / Chci ukázku */
+  .stage-cap b{font-size:clamp(24px,6.8vw,32px)}
+  .stage-tag{max-width:55%}
+  .hero-copy>.h1{order:2}
+}
+@media(min-width:861px) and (max-height:720px),(min-width:861px) and (max-width:1100px){.stage-side .lead{display:none}.stage-side .price-line{margin-top:0}}
+@media(min-width:861px) and (max-width:1100px){.stage-copy{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.stage-copy h1{font-size:clamp(34px,4vw,44px)}}
+@media(prefers-reduced-motion:reduce){
+  .stage{height:auto}
+  .stage-pin{position:static;height:auto;overflow:visible;padding-bottom:24px}
+  .stage-view{position:relative;inset:auto;margin:24px var(--pad) 0;aspect-ratio:16/9;clip-path:inset(0 round 22px)}
+  .stage-cap,.stage-hint{display:none}
+  .stage-tag{bottom:16px;left:20px}
+}
