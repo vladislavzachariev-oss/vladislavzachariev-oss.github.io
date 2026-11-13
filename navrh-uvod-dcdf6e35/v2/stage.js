@@ -35,7 +35,11 @@
       while (live < 6 && qi < order.length && mine === set) {
         const i = order[qi++], im = new Image();
         live++; im.decoding = 'async';
-        im.onload = im.onerror = () => { im.ok = im.naturalWidth > 0; live--; pump(); };
+        im.onload = () => { im.ok = im.naturalWidth > 0; live--; pump(); };
+        im.onerror = () => {                           // výpadek spojení: jeden pokus navíc, do té doby kryje sousední snímek
+          if (im.again) { live--; pump(); return; }
+          im.again = 1; setTimeout(() => { if (mine === set) im.src = im.src.replace(/(\?.*)?$/, m => (m || '?') + '&r=1'); else { live--; } }, 1500);
+        };
         im.src = `${mine.dir}/${String(i).padStart(4, '0')}.webp${VER}`;
         imgs[i] = im;
       }
@@ -112,5 +116,5 @@
   view.addEventListener('pointerleave', () => { px = 0; });
   if ('IntersectionObserver' in window) new IntersectionObserver(en => { en[0].isIntersecting ? start() : stop(); }).observe(st);
   else start();
-  window.__stage = { get cur() { return cur; }, get loaded() { return imgs.filter(i => i && i.ok).length; }, N };
+  window.__stage = { get cur() { return cur; }, get loaded() { return imgs.filter(i => i && i.ok).length; }, get missing() { const m = []; for (let i = 0; i < N; i++) if (!imgs[i] || !imgs[i].ok) m.push(i); return m; }, N };
 })();
