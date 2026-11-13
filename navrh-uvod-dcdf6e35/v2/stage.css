@@ -1,8 +1,17 @@
-/* Úvod v2 (J 13. 11. 2026): světlá stránka, nahoře věta a cena, pod ní tmavé okno s jízdou kolem auta.
+/* Úvod v2 (J 13.–14. 11. 2026): světlá stránka, nahoře věta a cena, pod ní tmavé okno s jízdou kolem auta.
    Při posunu se okno roztáhne přes celou obrazovku a jízda pokračuje dovnitř. Vzor: lusion.co.
-   Okno je celoobrazovková vrstva oříznutá clip-path (žádné přepočty rozvržení), obraz kreslí stage.js na plátno. */
-.stage{position:relative;height:470vh;padding:0;background:var(--bg)}
-.stage-pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+   Okno i obraz kreslí stage.js do jednoho plátna (dřív clip-path na celé vrstvě: překreslovala se každý snímek a trhalo to).
+
+   Výška (oprava 14. 11., Z: „ujede dolejšek“): připnutá plocha NESMÍ být 100svh. To je okno s vysunutou lištou prohlížeče;
+   jakmile se lišta schová, je vidět víc a pod plochou zůstal pruh. Plocha je proto vysoká jako největší možné okno (lvh,
+   případně výška změřená skriptem ve --vh) a navíc přesahuje o --bleed pod spodní okraj; přesah zakrývá další oddíl.
+   --low = kolik spodku plochy může být schované pod okrajem okna; o tolik výš se drží všechno, co musí být vidět. */
+.stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(max(470vh,3400px) + var(--bleed));   /* nízké okno: aspoň 13 px posunu na snímek, jinak kolečko přeskakuje */
+  margin-bottom:calc(-1 * var(--bleed));padding:0;background:var(--bg)}
+@supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
+.stage-pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
+.stage+section{position:relative;z-index:1;background:var(--bg)}   /* zakrývá přesah */
 .stage-copy{position:relative;z-index:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.78fr);gap:clamp(24px,4vw,72px);align-items:end;padding-top:clamp(80px,12.5svh,118px);will-change:transform,opacity}
 .stage-copy .label{margin-bottom:12px}
 .stage-copy h1{font-size:clamp(34px,min(3.7vw,8svh),66px);max-width:24ch}
@@ -11,9 +20,10 @@
 .stage-side .actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px}
 .stage-side .btn{min-height:46px;padding:0 22px;font-size:15px}
 
-.stage-view{position:absolute;inset:0;z-index:1;background:#000;color:#fff;clip-path:inset(var(--t,46%) var(--s,2.2%) var(--b,2.2%) var(--s,2.2%) round var(--r,22px));will-change:clip-path}
+.stage-view{position:absolute;inset:0;z-index:1;color:#fff;pointer-events:none}
+.stage-view a{pointer-events:auto}
 .stage-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.stage-tag,.stage-hint{position:absolute;z-index:2;margin:0;bottom:calc(var(--b,16px) + 16px);font-size:13px;font-weight:500;letter-spacing:.01em;color:rgba(255,255,255,.74);will-change:opacity}
+.stage-tag,.stage-hint{position:absolute;z-index:2;margin:0;bottom:calc(var(--low) + var(--b,16px) + 16px);font-size:13px;font-weight:500;letter-spacing:.01em;color:rgba(255,255,255,.74);will-change:opacity}
 .stage-tag{left:calc(var(--s,16px) + 20px)}
 .stage-hint{right:calc(var(--s,16px) + 20px);display:flex;align-items:center;gap:10px}
 .stage-hint i{width:1px;height:26px;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
@@ -25,9 +35,10 @@
 .stage-cap span{display:block;margin:12px auto 0;font-size:clamp(15px,1.2vw,18px);line-height:1.5;color:rgba(255,255,255,.78)}
 .stage-cap .btn{margin-top:20px;background:#fff;color:#111;text-shadow:none}
 .stage-cap .btn:hover{background:#fff}
-/* venku je horní čtvrtina záběru černá (změřeno na snímcích 0–70), popisek tam auto nekryje; uvnitř jde popisek dolů na tmavý přechod */
+/* venku je horní pětina záběru černá (změřeno 14. 11.: snímky 0–160 nejméně 21 %), stage.js drží záběr u horního okraje,
+   takže popisek nahoře auto nekryje; uvnitř auta jde popisek dolů na tmavý přechod */
 .stage-cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(84px,14.5svh,170px) 24px 10svh;background:linear-gradient(rgba(0,0,0,.86) 50%,rgba(0,0,0,0))}
-.stage-cap.b{left:0;right:0;bottom:0;text-align:center;padding:24svh 24px clamp(34px,8svh,90px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.8) 70%)}
+.stage-cap.b{left:0;right:0;bottom:0;text-align:center;padding:24svh 24px calc(var(--low) + clamp(34px,8svh,90px));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.8) 55%)}
 
 /* lišta nad tmavým oknem: stejné barvy jako tmavý režim */
 .hdr.stage-on{--hdr:rgba(8,8,9,.5);--ink:#f2f1ee;--ink2:#d6d4ce;--mute:#a09d96;--line:rgba(255,255,255,.16);--ink-h:#fff;--on:#111;color:#f2f1ee}
@@ -36,14 +47,14 @@
 .hero .h1{max-width:16ch;font-size:clamp(34px,min(4.4vw,8svh),66px);letter-spacing:-.035em;line-height:1.1}
 
 @media(max-width:860px){
-  .stage{height:430vh}
+  .stage{height:calc(max(430vh,3400px) + var(--bleed))}
   .stage-copy{grid-template-columns:minmax(0,1fr);gap:12px;padding-top:84px}
   .stage-copy h1{font-size:clamp(32px,9.2vw,44px);max-width:none}
   .stage-side .lead{display:none}
   .stage-side .price-line{margin-top:0;font-size:15px}
   .stage-side .actions{display:none}
   .stage-cap.t{padding:clamp(84px,13svh,130px) 20px 8svh}
-  .stage-cap.b{padding-bottom:clamp(96px,14svh,130px)}
+  .stage-cap.b{padding-bottom:calc(var(--low) + clamp(96px,14svh,130px))}
   .stage-cap.b .btn{display:none}   /* dole už je lišta Zavolat / Chci ukázku */
   .stage-cap b{font-size:clamp(24px,6.8vw,32px)}
   .stage-tag{max-width:55%}
@@ -51,10 +62,25 @@
 }
 @media(min-width:861px) and (max-height:720px),(min-width:861px) and (max-width:1100px){.stage-side .lead{display:none}.stage-side .price-line{margin-top:0}}
 @media(min-width:861px) and (max-width:1100px){.stage-copy{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.stage-copy h1{font-size:clamp(34px,4vw,44px)}}
+/* nízké okno (notebook, tablet na šířku v okně): popisek těsně pod lištu, ať zůstane na černé nad střechou */
+@media(min-width:861px) and (max-height:640px){.stage-cap.t{padding-top:74px}.stage-cap span{margin-top:8px}}
+/* telefon na šířku */
+@media(max-height:480px) and (orientation:landscape){
+  .stage-copy{padding-top:66px;gap:6px}
+  .stage-copy .label{display:none}
+  .stage-copy h1{font-size:clamp(22px,3.6vw,30px)}
+  .stage-side .price-line{font-size:14px}
+  .stage-cap.t{padding:60px 20px 8svh}
+  .stage-cap b{font-size:clamp(18px,2.6vw,24px)}
+  .stage-cap.t span{display:none}
+  .stage-cap.b{padding-top:12svh;padding-bottom:calc(var(--low) + 74px)}
+  .stage-cap.b span{margin-top:6px;font-size:14px}
+  .stage-tag,.stage-hint{font-size:12px}
+}
 @media(prefers-reduced-motion:reduce){
-  .stage{height:auto}
+  .stage{height:auto;margin-bottom:0}
   .stage-pin{position:static;height:auto;overflow:visible;padding-bottom:24px}
-  .stage-view{position:relative;inset:auto;margin:24px var(--pad) 0;aspect-ratio:16/9;clip-path:inset(0 round 22px)}
+  .stage-view{position:relative;inset:auto;margin:24px var(--pad) 0;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#000}
   .stage-cap,.stage-hint{display:none}
   .stage-tag{bottom:16px;left:20px}
 }

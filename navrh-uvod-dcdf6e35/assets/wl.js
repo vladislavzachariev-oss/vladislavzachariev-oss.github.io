@@ -99,6 +99,7 @@
   var arc = $('#arc');
   if (arc) (function () {
     var cards = $$('.arc-card', arc), n = cards.length, TAU = Math.PI * 2;
+    var SLOTS = Math.max(n, 9);   // rozteč karet jako u devíti (40°), i když jich je méně: oblouk vypadá stejně, karty se vracejí zezadu, kde nejsou vidět
     var step = 1, R = 1, off = 0, vel = 0, target = null, drag = null, moved = 0, vis = true, last = 0;
     var AUTO = reduce ? 0 : 0.1;
     arc.classList.add('on');
@@ -106,13 +107,13 @@
     seen(arc, function (v) { if (v) fillImgs(arc); }, { rootMargin: '300px 0px' });
     function measure() {
       var cw = cards[0].offsetWidth;
-      step = cw * 1.07; R = n * step / TAU;
+      step = cw * 1.07; R = SLOTS * step / TAU;
       arc.style.setProperty('--persp', (innerWidth < 700 ? 900 : 1500) + 'px');
     }
     function render() {
       for (var i = 0; i < n; i++) {
         var a = ((i - off) % n + n) % n; if (a > n / 2) a -= n;
-        var th = a * TAU / n, ab = Math.abs(th);
+        var th = a * TAU / SLOTS, ab = Math.abs(th);
         var o = ab < 1 ? 1 : clamp(1 - (ab - 1) / 0.32, 0, 1);
         var c = cards[i];
         c.style.transform = 'translate3d(' + (R * Math.sin(th)).toFixed(1) + 'px,0,' + (R * (1 - Math.cos(th)) * 0.9).toFixed(1) + 'px) rotateY(' + (-th).toFixed(4) + 'rad)';
