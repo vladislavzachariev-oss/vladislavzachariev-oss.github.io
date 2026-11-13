@@ -26,7 +26,7 @@
 .stage-cap .btn{margin-top:20px;background:#fff;color:#111;text-shadow:none}
 .stage-cap .btn:hover{background:#fff}
 /* venku je horní čtvrtina záběru černá (změřeno na snímcích 0–70), popisek tam auto nekryje; uvnitř jde popisek dolů na tmavý přechod */
-.stage-cap.t{left:0;right:0;top:clamp(84px,14.5svh,170px);text-align:center;padding:0 24px}
+.stage-cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(84px,14.5svh,170px) 24px 10svh;background:linear-gradient(rgba(0,0,0,.86) 50%,rgba(0,0,0,0))}
 .stage-cap.b{left:0;right:0;bottom:0;text-align:center;padding:24svh 24px clamp(34px,8svh,90px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.8) 70%)}
 
 /* lišta nad tmavým oknem: stejné barvy jako tmavý režim */
@@ -42,7 +42,7 @@
   .stage-side .lead{display:none}
   .stage-side .price-line{margin-top:0;font-size:15px}
   .stage-side .actions{display:none}
-  .stage-cap.t{top:clamp(84px,13svh,130px);padding:0 20px}
+  .stage-cap.t{padding:clamp(84px,13svh,130px) 20px 8svh}
   .stage-cap.b{padding-bottom:clamp(96px,14svh,130px)}
   .stage-cap.b .btn{display:none}   /* dole už je lišta Zavolat / Chci ukázku */
   .stage-cap b{font-size:clamp(24px,6.8vw,32px)}
