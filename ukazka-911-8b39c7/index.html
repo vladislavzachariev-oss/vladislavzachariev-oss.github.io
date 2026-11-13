@@ -15,14 +15,14 @@
    nadpis 66 px / 400, odstavec 20 px / 1,43, velká tenká čísla s malou jednotkou, karty s rohem 32 px, lišta s postupem.
    Písmo značky je licencované, Barlow je volná náhrada. Na stránce neběží žádné 3D: jízda je řada předem připravených
    obrázků kreslených do plátna podle posunu (blender/scena.py, _nastroje/webp.py). */
-:root{--bg:#000;--tx:#fbfcff;--tx2:rgba(251,252,255,.66);--ink:#0e0e12;--ink2:rgba(14,14,18,.62);--line:rgba(14,14,18,.14);--edge:max(24px,calc(50% - 600px))}
+:root{--bg:#000;--tx:#fbfcff;--tx2:rgba(251,252,255,.66);--ink:#0e0e12;--ink2:rgba(14,14,18,.62);--line:rgba(14,14,18,.14);--edge:max(24px,calc(50% - 600px));--side:clamp(24px,4vw,96px)}   /* --side: okraj lišty a popisků v jízdě; snímek je vždy přes celou šířku, auto začíná ve třetině, takže popisek nesmí jít se středem */
 *{box-sizing:border-box;margin:0}
 html{background:var(--bg)}
 body{font:400 18px/1.5 Barlow,"Segoe UI",system-ui,sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 
 /* horní lišta: nad jízdou průhledná, nad textovými částmi dostane podklad (světlý nebo tmavý), aby se text pod ní nepletl */
-nav{position:fixed;inset:0 0 auto 0;height:64px;padding:0 var(--edge);display:flex;align-items:center;justify-content:space-between;z-index:6;color:#fff;pointer-events:none;transition:background-color .25s,color .25s}
+nav{position:fixed;inset:0 0 auto 0;height:64px;padding:0 var(--side);display:flex;align-items:center;justify-content:space-between;z-index:6;color:#fff;pointer-events:none;transition:background-color .25s,color .25s}
 nav.dk{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 nav.lt{background:rgba(255,255,255,.84);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#0b0c0e}
 nav>*{pointer-events:auto}
@@ -43,11 +43,11 @@ p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:va
 .pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pin::after{content:"";position:absolute;inset:0 0 auto 0;height:104px;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0));pointer-events:none}   /* lišta zůstane čitelná i nad světlým interiérem */
 .cap{position:absolute;opacity:0;visibility:hidden;will-change:opacity,transform;text-shadow:0 1px 28px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.5)}
-.cap.l{left:var(--edge);top:50%;width:min(440px,29vw);margin-top:-130px}
+.cap.l{left:var(--side);top:50%;width:min(440px,27vw);margin-top:-130px}
 .cap h1{white-space:nowrap}
-.cap.r{right:var(--edge);top:50%;width:min(400px,28vw);margin-top:-90px}
-.cap.tl{left:var(--edge);top:clamp(96px,19vh,190px);width:min(440px,36vw)}
-.cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(92px,15vh,150px) 24px 10vh;background:linear-gradient(rgba(0,0,0,.84) 50%,rgba(0,0,0,0))}
+.cap.r{right:var(--side);top:50%;width:min(400px,28vw);margin-top:-90px}
+.cap.tl{left:var(--side);top:clamp(96px,19vh,190px);width:min(440px,36vw)}
+.cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(76px,13vh,150px) 24px 10vh;background:linear-gradient(rgba(0,0,0,.84) 60%,rgba(0,0,0,0))}
 .cap.b{left:0;right:0;bottom:0;text-align:center;padding:26vh 24px clamp(40px,9vh,96px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 72%)}
 .cap.t p.sub,.cap.b p.sub{margin-inline:auto}
 .hint{display:inline-flex;align-items:center;gap:10px;margin-top:34px;font-size:15px;color:var(--tx2)}
