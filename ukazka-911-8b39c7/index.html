@@ -214,7 +214,7 @@ document.body.appendChild(probe);
 function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
 const stages = [...document.querySelectorAll('.stage')].map(el => {
   const n = +el.dataset.frames, canvas = el.querySelector('canvas');
-  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null,
+  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
     map: el.dataset.map.split(' ').map(p => nums(p, ',')),
     caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
     blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
@@ -229,7 +229,7 @@ const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new 
 function load(s) {                                   // nejdřív okolí polohy, pak každý 16., 8., 4., 2. a zbytek: i brzký posun ukáže pohyb
   const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
   if (s.dir === dir) return;
-  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.dirty = true;
+  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
   const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
   const c = Math.round(s.t * (s.n - 1));
   for (let i = c - 3; i <= c + 12; i++) push(i);
@@ -286,14 +286,18 @@ function place(s, iw, ih) {                          // kam položit snímek (v 
   else { k = Math.min(H / ih, W * 1.06 / iw); y = H - ih * k; }                      // vyšší okno (tablet): celá šířka u spodního okraje, nahoře černá na popisky
   return [(W - iw * k) / 2, y, iw * k, ih * k];
 }
-function draw(s) {
-  const i = nearest(s, Math.round(s.t * (s.n - 1)));
-  if (i < 0 || (i === s.shown && !s.dirty)) return;
-  s.shown = i; s.dirty = false;
+function draw(s) {                                 // mezi dvěma sousedními snímky prolnout podle přesné polohy (14. 11., Z: „zasekaný dojezd“:
+  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;   // celé snímky se při dojezdu držely až 0,5 s a pak skočily)
+  let i = i0, b = -1, fa = 0, shownF;
+  if (s.slow && a > .002 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { b = i0 + 1; fa = a; shownF = f; }
+  else { i = nearest(s, Math.round(f)); shownF = i; }
+  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
+  s.shown = i; s.shownF = shownF; s.dirty = false;
   const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
   g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
   g.fillStyle = '#000'; g.fillRect(0, 0, s.W, s.Hc);
   g.drawImage(im, x, y, w, h);
+  if (b >= 0) { g.globalAlpha = fa; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
   const F = Math.min(w, h) * .14;                    // kde snímek nedosáhne k okraji plochy, rozpustí se jeho hrana do černé
   if (x > .5) { fade(g, x, 0, x + F, 0, x, y, F, h); fade(g, x + w, 0, x + w - F, 0, x + w - F, y, F, h); }
   if (y > .5) fade(g, 0, y, 0, y + F, x, y, w, F);
@@ -340,7 +344,7 @@ const prog = document.getElementById('prog'), navEl = document.querySelector('na
 /* ---------- jedna smyčka: běží jen, dokud se něco hýbe ---------- */
 let raf = 0;
 function tick() { if (!raf) raf = requestAnimationFrame(step); }
-function step() {
+function step(now) {
   raf = 0; let moving = false;
   for (const s of stages) {
     const r = s.el.getBoundingClientRect();
@@ -348,7 +352,9 @@ function step() {
     if (r.bottom < -50 || r.top > innerHeight + 50) continue;
     s.want = timeAt(s);
     const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
-    s.t = gap > 150 ? s.want : Math.abs(d) < 0.0004 ? s.want : s.t + d * 0.14;
+    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;   // dojezd podle času, ne podle počtu obnovení (60 i 120 Hz stejně)
+    const t1 = gap > 150 ? s.want : Math.abs(d) * (s.n - 1) < 0.01 ? s.want : s.t + d * (1 - Math.exp(-dt / 110));
+    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;   // prolínat jen pomalý pohyb; v rychlém se snímek mění každé obnovení
     if (gap > .3) s.dirn = d > 0 ? 1 : -1;
     if (s.t !== s.want) moving = true;
     size(s); feed(s); draw(s); captions(s);
@@ -358,7 +364,7 @@ function step() {
   if (navEl.className !== z) navEl.className = z;
   const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
   if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
-  if (moving) tick();
+  if (moving) tick(); else for (const s of stages) s.last = 0;
 }
 addEventListener('scroll', tick, { passive: true });
 addEventListener('resize', () => { setVh(); tick(); });
