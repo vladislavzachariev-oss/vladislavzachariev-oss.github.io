@@ -57,7 +57,7 @@ a{color:inherit}
     </div>
     <div class="cap" data-a=".30" data-b=".52"><b>Květinářství, kavárna, chata, podlahář.</b><span>Každý web je jiný, jako každá firma.</span></div>
     <div class="cap" data-a=".55" data-b=".78"><b>Na mobilu i&nbsp;na počítači.</b><span>Rychlý, přehledný, s&nbsp;tlačítkem na zavolání.</span></div>
-    <div class="cap" data-a=".86" data-b="1.1"><b>Autoservis Žahourek, Česká Lípa.</b><span>Hotový web pro našeho klienta.</span></div>
+    <div class="cap" data-a=".86" data-b="1.1" data-ns><b>Autoservis Žahourek, Česká Lípa.</b><span>Hotový web pro našeho klienta.</span></div>
     <div class="tag" id="tag"></div>
   </div>
 </section>
@@ -254,7 +254,7 @@ function frame(now) {
     const a = +el.dataset.a, b = +el.dataset.b;
     const o = smooth(a, a + .05, cur) * (1 - smooth(b - .05, b, cur));
     el.style.opacity = String(o); el.style.transform = `translateY(${16 * (1 - o)}px)`;
-    co = Math.max(co, o);
+    if (!el.hasAttribute('data-ns')) co = Math.max(co, o);   // poslední (Žahourek) bez tmavého pruhu: jeho web musí svítit
   });
   capO = co; capshade.style.opacity = String(co);
   renderer.render(scene, camera);
