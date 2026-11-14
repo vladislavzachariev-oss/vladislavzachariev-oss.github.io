@@ -130,7 +130,7 @@ footer p+p{margin-top:8px}
 <nav><b>911 Turbo S</b><div><a href="#jizda">Exteriér</a><a href="#jizda" data-t=".807">Interiér</a><a href="#technika">Technika</a><a href="#barvy">Barvy</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
 
 <!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas, dvojice „posun,čas“ (kde se čte text, jede obraz pomaleji, ale nezastaví) -->
-<div class="stage" id="jizda" data-frames="260" data-dir="seq/a" data-dir-p="seq/p"
+<div class="stage" id="jizda" data-frames="520" data-dir="seq/a" data-dir-p="seq/p"
      data-map="0,0 .035,0 .20,.17 .27,.21 .40,.36 .47,.40 .58,.555 .65,.60 .78,.785 .85,.83 .93,.96 1,1">
   <div class="pin">
     <canvas aria-hidden="true"></canvas>
@@ -219,7 +219,7 @@ const stages = [...document.querySelectorAll('.stage')].map(el => {
     caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
     blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
 });
-const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=2`;   // v = verze snímků; po novém renderu zvednout
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=3`;   // v = verze snímků; po novém renderu zvednout
 const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
   const im = new Image(), u = URL.createObjectURL(blob);
   im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
@@ -286,18 +286,14 @@ function place(s, iw, ih) {                          // kam položit snímek (v 
   else { k = Math.min(H / ih, W * 1.06 / iw); y = H - ih * k; }                      // vyšší okno (tablet): celá šířka u spodního okraje, nahoře černá na popisky
   return [(W - iw * k) / 2, y, iw * k, ih * k];
 }
-function draw(s) {                                 // mezi dvěma sousedními snímky prolnout podle přesné polohy (14. 11., Z: „zasekaný dojezd“:
-  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;   // celé snímky se při dojezdu držely až 0,5 s a pak skočily)
-  let i = i0, b = -1, fa = 0, shownF;
-  if (s.slow && !window.__noBlend && a > .002 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { b = i0 + 1; fa = a; shownF = f; }
-  else { i = nearest(s, Math.round(f)); shownF = i; }
-  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
-  s.shown = i; s.shownF = shownF; s.dirty = false;
+function draw(s) {                                 // vždy jen nejbližší CELÝ snímek, nic se neprolíná (14. 11., Z na snímcích 813/814: prolnutí
+  const i = nearest(s, Math.round(s.t * (s.n - 1)));   // dvou snímků = dvojité dveře a záď; profi postup = Math.round + 1 snímek, plynulost dělá počet snímků)
+  if (i < 0 || (!s.dirty && i === s.shown)) return;
+  s.shown = i; s.shownF = i; s.dirty = false;
   const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
   g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
   g.fillStyle = '#000'; g.fillRect(0, 0, s.W, s.Hc);
   g.drawImage(im, x, y, w, h);
-  if (b >= 0) { g.globalAlpha = fa; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
   const F = Math.min(w, h) * .14;                    // kde snímek nedosáhne k okraji plochy, rozpustí se jeho hrana do černé
   if (x > .5) { fade(g, x, 0, x + F, 0, x, y, F, h); fade(g, x + w, 0, x + w - F, 0, x + w - F, y, F, h); }
   if (y > .5) fade(g, 0, y, 0, y + F, x, y, w, F);
