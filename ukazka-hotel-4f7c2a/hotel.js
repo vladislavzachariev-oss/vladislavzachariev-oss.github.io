@@ -153,8 +153,11 @@
   function placeUI() {
     const tag = $('tag');
     if (scene === 'vez') {
-      const n = hover || floor, [x, y] = toScreen(TX1 + 40, floorY(n));
-      tag.hidden = false; tag.style.left = x + 'px'; tag.style.top = y + 'px'; $('tagN').textContent = n;
+      const n = hover || floor, [x, y] = toScreen(TX1 + 40, floorY(n)), pr = $('panel').getBoundingClientRect();
+      const left = pr.width && x + 90 > pr.left && y > pr.top - 20 && y < pr.bottom + 20; // panel by číslo zakryl → vlevo od věže
+      const xl = toScreen(TX0 - 40, 0)[0];
+      tag.hidden = false; tag.classList.toggle('left', left);
+      tag.style.left = (left ? xl : x) + 'px'; tag.style.top = y + 'px'; $('tagN').textContent = n;
     } else tag.hidden = true;
     for (const id in DOORS) {
       const b = $(id), on = scene === 'obyvak' && !flying;
