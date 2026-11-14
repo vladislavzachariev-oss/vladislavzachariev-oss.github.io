@@ -1,0 +1,93 @@
+:root{
+  --ink:#f4efe8; --dim:rgba(244,239,232,.72); --warm:#ffc98a;
+  --glass:rgba(20,34,58,.34); --line:rgba(255,255,255,.22);
+  --bg:#0c1524; --paper:#f3eee7; --text:#1d1a17; --muted:#6b635a;
+  --pad:clamp(16px,3vw,40px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Inter Tight",system-ui,sans-serif;font-weight:300;line-height:1.45}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+
+/* ---- celoobrazovková část: věž → let → pokoje ---- */
+.app{position:relative;height:100svh;min-height:520px;overflow:hidden;background:#1b3150;touch-action:pan-y}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.app::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;z-index:2;pointer-events:none;opacity:0;transition:opacity .6s ease;
+  background:linear-gradient(to top,rgba(10,14,22,.62),rgba(10,14,22,.28) 45%,transparent)}
+.app:not([data-scene="vez"]):not(.flying)::after{opacity:1}
+.veil{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg);transition:opacity .9s ease;z-index:9}
+.veil span{font-weight:200;letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--dim)}
+.veil.off{opacity:0;pointer-events:none}
+
+.bar{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:16px;padding:calc(var(--pad)*.7) var(--pad);z-index:5;font-size:13px}
+.brand{font-weight:400;letter-spacing:.32em;text-transform:uppercase;text-decoration:none;font-size:12px}
+.back{border-bottom:1px solid var(--line);padding:2px 0;font-size:13px}
+.back:hover{border-color:var(--ink)}
+.cta{margin-left:auto;text-decoration:none;display:flex;align-items:center;gap:8px}
+.cta i,.door i{width:7px;height:7px;border-radius:50%;background:var(--warm);box-shadow:0 0 10px var(--warm)}
+.app[data-scene]:not([data-scene="vez"]) .brand{display:none}
+
+.panel{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);width:min(340px,34vw);padding:26px 26px 24px;
+  background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  border:1px solid var(--line);border-radius:14px;z-index:4;transition:opacity .45s ease,transform .45s ease}
+.panel h1{font-weight:200;font-size:clamp(30px,3vw,42px);line-height:1.02;letter-spacing:-.01em}
+.panel .hint{margin-top:12px;font-size:13px;color:var(--dim)}
+.lvl{display:flex;align-items:baseline;gap:12px;margin-top:22px}
+.lvl small{font-size:13px;color:var(--dim)}
+.lvl strong{font-weight:200;font-size:clamp(58px,6vw,84px);line-height:.9;font-variant-numeric:tabular-nums;color:var(--warm)}
+.panel h2{font-weight:400;font-size:15px;margin-top:8px}
+.panel .desc{font-size:13px;color:var(--dim);margin-top:4px;min-height:3.9em}
+#rng{width:100%;margin-top:14px;accent-color:var(--warm);height:24px}
+.ends{display:flex;justify-content:space-between;font-size:11px;color:var(--dim)}
+.go{margin-top:14px;width:100%;padding:12px;border-radius:999px;background:var(--ink);color:#14202f;font-weight:500;font-size:14px}
+.go:hover{background:#fff}
+.app.flying .panel,.app:not([data-scene="vez"]) .panel{opacity:0;transform:translateY(-50%) translateX(24px);pointer-events:none}
+
+.tag{position:absolute;z-index:3;display:flex;align-items:center;gap:10px;font-weight:200;font-size:30px;pointer-events:none;
+  font-variant-numeric:tabular-nums;transform:translateY(-50%);text-shadow:0 1px 12px rgba(0,0,0,.35)}
+.tag b{display:block;width:44px;height:1px;background:var(--ink)}
+
+.room{position:absolute;left:var(--pad);bottom:calc(var(--pad) + env(safe-area-inset-bottom));max-width:min(520px,80vw);z-index:4;
+  text-shadow:0 2px 24px rgba(0,0,0,.45);animation:up .7s ease both}
+.room h2{font-weight:200;font-size:clamp(34px,4.6vw,66px);line-height:1;letter-spacing:-.015em}
+.room p{margin-top:12px;font-size:15px;color:var(--ink);max-width:40ch}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+
+.door{position:absolute;z-index:4;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;font-size:13px;
+  background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);
+  transform:translate(-50%,-50%);animation:up .6s ease both}
+.door:hover{background:rgba(20,34,58,.55)}
+
+/* telefon a úzké okno: panel dole */
+@media (max-width:760px),(max-aspect-ratio:4/5){
+  .panel{left:12px;right:12px;width:auto;top:auto;bottom:calc(12px + env(safe-area-inset-bottom));transform:none;
+    padding:14px 16px 14px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:end}
+  .panel h1{grid-column:1/-1;font-size:22px}
+  .panel .hint{display:none}
+  .lvl{margin-top:8px;gap:6px;grid-row:2}
+  .lvl strong{font-size:50px}
+  .panel h2{grid-row:2;grid-column:2;margin:0 0 6px}
+  .panel .desc{display:none}
+  #rng,.ends,.go{grid-column:1/-1}
+  #rng{margin-top:6px}
+  .go{margin-top:8px;padding:11px}
+  .app.flying .panel,.app:not([data-scene="vez"]) .panel{transform:translateY(24px)}
+  .tag{font-size:22px}.tag b{width:26px}
+  .room p{font-size:14px}
+}
+
+/* ---- pod tím obyčejná stránka ---- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+.rooms{background:var(--paper);color:var(--text);padding:clamp(56px,9vw,120px) 0}
+.kick{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.rooms h2,.contact h2{font-weight:200;font-size:clamp(30px,4vw,52px);line-height:1.05;margin-top:10px;letter-spacing:-.015em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:40px}
+.cards img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block}
+.cards h3{font-weight:400;font-size:18px;margin-top:14px}
+.cards p{font-size:14px;color:var(--muted);margin-top:4px}
+.contact{background:var(--paper);color:var(--text);padding:0 0 clamp(56px,9vw,110px);display:flow-root}
+.contact p{margin-top:12px;max-width:52ch;color:var(--muted)}
+.foot{background:#14110e;color:#cfc6bb;padding:28px 0 calc(28px + env(safe-area-inset-bottom));font-size:14px}
+.foot .small{font-size:12px;color:#8d8479;margin-top:4px}

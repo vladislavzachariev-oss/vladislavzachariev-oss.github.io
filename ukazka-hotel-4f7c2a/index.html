@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Hotel Hladina — ukázka</title>
+<meta name="description" content="Ukázka webu pro hotel: vyberte si patro a proleťte sklem dovnitř.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500&display=swap&subset=latin-ext" rel="stylesheet">
+<link rel="stylesheet" href="hotel.css?v=3">
+</head>
+<body>
+<section class="app" id="app" data-scene="vez">
+  <canvas id="cv" aria-hidden="true"></canvas>
+  <div class="veil" id="veil"><span>Hotel Hladina</span></div>
+
+  <header class="bar">
+    <a class="brand" href="#" id="brand">Hladina</a>
+    <button class="back" id="back" type="button" hidden>← <span id="backTxt">Zpět na budovu</span></button>
+    <a class="cta" href="#kontakt">Mám zájem <i></i></a>
+  </header>
+
+  <div class="tag" id="tag" hidden><b></b><span id="tagN">14</span></div>
+
+  <aside class="panel" id="panel">
+    <h1>Vyberte si patro</h1>
+    <p class="hint">Najeďte na patro a rozsvítí se. Klikněte na něj, nebo ho vyberte posuvníkem a dejte Vstoupit. Proletíte sklem dovnitř.</p>
+    <div class="lvl"><small>Patro</small><strong id="lvlN">14</strong></div>
+    <h2 id="lvlType">Apartmá s jednou ložnicí</h2>
+    <p class="desc" id="lvlDesc"></p>
+    <input type="range" id="rng" min="1" max="22" value="14" aria-label="Patro">
+    <div class="ends"><span>1</span><span>22</span></div>
+    <button class="go" id="go" type="button">Vstoupit</button>
+  </aside>
+
+  <div class="room" id="room" hidden>
+    <h2 id="roomH"></h2>
+    <p id="roomP"></p>
+  </div>
+  <button class="door" id="dLoz" type="button" data-to="loznice" hidden>Ložnice <i></i></button>
+  <button class="door" id="dKoup" type="button" data-to="koupelna" hidden>Koupelna <i></i></button>
+</section>
+
+<section class="rooms">
+  <div class="wrap">
+    <p class="kick">Pokoje a apartmá</p>
+    <h2>Každé patro má výhled na jezero.</h2>
+    <div class="cards">
+      <article><img src="img/loznice-1400.webp" alt="Ložnice s výhledem na jezero" loading="lazy" width="1400" height="764"><h3>Pokoj s výhledem</h3><p>Patra 1–6 · 32 m² · postel 180 cm, sprcha, balkon nad promenádou</p></article>
+      <article><img src="img/obyvak-1400.webp" alt="Obývák apartmá s kuchyní" loading="lazy" width="1400" height="764"><h3>Apartmá s jednou ložnicí</h3><p>Patra 7–15 · 62 m² · obývák s kuchyní, ložnice, koupelna s vanou</p></article>
+      <article><img src="img/koupelna-1400.webp" alt="Koupelna z travertinu s vanou u okna" loading="lazy" width="1400" height="764"><h3>Apartmá se dvěma ložnicemi</h3><p>Patra 16–21 · 96 m² · dvě ložnice, dvě koupelny, rohový balkon</p></article>
+      <article><img src="img/balkon-1400.webp" alt="Balkon apartmá nad jezerem" loading="lazy" width="1400" height="764"><h3>Střešní apartmá</h3><p>Patro 22 · 140 m² · terasa kolem dokola, výhled na všechny strany</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="kontakt">
+  <div class="wrap">
+    <h2>Mám zájem</h2>
+    <p>Tady bude rezervace nebo krátký formulář přímo pro hotel. Hotel Hladina je smyšlený, celá stránka je ukázka.</p>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Ukázka webu · Vladislav Zachariev, <a href="https://whytelynx.cz">Whyte Lynx</a></p>
+    <p class="small">Vzhled, barvy i texty se dají předělat podle Vašeho hotelu.</p>
+  </div>
+</footer>
+<script src="hotel.js?v=4"></script>
+</body>
+</html>
