@@ -289,7 +289,7 @@ function place(s, iw, ih) {                          // kam položit snímek (v 
 function draw(s) {                                 // mezi dvěma sousedními snímky prolnout podle přesné polohy (14. 11., Z: „zasekaný dojezd“:
   const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;   // celé snímky se při dojezdu držely až 0,5 s a pak skočily)
   let i = i0, b = -1, fa = 0, shownF;
-  if (s.slow && a > .002 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { b = i0 + 1; fa = a; shownF = f; }
+  if (s.slow && !window.__noBlend && a > .002 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { b = i0 + 1; fa = a; shownF = f; }
   else { i = nearest(s, Math.round(f)); shownF = i; }
   if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
   s.shown = i; s.shownF = shownF; s.dirty = false;

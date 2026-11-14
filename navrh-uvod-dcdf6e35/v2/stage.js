@@ -128,7 +128,7 @@
   }
   function frameAt() {                                // co ukázat: při pomalém pohybu prolnout dva sousední snímky podle přesné polohy
     const i0 = Math.floor(cur), a = cur - i0;        // (14. 11., Z u Porsche: „zasekaný dojezd“ — celé snímky se držely až 0,4 s a pak skočily)
-    if (!still && slow && a > .002 && i0 + 1 < N && bms.has(i0) && bms.has(i0 + 1)) return [i0, i0 + 1, a, cur];
+    if (!still && slow && !window.__noBlend && a > .002 && i0 + 1 < N && bms.has(i0) && bms.has(i0 + 1)) return [i0, i0 + 1, a, cur];
     const k = nearest(Math.round(cur)); return [k, -1, 0, k];
   }
   function draw(e) {
