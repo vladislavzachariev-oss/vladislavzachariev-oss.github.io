@@ -21,7 +21,7 @@ a{color:inherit}
 .veil span{font-weight:200;letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--dim)}
 .veil.off{opacity:0;pointer-events:none}
 
-.bar{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:16px;padding:calc(var(--pad)*.7) var(--pad);z-index:5;font-size:13px}
+.bar{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:16px;padding:calc(var(--pad)*.7) var(--pad);z-index:5;font-size:13px;text-shadow:0 1px 10px rgba(0,0,0,.5),0 0 2px rgba(0,0,0,.35)}
 .brand{font-weight:400;letter-spacing:.32em;text-transform:uppercase;text-decoration:none;font-size:12px}
 .back{border-bottom:1px solid var(--line);padding:2px 0;font-size:13px}
 .back:hover{border-color:var(--ink)}
