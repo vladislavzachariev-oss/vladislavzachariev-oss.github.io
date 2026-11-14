@@ -1,4 +1,5 @@
-/* Hotel Hladina — výběr patra a let dovnitř.
+/* Hotel Hladina — výběr patra a let dovnitř (verze 3D: všechny snímky z Blenderu, 14. 11. 2026).
+   Úvod = video průletu nad jezerem, končí přiblížením věže; pak se kamera plynule oddálí na celou věž.
    Všechny snímky mají stejný souřadný prostor 2816×1536. Let = řetěz přiblížení:
    snímek B leží v obdélníku R snímku A; kamera se plynule přiblíží z A do R a B se mezitím rozsvítí. */
 (() => {
@@ -7,32 +8,31 @@
   const $ = id => document.getElementById(id);
   const big = Math.min(window.devicePixelRatio || 1, 2) * Math.max(innerWidth, innerHeight) > 1500;
 
-  // hrany pater na snímku věže (změřeno na vez_02.png, 14. 11. 2026), zdola nahoru; patro n = mezi EDGES[n-1] a EDGES[n]
-  const EDGES = [1186, 1152, 1105, 1057, 1013, 967, 922, 876, 828, 779, 733, 694, 650, 609, 566, 520, 476, 435, 392, 350, 306, 261, 215];
-  const FLOORS = EDGES.length - 1, TX0 = 1236, TX1 = 1592, TCX = 1413;
+  // hrany pater na snímku věže: desky balkonů promítnuté v Blenderu (hotel.py MEASURE, FD1 300), zdola nahoru; poslední = střecha odhadem
+  const EDGES = [1032, 991, 951, 910, 869, 828, 788, 747, 706, 666, 625, 584, 544, 503, 462];
+  const FLOORS = EDGES.length - 1, TX0 = 1102, TX1 = 1730, TCX = 1414;
 
-  const FOCUS = { vez: [TCX, 660], bok: [1210, 780], balkon: [1700, 760], obyvak: [1160, 768], koupelna: [1420, 820], loznice: [1300, 800] };
+  const FOCUS = { vez: [TCX, 760], bok: [1580, 760], obyvak: [1408, 768], koupelna: [1408, 768], loznice: [1408, 768] };
   const rect = (cx, cy, w, fx, fy) => { const sc = w / W; return { x: cx - fx * sc, y: cy - fy * sc, sc }; };
   // R: kde leží dítě v rodiči (fx,fy = bod dítěte, který sedí na cx,cy rodiče)
   const LINK = {
-    bok: f => ({ from: 'vez', ...rect(TCX, floorY(f), 470, 1210, 780) }),
-    balkon: () => ({ from: 'bok', ...rect(1210, 780, 1149, 1815, 743) }),
-    obyvak: () => ({ from: 'balkon', ...rect(1815, 700, 1200, 1408, 768) }),
-    koupelna: () => ({ from: 'obyvak', ...rect(1424, 787, 600, 1408, 768) }),
-    loznice: () => ({ from: 'obyvak', ...rect(902, 752, 520, 1408, 768) }),
+    bok: f => ({ from: 'vez', ...rect(TCX, floorY(f), 515, 1408, 768) }),        // detail fasády: kamera 48 m / 35 mm proti 300 m / 40 mm
+    obyvak: () => ({ from: 'bok', ...rect(1580, 760, 560, 1408, 768) }),          // rozsvícené okno uprostřed detailu
+    koupelna: () => ({ from: 'obyvak', ...rect(1460, 740, 600, 1408, 768) }),      // průchod ve dřevěné stěně (výklenek)
+    loznice: () => ({ from: 'obyvak', ...rect(520, 880, 560, 1408, 768) }),        // za pohovkou vlevo
   };
-  const DOORS = { dLoz: [902, 432], dKoup: [1424, 452] };
+  const DOORS = { dLoz: [520, 760], dKoup: [1460, 600] };
 
   const TYPES = [
-    [6, 'Pokoj s výhledem na jezero', '32 m², postel 180 cm, koupelna se sprchou a balkon nad promenádou.'],
-    [15, 'Apartmá s jednou ložnicí', '62 m², obývák s kuchyní, ložnice a koupelna s vanou u okna. Výhled na západ, na jezero a kopce.'],
-    [21, 'Apartmá se dvěma ložnicemi', '96 m², dvě ložnice, dvě koupelny a rohový balkon nad celou hladinou.'],
-    [22, 'Střešní apartmá', '140 m², terasa kolem dokola a výhled na všechny strany.'],
+    [4, 'Pokoj s výhledem na jezero', '32 m², postel 180 cm, koupelna se sprchou a balkon nad promenádou.'],
+    [10, 'Apartmá s jednou ložnicí', '62 m², obývák s kuchyní, ložnice a koupelna s vanou u okna. Výhled na západ, na jezero a kopce.'],
+    [13, 'Apartmá se dvěma ložnicemi', '96 m², dvě ložnice, dvě koupelny a rohový balkon nad celou hladinou.'],
+    [14, 'Střešní apartmá', '140 m², terasa kolem dokola a výhled na všechny strany.'],
   ];
   const type = n => TYPES.find(t => n <= t[0]);
   const ROOMS = {
     obyvak: n => [`Patro ${n}, ${type(n)[1].toLowerCase()}`, 'Obývák se otevírá na balkon nad jezerem. Odtud vedou dveře do ložnice a do koupelny.'],
-    koupelna: () => ['Koupelna', 'Travertin, vana u okna a výhled na jezero i z vany.'],
+    koupelna: () => ['Koupelna', 'Mramor, volně stojící vana a umyvadlo z tmavého kamene.'],
     loznice: () => ['Ložnice', 'Postel 180 cm, dubová stěna a okno přes celou šířku pokoje.'],
   };
 
@@ -43,11 +43,14 @@
   const IMG = {};
   const names = Object.keys(FOCUS);
   async function load(n) {
-    const im = new Image(); im.src = `img/${n === 'vez' ? 'vez' : n}-${big ? 2400 : 1400}.webp`;
+    const im = new Image(); im.src = n === 'vez' ? 'img/vez-2816.webp' : `img/${n}-${big ? 2400 : 1400}.webp`;   // věž vždy plná: konec průletu ji ukáže zblízka (14. 11.)
     await im.decode();
     IMG[n] = window.createImageBitmap ? await createImageBitmap(im) : im;
     if (n !== 'vez') SOFT[n] = await soft(im);
+    else { const m = new Image(); m.src = 'img/vez-mask.png?v=8'; await m.decode(); MASK = m; }
   }
+  let MASK = null;   // alfa věže (render ze stejné kamery): ztlumení a pruh patra jen přes věž, ne do oblohy
+  const OFF = document.createElement('canvas'), ox = OFF.getContext('2d');
   // měkké okraje: dítě se při přiblížení vynoří bez ostrého obdélníku
   const SOFT = {};
   async function soft(im) {
@@ -86,7 +89,8 @@
   }
 
   // ---- stav ----
-  let scene = 'vez', floor = 14, hover = 0, flying = false, view = null;
+  let introDone = false;
+  let scene = 'vez', floor = 8, hover = 0, flying = false, view = null;
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -103,7 +107,7 @@
     ctx.globalAlpha = 1;
   }
 
-  function fly(path, dur, back) { // path = řada dětí (bok, balkon, obyvak); back = pozpátku
+  function fly(path, dur, back) { // path = řada dětí (bok, obyvak); back = pozpátku
     flying = true; app.classList.add('flying'); hideUI();
     const logs = path.map(ch => Math.log(1 / LINK[ch](floor).sc)), tot = logs.reduce((a, b) => a + b, 0);
     const t0 = performance.now();
@@ -121,23 +125,33 @@
 
   // ---- kreslení klidového stavu ----
   function render() {
-    if (flying || !IMG[scene]) return;
+    if (flying || !IMG[scene] || app.classList.contains('intro') && !introDone) return;
     view = draw(IMG[scene], home(scene), 1, scene === 'vez' ? towerOverlay : null);
     placeUI();
   }
   function towerOverlay(dx, dy, s) {
     const n = hover || floor, y0 = dy + EDGES[n] * s, y1 = dy + EDGES[n - 1] * s, x0 = dx + TX0 * s, x1 = dx + TX1 * s;
-    ctx.save();
-    ctx.fillStyle = 'rgba(8,16,32,.22)'; // ostatní patra trochu ztlumit, zvolené rozsvítit
-    ctx.fillRect(x0, dy + EDGES[FLOORS] * s, x1 - x0, y0 - (dy + EDGES[FLOORS] * s));
-    ctx.fillRect(x0, y1, x1 - x0, dy + EDGES[0] * s - y1);
-    ctx.globalCompositeOperation = 'lighter';
-    const g = ctx.createLinearGradient(0, y0, 0, y1);
-    g.addColorStop(0, 'rgba(255,160,70,.25)'); g.addColorStop(1, 'rgba(255,170,80,.7)');
-    ctx.fillStyle = g; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = 'rgba(255,220,170,.95)'; ctx.fillRect(x0 - 6, y1 - 1, x1 - x0 + 12, 1.5); ctx.fillRect(x0 - 6, y0, x1 - x0 + 12, 1);
-    ctx.restore();
+    // 14. 11.: věž je 3D a natočená → obdélníky by lezly do oblohy; každý průchod se ořízne maskou věže (MASK)
+    const pass = (op, paint) => {
+      if (!MASK) { ctx.save(); ctx.globalCompositeOperation = op; paint(ctx); ctx.restore(); return; }
+      if (OFF.width !== cv.width || OFF.height !== cv.height) { OFF.width = cv.width; OFF.height = cv.height; }
+      ox.setTransform(1, 0, 0, 1, 0, 0); ox.clearRect(0, 0, OFF.width, OFF.height); ox.setTransform(ctx.getTransform());
+      ox.save(); paint(ox); ox.globalCompositeOperation = 'destination-in'; ox.drawImage(MASK, dx, dy, 2816 * s, 1536 * s); ox.restore();
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = op; ctx.drawImage(OFF, 0, 0); ctx.restore();
+    };
+    pass('source-over', c => {               // ostatní patra trochu ztlumit
+      c.fillStyle = 'rgba(8,16,32,.22)';
+      c.fillRect(x0, dy + EDGES[FLOORS] * s, x1 - x0, y0 - (dy + EDGES[FLOORS] * s));
+      c.fillRect(x0, y1, x1 - x0, dy + EDGES[0] * s - y1);
+    });
+    pass('lighter', c => {                   // zvolené rozsvítit
+      const g = c.createLinearGradient(0, y0, 0, y1);
+      g.addColorStop(0, 'rgba(255,160,70,.25)'); g.addColorStop(1, 'rgba(255,170,80,.7)');
+      c.fillStyle = g; c.fillRect(x0, y0, x1 - x0, y1 - y0);
+    });
+    pass('source-over', c => {
+      c.fillStyle = 'rgba(255,220,170,.95)'; c.fillRect(x0 - 6, y1 - 1, x1 - x0 + 12, 1.5); c.fillRect(x0 - 6, y0, x1 - x0 + 12, 1);
+    });
   }
   function toScreen(x, y) { return view ? [view[0] + x * view[2], view[1] + y * view[2]] : [0, 0]; }
 
@@ -183,11 +197,11 @@
   // ---- ovládání ----
   async function enter() {
     if (flying || scene !== 'vez') return;
-    hover = 0; await fly(['bok', 'balkon', 'obyvak'], 3600); setScene('obyvak');
+    hover = 0; await fly(['bok', 'obyvak'], 3200); setScene('obyvak');
   }
   async function back() {
     if (flying) return;
-    if (scene === 'obyvak') { await fly(['bok', 'balkon', 'obyvak'], 2600, true); setScene('vez'); }
+    if (scene === 'obyvak') { await fly(['bok', 'obyvak'], 2400, true); setScene('vez'); }
     else if (scene === 'koupelna' || scene === 'loznice') { const n = scene; await fly([n], 1100, true); setScene('obyvak'); }
   }
   async function door(to) {
@@ -230,8 +244,66 @@
 
   // ---- start ----
   size();
-  setFloor(14);
-  load('vez').then(() => { render(); $('veil').classList.add('off'); return Promise.all(names.filter(n => n !== 'vez').map(load)); })
+  setFloor(8);
+  // ---- úvod: video průletu (na šířku / na výšku), konec navazuje na snímek věže a kamera se oddálí ----
+  // kotva = střed desek balkonů na posledním snímku videa (hotel.py MEASURE), span = výška od 1. do 14. desky v px
+  // kotva = střed desek balkonů na posledním snímku videa (hotel.py MEASURE=285), span = výška od 1. do 14. desky v px.
+  // 14. 11.: video končí couvnutím na stejnou kameru jako snímek věže (FLY_BACK) → přechod je čistý zoom, bez dvojité věže
+  const V = { a: { src: 'video/prulet-a.mp4?v=8', w: 1920, h: 1080, span: 361, ax: 964, ay: 539.5 },
+              p: { src: 'video/prulet-p.mp4?v=8', w: 720, h: 1560, span: 293, ax: 363, ay: 779.5 } };
+  const VEZ = { span: EDGES[0] - EDGES[FLOORS - 1], ax: TCX, ay: (EDGES[0] + EDGES[FLOORS - 1]) / 2 };
+  const vid = $('intro'), vk = sh > sw ? 'p' : 'a';
+  function finishIntro() { flying = false; app.classList.remove('intro'); render(); }
+  function outro() {
+    if (introDone) return; introDone = true;
+    $('veil').classList.add('off');
+    if (!IMG.vez) { vid.classList.add('off'); app.classList.remove('intro'); return; }
+    const v = V[vk], sv = Math.max(sw / v.w, sh / v.h);
+    const sx = sw / 2 + (v.ax - v.w / 2) * sv, sy = sh / 2 + (v.ay - v.h / 2) * sv;   // kotva věže ve videu na obrazovce
+    const kr = (v.span * sv) / (VEZ.span * s0());                                        // > 1: video ukazuje věž větší než stránka
+    const atEnd = vid.ended || (vid.duration && vid.currentTime > vid.duration - 0.2);
+    if (!atEnd) { vid.classList.add('off'); finishIntro(); return; }                   // přeskočeno ťuknutím: jen prolnout
+    if (kr < 1) {
+      // na výšku: snímek stránky je výřez → zvětšit samotné video (stejná kamera = čistý zoom) a pod ním prolnout stránku
+      render(); hideUI();
+      const c1 = home('vez'), tX = (VEZ.ax - c1[0]) * s0() + sw / 2, tY = (VEZ.ay - c1[1]) * s0() + sh / 2;
+      const m = 1 / kr, t0 = performance.now(), D = 1700;
+      vid.style.transformOrigin = '0 0'; vid.style.transition = 'opacity .6s ease';
+      (function step(now) {
+        const p = Math.min(1, (now - t0) / D), e = ease(p), s = Math.exp(Math.log(m) * e);
+        const w = m === 1 ? e : (s - 1) / (m - 1);                                        // kotva jede v poměru k měřítku
+        vid.style.transform = `translate(${(tX - sx * m) * w}px, ${(tY - sy * m) * w}px) scale(${s})`;
+        if (p > .6) vid.classList.add('off');
+        if (p < 1) requestAnimationFrame(step); else finishIntro();
+      })(t0);
+      return;
+    }
+    const k0 = Math.max(1.0001, kr), sk = s0() * k0;
+    const c0 = [VEZ.ax - (sx - sw / 2) / sk, VEZ.ay - (sy - sh / 2) / sk], c1 = home('vez');
+    flying = true; hideUI();
+    const t0 = performance.now(), D = k0 < 1.15 ? 900 : 2200;
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / D), e = ease(p), k = Math.exp(Math.log(k0) * (1 - e));
+      const w = (1 / k - 1 / k0) / (1 - 1 / k0);
+      draw(IMG.vez, [c0[0] + (c1[0] - c0[0]) * w, c0[1] + (c1[1] - c0[1]) * w], k);
+      if (p === 0 || now - t0 < 20) { vid.classList.add('off'); }
+      if (p < 1) requestAnimationFrame(step); else finishIntro();
+    })(t0);
+  }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (vid && !reduce) {
+    app.classList.add('intro');
+    vid.src = V[vk].src;
+    vid.addEventListener('ended', outro);
+    vid.addEventListener('click', outro);
+    vid.addEventListener('playing', () => $('veil').classList.add('off'), { once: true });
+    setTimeout(() => { if (vid.paused && !introDone) outro(); }, 6000);   // video se nespustilo (úsporný režim) → rovnou věž
+  } else introDone = true;
+  load('vez').then(() => {
+    if (introDone) { vid && vid.classList.add('off'); app.classList.remove('intro'); render(); $('veil').classList.add('off'); }
+    else vid.play().catch(() => outro());
+    return Promise.all(names.filter(n => n !== 'vez').map(load));
+  })
     .then(() => { app.dataset.ready = '1'; })
     .catch(err => { console.error(err); $('veil').classList.add('off'); });
   // tlačítko Vstoupit čeká, než jsou nahrané všechny snímky letu

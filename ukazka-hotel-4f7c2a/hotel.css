@@ -92,3 +92,8 @@ a{color:inherit}
 .contact p{margin-top:12px;max-width:52ch;color:var(--muted)}
 .foot{background:#14110e;color:#cfc6bb;padding:28px 0 calc(28px + env(safe-area-inset-bottom));font-size:14px}
 .foot .small{font-size:12px;color:#8d8479;margin-top:4px}
+
+/* ---- úvodní průlet (3D verze) ---- */
+.intro-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3;transition:opacity .7s ease;background:transparent}
+.intro-v.off{opacity:0;pointer-events:none}
+.app.intro .panel,.app.intro .tag{opacity:0;pointer-events:none}
