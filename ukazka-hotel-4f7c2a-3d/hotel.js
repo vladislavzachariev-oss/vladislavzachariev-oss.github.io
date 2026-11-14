@@ -247,27 +247,47 @@
   setFloor(8);
   // ---- úvod: video průletu (na šířku / na výšku), konec navazuje na snímek věže a kamera se oddálí ----
   // kotva = střed desek balkonů na posledním snímku videa (hotel.py MEASURE), span = výška od 1. do 14. desky v px
-  const V = { a: { src: 'video/prulet-a.mp4', w: 1920, h: 1080, span: 890, ax: 970, ay: 532 },
-              p: { src: 'video/prulet-p.mp4', w: 720, h: 1560, span: 723, ax: 368, ay: 773 } };
+  // kotva = střed desek balkonů na posledním snímku videa (hotel.py MEASURE=285), span = výška od 1. do 14. desky v px.
+  // 14. 11.: video končí couvnutím na stejnou kameru jako snímek věže (FLY_BACK) → přechod je čistý zoom, bez dvojité věže
+  const V = { a: { src: 'video/prulet-a.mp4?v=8', w: 1920, h: 1080, span: 361, ax: 964, ay: 539.5 },
+              p: { src: 'video/prulet-p.mp4?v=8', w: 720, h: 1560, span: 293, ax: 363, ay: 779.5 } };
   const VEZ = { span: EDGES[0] - EDGES[FLOORS - 1], ax: TCX, ay: (EDGES[0] + EDGES[FLOORS - 1]) / 2 };
   const vid = $('intro'), vk = sh > sw ? 'p' : 'a';
+  function finishIntro() { flying = false; app.classList.remove('intro'); render(); }
   function outro() {
     if (introDone) return; introDone = true;
     $('veil').classList.add('off');
     if (!IMG.vez) { vid.classList.add('off'); app.classList.remove('intro'); return; }
     const v = V[vk], sv = Math.max(sw / v.w, sh / v.h);
-    const sx = sw / 2 + (v.ax - v.w / 2) * sv, sy = sh / 2 + (v.ay - v.h / 2) * sv;
-    const k0 = Math.max(1.0001, (v.span * sv) / (VEZ.span * s0())), sk = s0() * k0;
+    const sx = sw / 2 + (v.ax - v.w / 2) * sv, sy = sh / 2 + (v.ay - v.h / 2) * sv;   // kotva věže ve videu na obrazovce
+    const kr = (v.span * sv) / (VEZ.span * s0());                                        // > 1: video ukazuje věž větší než stránka
+    const atEnd = vid.ended || (vid.duration && vid.currentTime > vid.duration - 0.2);
+    if (!atEnd) { vid.classList.add('off'); finishIntro(); return; }                   // přeskočeno ťuknutím: jen prolnout
+    if (kr < 1) {
+      // na výšku: snímek stránky je výřez → zvětšit samotné video (stejná kamera = čistý zoom) a pod ním prolnout stránku
+      render(); hideUI();
+      const c1 = home('vez'), tX = (VEZ.ax - c1[0]) * s0() + sw / 2, tY = (VEZ.ay - c1[1]) * s0() + sh / 2;
+      const m = 1 / kr, t0 = performance.now(), D = 1700;
+      vid.style.transformOrigin = '0 0'; vid.style.transition = 'opacity .6s ease';
+      (function step(now) {
+        const p = Math.min(1, (now - t0) / D), e = ease(p), s = Math.exp(Math.log(m) * e);
+        const w = m === 1 ? e : (s - 1) / (m - 1);                                        // kotva jede v poměru k měřítku
+        vid.style.transform = `translate(${(tX - sx * m) * w}px, ${(tY - sy * m) * w}px) scale(${s})`;
+        if (p > .6) vid.classList.add('off');
+        if (p < 1) requestAnimationFrame(step); else finishIntro();
+      })(t0);
+      return;
+    }
+    const k0 = Math.max(1.0001, kr), sk = s0() * k0;
     const c0 = [VEZ.ax - (sx - sw / 2) / sk, VEZ.ay - (sy - sh / 2) / sk], c1 = home('vez');
     flying = true; hideUI();
-    const t0 = performance.now(), D = 2200;
+    const t0 = performance.now(), D = k0 < 1.15 ? 900 : 2200;
     (function step(now) {
       const p = Math.min(1, (now - t0) / D), e = ease(p), k = Math.exp(Math.log(k0) * (1 - e));
       const w = (1 / k - 1 / k0) / (1 - 1 / k0);
       draw(IMG.vez, [c0[0] + (c1[0] - c0[0]) * w, c0[1] + (c1[1] - c0[1]) * w], k);
       if (p === 0 || now - t0 < 20) { vid.classList.add('off'); }
-      if (p < 1) requestAnimationFrame(step);
-      else { flying = false; app.classList.remove('intro'); render(); }
+      if (p < 1) requestAnimationFrame(step); else finishIntro();
     })(t0);
   }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
