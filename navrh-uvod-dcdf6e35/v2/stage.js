@@ -28,7 +28,7 @@
     p: { k: 'p', dir: st.dataset.dirP, car: { cx: .50, cy: .555, w: .95, h: .27 } }
   };
   let set = null, blobs = [], bms = new Map(), busy = new Set(), decoding = 0, dirn = 1;
-  let W = 0, H = 0, Hc = 0, dpr = 1, pad = 16, top0 = 300, win0 = null, cur = REST, shown = -1, lastE = -1, dirty = true;
+  let W = 0, H = 0, Hc = 0, dpr = 1, pad = 16, top0 = 300, win0 = null, cur = REST, shown = -1, shownF = -1, slow = true, lastE = -1, dirty = true;
   let running = false, raf = 0, lastT = 0;
 
   /* --vh = skutečná výška okna; CSS bere větší z ní a z 100lvh (stage.css) */
@@ -126,8 +126,13 @@
     if (y > R.y + .5) g(0, y, 0, y + F, x, y, w, F);
     if (y + h < R.y + R.h - .5) g(0, y + h, 0, y + h - F, x, y + h - F, w, F);
   }
+  function frameAt() {                                // co ukázat: při pomalém pohybu prolnout dva sousední snímky podle přesné polohy
+    const i0 = Math.floor(cur), a = cur - i0;        // (14. 11., Z u Porsche: „zasekaný dojezd“ — celé snímky se držely až 0,4 s a pak skočily)
+    if (!still && slow && a > .002 && i0 + 1 < N && bms.has(i0) && bms.has(i0 + 1)) return [i0, i0 + 1, a, cur];
+    const k = nearest(Math.round(cur)); return [k, -1, 0, k];
+  }
   function draw(e) {
-    const k = nearest(Math.round(cur));
+    const [k, k2, fa, f] = frameAt();
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const R = still ? { x: 0, y: 0, w: W, h: Hc } : { x: lerp(win0.x, 0, e), y: lerp(win0.y, 0, e), w: lerp(win0.w, W, e), h: lerp(win0.h, Hc, e) };
@@ -143,10 +148,11 @@
       const cy = still ? f.y + ih * f.s / 2 : lerp(win0.y + win0.h / 2 + (.5 - c.cy) * ih * sR, f.y + ih * f.s / 2, e);
       const x = cx - iw * s / 2, y = cy - ih * s / 2;
       ctx.drawImage(im, x, y, iw * s, ih * s);
+      if (k2 >= 0) { ctx.globalAlpha = fa; ctx.drawImage(bms.get(k2), x, y, iw * s, ih * s); ctx.globalAlpha = 1; }
       fadeEdges(x, y, iw * s, ih * s, R);
     }
     ctx.restore();
-    shown = k;
+    shown = k; shownF = f;
   }
 
   const css = new WeakMap();
@@ -170,13 +176,14 @@
     AHEAD = Math.round(clamp(12 + Math.abs(gap) * .6, 12, 30)); KEEP = AHEAD + BEHIND + 6;
     const was = cur;
     if (Math.abs(gap) > 150) cur = target; else if (Math.abs(gap) > .02) cur += gap * (1 - Math.exp(-dt * 7.5)); else cur = target;
+    slow = Math.abs(cur - was) < 1.2;                                      // v rychlém pohybu se snímek mění každé obnovení, prolínání netřeba
     if (dt > 0) vel += (Math.abs(cur - was) / dt - vel) * .25;            // snímků za sekundu
     STRIDE = Math.round(clamp(vel / 40, 1, 6));                          // ~40 dekódování/s stihne i pomalý tablet (změřeno 14. 11.)
     if (Math.abs(gap) > .3) dirn = gap > 0 ? 1 : -1;
     const want = Math.round(cur);
     if (want !== shown || bms.has(want) && shown !== want) feed();
     const eq = Math.round(e * 1000);
-    if (dirty || eq !== lastE || (nearest(want) !== shown)) { draw(e); dirty = false; lastE = eq; }
+    if (dirty || eq !== lastE || Math.abs(frameAt()[3] - shownF) > .004) { draw(e); dirty = false; lastE = eq; }
     const q = cur / (N - 1);
     for (const c of caps) {
       const a = +c.dataset.a, b = +c.dataset.b;
@@ -199,7 +206,7 @@
   if ('IntersectionObserver' in window) new IntersectionObserver(en => { en[0].isIntersecting ? start() : stop(); }).observe(st);
   else start();
   window.__stage = {
-    get cur() { return cur; }, get shown() { return shown; }, get loaded() { return blobs.filter(Boolean).length; },
+    get cur() { return cur; }, get shown() { return shown; }, get shownF() { return shownF; }, get loaded() { return blobs.filter(Boolean).length; },
     get decoded() { return bms.size; }, get missing() { const m = []; for (let i = 0; i < N; i++) if (!blobs[i]) m.push(i); return m; }, N
   };
 })();
