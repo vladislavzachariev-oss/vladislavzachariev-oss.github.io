@@ -357,10 +357,19 @@ function step(now) {
     if (!rest) moving = true;
     const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
     const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;   // dojezd podle času, ne podle počtu obnovení (60 i 120 Hz stejně)
-    const t1 = gap > 150 ? s.want : Math.abs(d) * (s.n - 1) < 0.01 ? s.want : s.t + d * (1 - Math.exp(-dt / 110));
+    // Z 14. 11. večer: „plynulejší dojezd“. Dřív 1. řád (110 ms): obraz se po puštění zastavil skoro hned a rozjel se skokem.
+    // Teď kriticky tlumená pružina v jednotkách snímků: rychlost se mění spojitě, po puštění obraz plynule dojede (~0,5 s), bez překmitu.
+    const OM = window.__om || 10;                                          // tuhost [1/s]: zpoždění za posunem 2/OM = 200 ms
+    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
+    if (Math.abs(d) > .25) { F = W; v = 0; }                               // skok přes čtvrtinu jízdy (odkaz v liště) = rovnou
+    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
+      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+    }
+    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
+    s.v = v; const t1 = F / (s.n - 1);
     s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;   // prolínat jen pomalý pohyb; v rychlém se snímek mění každé obnovení
     if (gap > .3) s.dirn = d > 0 ? 1 : -1;
-    if (s.t !== s.want) moving = true;
+    if (s.t !== s.want || v) moving = true;
     size(s); feed(s); draw(s); captions(s);
   }
   reveal();
