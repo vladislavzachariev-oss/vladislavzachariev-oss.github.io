@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>911 Turbo S — ukázka Whyte Lynx</title>
+<meta name="description" content="Jedna plynulá jízda kolem auta a dovnitř, řízená posunem stránky. Ukázka práce Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Rozvržení změřené 13. 11. 2026 na stránce 911 Turbo S (porsche.com): tmavá scéna s autem, bílé textové části,
+   nadpis 66 px / 400, odstavec 20 px / 1,43, velká tenká čísla s malou jednotkou, karty s rohem 32 px, lišta s postupem.
+   Písmo značky je licencované, Barlow je volná náhrada. Na stránce neběží žádné 3D: jízda je řada předem připravených
+   obrázků kreslených do plátna podle posunu (blender/scena.py, _nastroje/webp.py). */
+:root{--bg:#000;--tx:#fbfcff;--tx2:rgba(251,252,255,.66);--ink:#0e0e12;--ink2:rgba(14,14,18,.62);--line:rgba(14,14,18,.14);--edge:max(24px,calc(50% - 600px));--side:clamp(24px,4vw,96px)}   /* --side: okraj lišty a popisků v jízdě; snímek je vždy přes celou šířku, auto začíná ve třetině, takže popisek nesmí jít se středem */
+*{box-sizing:border-box;margin:0}
+html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}   /* bez modrého pole po ťuknutí (Z 13. 11.) */
+body{font:400 18px/1.5 Barlow,"Segoe UI",system-ui,sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+
+/* horní lišta: nad jízdou průhledná, nad textovými částmi dostane podklad (světlý nebo tmavý), aby se text pod ní nepletl */
+nav{position:fixed;inset:0 0 auto 0;height:64px;padding:0 var(--side);display:flex;align-items:center;justify-content:space-between;z-index:6;color:#fff;pointer-events:none;transition:background-color .25s,color .25s}
+nav.dk{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+nav.lt{background:rgba(255,255,255,.84);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#0b0c0e}
+nav>*{pointer-events:auto}
+nav b{font-weight:500;font-size:20px;letter-spacing:.01em}
+nav div{display:flex;gap:28px;font-size:15px}
+nav a{text-decoration:none;opacity:.72;transition:opacity .2s}
+nav a:hover,nav a:focus-visible{opacity:1}
+#prog{position:fixed;left:0;top:0;height:2px;width:100%;background:#9a9da5;transform-origin:0 50%;transform:scaleX(0);z-index:7}   /* šedá je vidět na černé i bílé; mix-blend-mode přepočítával při posunu celou plochu */
+
+.eye{font-size:15px;font-weight:500;letter-spacing:.02em;color:var(--tx2);margin-bottom:12px}
+h1{font-weight:400;font-size:clamp(44px,min(6.4vw,12vh),92px);line-height:1.04;letter-spacing:-.012em}
+h2{font-weight:400;font-size:clamp(30px,min(3.6vw,7.4vh),52px);line-height:1.12;letter-spacing:-.008em}
+p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:var(--tx2);max-width:26em}
+
+/* jeviště: vysoký blok, obraz drží na místě a jeho snímky se přehrávají podle posunu.
+   Výška (oprava 14. 11., Z: „ujede dolejšek“): plocha NESMÍ být 100svh; po schování lišty prohlížeče je okno vyšší a pod plochou
+   zůstal pruh. Plocha je vysoká jako největší okno (lvh, nebo výška změřená skriptem ve --vh) a přesahuje o --bleed, přesah
+   zakryje další oddíl. --low = kolik spodku plochy může být pod okrajem okna; o tolik výš drží všechno, co musí být vidět. */
+.stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(1100vh + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#000}
+@supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
+.stage+section{z-index:1}
+.pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
+.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pin::after{content:"";position:absolute;inset:0 0 auto 0;height:104px;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0));pointer-events:none}   /* lišta zůstane čitelná i nad světlým interiérem */
+.cap{position:absolute;opacity:0;visibility:hidden;will-change:opacity,transform;text-shadow:0 1px 28px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.5)}
+.cap.l{left:var(--side);top:calc(var(--sv) / 2);width:min(440px,27vw);margin-top:-130px}
+.cap h1{white-space:nowrap}
+.cap.r{right:var(--side);top:calc(var(--sv) / 2);width:min(400px,28vw);margin-top:-90px}
+.cap.tl{left:var(--side);top:clamp(96px,19vh,190px);width:min(440px,36vw)}
+.cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(76px,13vh,150px) 24px 10vh;background:linear-gradient(rgba(0,0,0,.84) 60%,rgba(0,0,0,0))}
+.cap.b{left:0;right:0;bottom:0;text-align:center;padding:26vh 24px calc(var(--low) + clamp(40px,9vh,96px));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 72%)}
+.cap.t p.sub,.cap.b p.sub{margin-inline:auto}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:34px;font-size:15px;color:var(--tx2)}
+.hint i{width:1px;height:34px;background:linear-gradient(#fff,rgba(255,255,255,0));animation:hint 2.2s ease-in-out infinite;transform-origin:50% 0}
+@keyframes hint{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.btn{display:inline-block;margin-top:26px;padding:13px 26px;border-radius:6px;background:#fbfcff;color:#0e0e12;font-size:17px;font-weight:500;text-decoration:none;text-shadow:none;transition:background .2s}
+.btn:hover{background:#dfe2ea}
+.btn.dark{background:#0e0e12;color:#fbfcff}
+.btn.dark:hover{background:#2b2c33}
+
+/* bílé textové části */
+section.band{position:relative;background:#fff;color:var(--ink);padding:clamp(88px,13vh,160px) var(--edge);--p:0}
+section.band .eye,section.band p.sub{color:var(--ink2)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(48px,8vh,88px)}
+.nums div{font-size:16px;line-height:1.35;color:var(--ink2);border-top:1px solid var(--line);padding-top:22px}
+.nums strong{display:block;font-weight:300;font-size:clamp(56px,7.2vw,112px);line-height:.95;letter-spacing:-.03em;color:var(--ink);margin-bottom:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nums strong small{font-size:.24em;font-weight:500;letter-spacing:0;margin-left:.3em}
+dl{display:grid;grid-template-columns:repeat(2,1fr);column-gap:56px;margin-top:clamp(48px,7vh,80px)}
+dl div{display:flex;justify-content:space-between;gap:24px;padding:16px 0;border-top:1px solid var(--line);font-size:18px}
+dt{color:var(--ink2)}
+dd{text-align:right;font-weight:500}
+
+/* barvy: tentýž záběr v šesti lacích, prolínají se */
+.paint{position:relative;background:#000;padding:clamp(88px,12vh,140px) 0 clamp(56px,8vh,96px);text-align:center;overflow:hidden}
+.paint .shots{position:relative;width:min(1500px,100%);margin:clamp(8px,2vh,24px) auto 0;aspect-ratio:16/9}
+.paint .shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
+.paint .shots img.on{opacity:1}
+.paint .shots::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#000,transparent 14%,transparent 86%,#000),linear-gradient(90deg,#000,transparent 8%,transparent 92%,#000)}
+.dots{display:flex;gap:18px;justify-content:center;margin-top:10px;flex-wrap:wrap;padding:0 24px}
+.dots button{width:34px;height:34px;border-radius:50%;border:0;padding:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);transition:box-shadow .2s,transform .2s}
+.dots button:hover{transform:scale(1.08)}
+.dots button[aria-pressed=true]{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 0 0 3px #000,0 0 0 4.5px #fbfcff}
+.dots button:focus-visible,.btn:focus-visible,a:focus-visible{outline:2px solid #6aa7ff;outline-offset:4px}
+#lak{margin-top:18px;font-size:17px;color:var(--tx2);min-height:1.5em}
+
+.about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(32px,6vw,96px);align-items:start}
+.about p{font-size:clamp(18px,1.5vw,20px);line-height:1.5;color:var(--ink2)}
+.about p+p{margin-top:16px}
+.about p b{color:var(--ink);font-weight:500}
+
+footer{background:#fff;color:var(--ink2);padding:28px var(--edge) 44px;font-size:13px;line-height:1.55;border-top:1px solid var(--line)}
+footer b{color:var(--ink);font-weight:500}
+footer p+p{margin-top:8px}
+
+@media(max-width:860px){
+  nav div a:not(.keep){display:none}
+  .stage{height:calc(900vh + var(--bleed))}
+  .cap.l,.cap.r,.cap.tl{left:24px;right:24px;width:auto;top:auto;bottom:calc(var(--low) + clamp(36px,8vh,80px));margin-top:0}
+  .nums{grid-template-columns:repeat(2,1fr);gap:20px}
+  dl,.about{grid-template-columns:1fr}
+  .paint .shots{aspect-ratio:4/3}
+}
+/* nízké široké okno (notebook, tablet na šířku v okně): menší nadpisy a popisky výš, ať leží na černé nad autem */
+@media(min-width:861px) and (max-height:700px){
+  .cap.l{margin-top:-110px}.cap.l h1{font-size:clamp(40px,min(5.2vw,11vh),72px)}
+  .cap.t{padding-top:72px}.cap .hint{margin-top:20px}
+  p.sub{margin-top:10px;font-size:17px}
+}
+/* telefon na šířku */
+@media(max-height:480px) and (orientation:landscape){
+  nav{height:52px}
+  h1{font-size:34px}h2{font-size:24px}p.sub{margin-top:6px;font-size:15px}
+  .cap.l,.cap.r,.cap.tl{left:var(--side);right:auto;width:min(360px,44vw);top:64px;bottom:auto;margin-top:0}
+  .cap.r{left:auto;right:var(--side)}
+  .cap.t{padding:58px 20px 8vh}
+  .cap.b{padding:14vh 20px calc(var(--low) + 22px)}
+  .cap .hint{margin-top:12px}
+}
+@media(prefers-reduced-motion:reduce){.hint i{animation:none}.paint .shots img{transition:none}}
+</style>
+</head>
+<body>
+<i id="prog" aria-hidden="true"></i>
+<nav><b>911 Turbo S</b><div><a href="#jizda">Exteriér</a><a href="#jizda" data-t=".807">Interiér</a><a href="#technika">Technika</a><a href="#barvy">Barvy</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
+
+<!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas, dvojice „posun,čas“ (kde se čte text, jede obraz pomaleji, ale nezastaví) -->
+<div class="stage" id="jizda" data-frames="1039" data-dir="seq/a" data-dir-p="seq/p"
+     data-map="0,0 .035,0 .20,.17 .27,.21 .40,.36 .47,.40 .58,.555 .65,.60 .78,.785 .85,.83 .93,.96 1,1">
+  <div class="pin">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cap l" data-at="0"><p class="eye">Ukázka · Whyte Lynx</p><h1>911 Turbo&nbsp;S</h1><p class="sub">Projeďte si ho celý, kolem dokola a&nbsp;pak dovnitř.</p><span class="hint"><i></i>Posouvejte dolů</span></div>
+    <div class="cap t" data-at=".191"><h2>4&nbsp;535 mm jedné linie.</h2><p class="sub">Od světlometů po záď, na výšku jen 1&nbsp;303&nbsp;mm.</p></div>
+    <div class="cap r" data-at=".383"><h2>Světelný pás přes celou záď.</h2><p class="sub">Záď je široká 1&nbsp;900&nbsp;mm a&nbsp;motor je hned za ní.</p></div>
+    <div class="cap tl" data-at=".576"><h2>Nastupte.</h2><p class="sub">Dál už se jede zevnitř.</p></div>
+    <div class="cap t" data-at=".807"><h2>Místo řidiče.</h2><p class="sub">Uprostřed otáčkoměr, po stranách dva displeje.</p></div>
+    <div class="cap t" data-at=".904"><h2>Všechno po ruce.</h2><p class="sub">Střední obrazovka, pod ní řada přepínačů a&nbsp;volič převodovky.</p></div>
+    <div class="cap b" data-at="1"><h2>A teď čísla.</h2><a class="btn" href="#technika">Technika</a></div>
+  </div>
+</div>
+
+<section class="band" id="technika">
+  <p class="eye">Technika</p>
+  <h2>Šestiválec vzadu a&nbsp;pohon všech kol</h2>
+  <div class="nums">
+    <div><strong><span data-n="650">650</span><small>k</small></strong>výkon při 6&nbsp;750 ot./min</div>
+    <div><strong><span data-n="800">800</span><small>N·m</small></strong>točivý moment</div>
+    <div><strong><span data-n="2.7" data-d="1">2,7</span><small>s</small></strong>z&nbsp;0 na 100&nbsp;km/h</div>
+    <div><strong><span data-n="330">330</span><small>km/h</small></strong>nejvyšší rychlost</div>
+  </div>
+  <dl>
+    <div><dt>Motor</dt><dd>plochý šestiválec, 3&nbsp;745&nbsp;cm³</dd></div>
+    <div><dt>Převodovka</dt><dd>osmistupňová PDK</dd></div>
+    <div><dt>Délka × šířka × výška</dt><dd>4&nbsp;535 × 1&nbsp;900 × 1&nbsp;303&nbsp;mm</dd></div>
+    <div><dt>Rozvor</dt><dd>2&nbsp;450&nbsp;mm</dd></div>
+    <div><dt>Pohon</dt><dd>všech kol</dd></div>
+    <div><dt>Pohotovostní hmotnost</dt><dd>1&nbsp;640&nbsp;kg</dd></div>
+  </dl>
+</section>
+
+<div class="paint" id="barvy">
+  <h2>Vyberte si lak</h2>
+  <div class="shots" id="shots">
+    <img class="on" src="seq/barvy/stribrna.webp" alt="911 Turbo S ve stříbrné barvě, pohled zepředu z boku" decoding="async">
+  </div>
+  <div class="dots" role="group" aria-label="Barva laku">
+    <button type="button" data-col="stribrna" aria-pressed="true" aria-label="Stříbrná metalíza" style="background:#b9bcc2"></button>
+    <button type="button" data-col="kridova" aria-pressed="false" aria-label="Křídově šedá" style="background:#c9c8c0"></button>
+    <button type="button" data-col="cervena" aria-pressed="false" aria-label="Červená" style="background:#c1121c"></button>
+    <button type="button" data-col="modra" aria-pressed="false" aria-label="Tmavě modrá metalíza" style="background:#16306e"></button>
+    <button type="button" data-col="zelena" aria-pressed="false" aria-label="Tmavě zelená metalíza" style="background:#12432f"></button>
+    <button type="button" data-col="cerna" aria-pressed="false" aria-label="Černá metalíza" style="background:#1b1b1f"></button>
+  </div>
+  <p id="lak" aria-live="polite">Stříbrná metalíza</p>
+</div>
+
+<section class="band" id="ukazka">
+  <div class="about">
+    <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;Vaše nabídka.</h2></div>
+    <div>
+      <p><b>Celou jízdu tvoří 260 předem připravených obrázků</b>, které se přehrávají podle posunu stránky. Díky tomu běží plynule na počítači i&nbsp;na telefonu.</p>
+      <p>Místo auta může být Váš výrobek, provozovna nebo dům. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co prodáváte.</p>
+      <a class="btn dark" href="https://whytelynx.cz">Chci podobnou stránku</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><b>Ukázka práce — Vladislav Zachariev · Whyte Lynx</b>, <a href="https://whytelynx.cz">whytelynx.cz</a>. Nezávislá studie, není to web značky Porsche, není spojená se společností Dr. Ing. h.c. F. Porsche AG a nic neprodává. Porsche a 911 jsou ochranné známky této společnosti.</p>
+  <p>Parametry: <a href="https://www.auto-data.net/en/porsche-911-992-turbo-s-3.8-650hp-pdk-39256" target="_blank" rel="noopener">auto-data.net</a>, 911 Turbo S (992) z let 2020–2024 (čteno 13. 11. 2026). 3D model: „Porsche 911 with interior“, autor <a href="https://sketchfab.com/3d-models/877b1bc1739f4a2bb65d62fd7ffd9f75" target="_blank" rel="noopener">n.brizitskaya</a>, licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; lak, skla, světla a studio jsou upravené, obraz na displejích je vlastní kresba. Záběry jsou předem vyrenderované.</p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const nums = (s, sep) => s.split(sep).map(Number);
+const portrait = () => innerWidth / innerHeight < 0.8;
+
+/* ---------- jeviště: řada obrázků kreslená do plátna, čas určuje posun stránky ----------
+   Přepis 14. 11. 2026 (Z: „hrozně trhané“): snímky se stahují jako data a dekódují předem mimo hlavní vlákno
+   (createImageBitmap) jen v okně kolem polohy, ve směru jízdy víc; kreslí se jen hotové. Dřív drawImage(Image) dekódoval
+   velký snímek při kreslení a stránka se zasekla na 50–120 ms (změřeno při 4× zpomaleném procesoru: 9,3 s z 24 s). */
+let vh = 0;
+const probe = document.createElement('div');                 // výška malého okna (s vysunutou lištou prohlížeče)
+probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
+document.body.appendChild(probe);
+function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
+const stages = [...document.querySelectorAll('.stage')].map(el => {
+  const n = +el.dataset.frames, canvas = el.querySelector('canvas');
+  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
+    map: el.dataset.map.split(' ').map(p => nums(p, ',')),
+    caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
+    blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
+});
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=4`;   // v = verze snímků; po novém renderu zvednout
+const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
+  const im = new Image(), u = URL.createObjectURL(blob);
+  im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
+  im.onerror = no; im.src = u;
+});
+
+function load(s) {                                   // nejdřív okolí polohy, pak každý 16., 8., 4., 2. a zbytek: i brzký posun ukáže pohyb
+  const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
+  if (s.dir === dir) return;
+  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
+  const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
+  const c = Math.round(s.t * (s.n - 1));
+  for (let i = c - 3; i <= c + 12; i++) push(i);
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
+  push(s.n - 1);
+  let k = 0, live = 0;
+  const next = () => {
+    while (live < 6 && k < order.length && gen === s.gen) {
+      const i = order[k++], url = src(s, i); live++;
+      const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
+      get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
+        .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
+        .then(() => { live--; next(); });
+    }
+  };
+  next();
+}
+function feed(s) {                                   // dekódovat kolem polohy, ve směru jízdy víc; vzdálené zavřít (paměť tabletu)
+  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
+  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
+    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
+      if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
+      s.busy.add(i); s.dec++;
+      const gen = s.gen;
+      decode(s.blobs[i]).then(bm => {
+        if (gen !== s.gen) { bm.close && bm.close(); return; }
+        s.bms.set(i, bm); s.dirty = true; tick();
+      }, () => {}).then(() => { s.busy.delete(i); s.dec--; feed(s); });
+    }
+  }
+  if (s.bms.size > keep) {
+    const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
+    for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+  }
+}
+function nearest(s, i) {                             // nejbližší snímek, který je už dekódovaný
+  if (s.bms.has(i)) return i;
+  for (let d = 1; d < s.n; d++) { if (s.bms.has(i - d)) return i - d; if (s.bms.has(i + d)) return i + d; }
+  return -1;
+}
+function size(s) {                                   // plátno = celá plocha i s přesahem; obraz se rozvrhuje do malého okna (H)
+  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(probe.offsetHeight || innerHeight, Hc);
+  const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
+  if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
+    s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
+  }
+}
+function place(s, iw, ih) {                          // kam položit snímek (v px okna)
+  const W = s.W, H = s.H; let k, y;
+  if (iw < ih) { k = Math.max(W / iw, H / ih); y = (H - ih * k) / 2; }             // na výšku: vyplní telefon
+  else if (W / H >= iw / ih) { k = Math.min(W / iw, H * 1.12 / ih); y = -(ih * k - H) * .3; }   // široké okno: nanejvýš 12 % přes výšku, boky do černé
+  else { k = Math.min(H / ih, W * 1.06 / iw); y = H - ih * k; }                      // vyšší okno (tablet): celá šířka u spodního okraje, nahoře černá na popisky
+  return [(W - iw * k) / 2, y, iw * k, ih * k];
+}
+function draw(s) {                                 // v pomalém pohybu prolnout dva sousední snímky (dojezd po švihnutí nestojí), v klidu vždy CELÝ snímek:
+  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;   // dvojité dveře a záď na snímcích Z 813/814 (14. 11.) bylo prolnutí, které zůstalo stát
+  let i, b = -1, shownF;                                         // v klidu; teď step() po 250 ms klidu dovede polohu na celý snímek
+  if (s.slow && !window.__noBlend && a > .01 && a < .99 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { i = i0; b = i0 + 1; shownF = f; }
+  else { i = nearest(s, Math.round(f)); shownF = i; }
+  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
+  s.shown = i; s.shownF = shownF; s.dirty = false;
+  const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
+  g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+  g.fillStyle = '#000'; g.fillRect(0, 0, s.W, s.Hc);
+  g.drawImage(im, x, y, w, h);
+  if (b >= 0) { g.globalAlpha = a; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
+  const F = Math.min(w, h) * .14;                    // kde snímek nedosáhne k okraji plochy, rozpustí se jeho hrana do černé
+  if (x > .5) { fade(g, x, 0, x + F, 0, x, y, F, h); fade(g, x + w, 0, x + w - F, 0, x + w - F, y, F, h); }
+  if (y > .5) fade(g, 0, y, 0, y + F, x, y, w, F);
+  if (y + h < s.Hc - .5) fade(g, 0, y + h, 0, y + h - F, x, y + h - F, w, F);
+}
+function fade(g, x0, y0, x1, y1, rx, ry, rw, rh) {
+  const k = g.createLinearGradient(x0, y0, x1, y1); k.addColorStop(0, '#000'); k.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = k; g.fillRect(rx, ry, rw, rh);
+}
+function timeAt(s) {                                 // poloha uvnitř jeviště → čas 0..1 přes jeho mapu
+  const r = s.el.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, s.el.offsetHeight - s.pin.offsetHeight));
+  const m = s.map; let j = 0; while (j < m.length - 2 && p > m[j + 1][0]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1];
+  return t0 + (t1 - t0) * clamp((p - p0) / Math.max(1e-6, p1 - p0));
+}
+function scrollFor(s, t) {                           // obráceně: čas → kam posunout stránku
+  const m = s.map; let j = 0; while (j < m.length - 2 && t > m[j + 1][1]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1], p = p0 + (p1 - p0) * clamp((t - t0) / Math.max(1e-6, t1 - t0));
+  return s.el.offsetTop + p * (s.el.offsetHeight - s.pin.offsetHeight);
+}
+function captions(s) {                               // zapisuje jen změny (každý zápis stylu stojí přepočet)
+  for (const k of s.caps) {
+    const d = Math.abs(s.t - k.at), o = 1 - smooth(0.022, 0.06, d);
+    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - s.t) * 260).toFixed(0)}px,0)`;
+    if (os !== k.o) k.c.style.opacity = k.o = os;
+    if (vs !== k.v) k.c.style.visibility = k.v = vs;
+    if (o > 0.01 && tr !== k.tr) k.c.style.transform = k.tr = tr;
+  }
+}
+
+/* ---------- bílé části: --p běží 0 → 1, jak část vjíždí do okna; čísla se dopočítají ---------- */
+const bands = [...document.querySelectorAll('section.band')];
+const counters = [...document.querySelectorAll('[data-n]')].map(el => ({ el, n: +el.dataset.n, d: +(el.dataset.d || 0), band: el.closest('section') }));
+const fmt = (v, d) => v.toFixed(d).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+function reveal() {
+  for (const b of bands) {
+    const r = b.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue;
+    const p = smooth(0, 1, (innerHeight * 0.8 - r.top) / (innerHeight * 0.5));
+    for (const c of counters) if (c.band === b) c.el.textContent = fmt(c.n * p, c.d);
+  }
+}
+const prog = document.getElementById('prog'), navEl = document.querySelector('nav'), zones = [...document.querySelectorAll('.band,footer,.paint')];
+
+/* ---------- jedna smyčka: běží jen, dokud se něco hýbe ---------- */
+let raf = 0;
+function tick() { if (!raf) raf = requestAnimationFrame(step); }
+function step(now) {
+  raf = 0; let moving = false;
+  for (const s of stages) {
+    const r = s.el.getBoundingClientRect();
+    if (r.top < innerHeight * 2.5 && r.bottom > -innerHeight) load(s);
+    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
+    const w = timeAt(s);                                 // po 250 ms bez posunu cíl = nejbližší celý snímek (v klidu nikdy prolnutí)
+    if (s.raw === undefined || Math.abs(w - s.raw) * (s.n - 1) > 1e-3) { s.raw = w; s.moved = now; }
+    const rest = now - s.moved > 250;               // 250 ms = pod ~4 px/s, prakticky stání (kratší → kývání při pomalém dojezdu)
+    s.want = rest ? Math.round(w * (s.n - 1)) / (s.n - 1) : w;
+    if (!rest) moving = true;
+    const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
+    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;   // dojezd podle času, ne podle počtu obnovení (60 i 120 Hz stejně)
+    const t1 = gap > 150 ? s.want : Math.abs(d) * (s.n - 1) < 0.01 ? s.want : s.t + d * (1 - Math.exp(-dt / 110));
+    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;   // prolínat jen pomalý pohyb; v rychlém se snímek mění každé obnovení
+    if (gap > .3) s.dirn = d > 0 ? 1 : -1;
+    if (s.t !== s.want) moving = true;
+    size(s); feed(s); draw(s); captions(s);
+  }
+  reveal();
+  let z = ''; for (const el of zones) { const r = el.getBoundingClientRect(); if (r.top <= 58 && r.bottom > 58) z = el.classList.contains('paint') ? 'dk' : 'lt'; }
+  if (navEl.className !== z) navEl.className = z;
+  const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
+  if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
+  if (moving) tick(); else for (const s of stages) s.last = 0;
+}
+addEventListener('scroll', tick, { passive: true });
+addEventListener('resize', () => { setVh(); tick(); });
+if (window.visualViewport) visualViewport.addEventListener('resize', setVh);
+setVh();
+
+/* ---------- odkazy v liště: Interiér skočí doprostřed jízdy ---------- */
+document.querySelectorAll('nav a[data-t]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); scrollTo({ top: scrollFor(stages[0], +a.dataset.t), behavior: 'smooth' });
+}));
+document.querySelectorAll('a[href^="#"]:not([data-t])').forEach(a => a.addEventListener('click', e => {
+  const el = document.querySelector(a.getAttribute('href')); if (!el) return;
+  e.preventDefault(); scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+}));
+
+/* ---------- barvy: obrázky laků se načtou, až se k nim stránka přiblíží, a prolínají se ---------- */
+const shots = document.getElementById('shots'), lak = document.getElementById('lak'), dots = [...document.querySelectorAll('.dots button')], pics = { stribrna: shots.querySelector('img') };
+function pick(b) {
+  dots.forEach(x => x.setAttribute('aria-pressed', x === b));
+  lak.textContent = b.getAttribute('aria-label');
+  const c = b.dataset.col, show = () => Object.entries(pics).forEach(([k, im]) => im.classList.toggle('on', k === c));
+  if (pics[c]) return show();
+  const im = new Image(); im.alt = '911 Turbo S, ' + b.getAttribute('aria-label').toLowerCase(); im.decoding = 'async';
+  im.onload = () => { shots.appendChild(im); pics[c] = im; requestAnimationFrame(() => requestAnimationFrame(() => { if (b.getAttribute('aria-pressed') === 'true') show(); })); };
+  im.src = `seq/barvy/${c}.webp`;
+}
+dots.forEach(b => b.addEventListener('click', () => pick(b)));
+
+window.__P = { stages, tick, scrollFor };
+tick();
+})();
+</script>
+</body>
+</html>
