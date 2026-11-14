@@ -130,7 +130,7 @@ footer p+p{margin-top:8px}
 <nav><b>911 Turbo S</b><div><a href="#jizda">Exteriér</a><a href="#jizda" data-t=".807">Interiér</a><a href="#technika">Technika</a><a href="#barvy">Barvy</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
 
 <!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas, dvojice „posun,čas“ (kde se čte text, jede obraz pomaleji, ale nezastaví) -->
-<div class="stage" id="jizda" data-frames="520" data-dir="seq/a" data-dir-p="seq/p"
+<div class="stage" id="jizda" data-frames="1039" data-dir="seq/a" data-dir-p="seq/p"
      data-map="0,0 .035,0 .20,.17 .27,.21 .40,.36 .47,.40 .58,.555 .65,.60 .78,.785 .85,.83 .93,.96 1,1">
   <div class="pin">
     <canvas aria-hidden="true"></canvas>
@@ -219,7 +219,7 @@ const stages = [...document.querySelectorAll('.stage')].map(el => {
     caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
     blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
 });
-const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=3`;   // v = verze snímků; po novém renderu zvednout
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=4`;   // v = verze snímků; po novém renderu zvednout
 const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
   const im = new Image(), u = URL.createObjectURL(blob);
   im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
@@ -357,10 +357,19 @@ function step(now) {
     if (!rest) moving = true;
     const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
     const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;   // dojezd podle času, ne podle počtu obnovení (60 i 120 Hz stejně)
-    const t1 = gap > 150 ? s.want : Math.abs(d) * (s.n - 1) < 0.01 ? s.want : s.t + d * (1 - Math.exp(-dt / 110));
+    // Z 14. 11. večer: „plynulejší dojezd“. Dřív 1. řád (110 ms): obraz se po puštění zastavil skoro hned a rozjel se skokem.
+    // Teď kriticky tlumená pružina v jednotkách snímků: rychlost se mění spojitě, po puštění obraz plynule dojede (~0,5 s), bez překmitu.
+    const OM = window.__om || 10;                                          // tuhost [1/s]: zpoždění za posunem 2/OM = 200 ms
+    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
+    if (Math.abs(d) > .25) { F = W; v = 0; }                               // skok přes čtvrtinu jízdy (odkaz v liště) = rovnou
+    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
+      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+    }
+    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
+    s.v = v; const t1 = F / (s.n - 1);
     s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;   // prolínat jen pomalý pohyb; v rychlém se snímek mění každé obnovení
     if (gap > .3) s.dirn = d > 0 ? 1 : -1;
-    if (s.t !== s.want) moving = true;
+    if (s.t !== s.want || v) moving = true;
     size(s); feed(s); draw(s); captions(s);
   }
   reveal();
