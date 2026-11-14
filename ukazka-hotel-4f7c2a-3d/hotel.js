@@ -176,8 +176,9 @@
     for (const id in DOORS) {
       const b = $(id), on = scene === 'obyvak' && !flying;
       if (!on) { b.hidden = true; continue; }
-      const [x, y] = toScreen(...DOORS[id]), m = b.offsetWidth / 2 + 10 || 56;
+      const [x, y] = toScreen(...DOORS[id]);
       b.hidden = y < 60 || y > sh - 40; // dveře vedle záběru (úzký telefon) = štítek u kraje, ať se dá do pokoje dojít
+      const m = (b.offsetWidth || 92) / 2 + 12;   // šířka až po odkrytí, schované tlačítko měří 0
       b.style.left = Math.min(Math.max(x, m), sw - m) + 'px'; b.style.top = y + 'px';
     }
   }
