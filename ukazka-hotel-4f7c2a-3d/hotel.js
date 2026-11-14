@@ -177,7 +177,7 @@
       const b = $(id), on = scene === 'obyvak' && !flying;
       if (!on) { b.hidden = true; continue; }
       const [x, y] = toScreen(...DOORS[id]), m = b.offsetWidth / 2 + 10 || 56;
-      b.hidden = x < -20 || x > sw + 20 || y < 60 || y > sh - 40; // dveře mimo záběr = bez štítku
+      b.hidden = y < 60 || y > sh - 40; // dveře vedle záběru (úzký telefon) = štítek u kraje, ať se dá do pokoje dojít
       b.style.left = Math.min(Math.max(x, m), sw - m) + 'px'; b.style.top = y + 'px';
     }
   }
