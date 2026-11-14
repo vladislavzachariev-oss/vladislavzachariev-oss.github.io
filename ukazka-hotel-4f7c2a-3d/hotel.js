@@ -47,7 +47,7 @@
     await im.decode();
     IMG[n] = window.createImageBitmap ? await createImageBitmap(im) : im;
     if (n !== 'vez') SOFT[n] = await soft(im);
-    else { const m = new Image(); m.src = 'img/vez-mask.png?v=7'; await m.decode(); MASK = m; }
+    else { const m = new Image(); m.src = 'img/vez-mask.png?v=8'; await m.decode(); MASK = m; }
   }
   let MASK = null;   // alfa věže (render ze stejné kamery): ztlumení a pruh patra jen přes věž, ne do oblohy
   const OFF = document.createElement('canvas'), ox = OFF.getContext('2d');
