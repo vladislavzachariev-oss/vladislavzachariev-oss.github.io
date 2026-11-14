@@ -7,7 +7,7 @@
    případně výška změřená skriptem ve --vh) a navíc přesahuje o --bleed pod spodní okraj; přesah zakrývá další oddíl.
    --low = kolik spodku plochy může být schované pod okrajem okna; o tolik výš se drží všechno, co musí být vidět. */
 .stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
-  position:relative;height:calc(max(470vh,3400px) + var(--bleed));   /* nízké okno: aspoň 13 px posunu na snímek, jinak kolečko přeskakuje */
+  position:relative;height:calc(max(620vh,4600px) + var(--bleed));   /* kolečko: aspoň ~16 px posunu na snímek (14. 11.: při 3400 px skákala jízda rychlým kolečkem o 19 snímků, Porsche s 22 px/snímek ne) */
   margin-bottom:calc(-1 * var(--bleed));padding:0;background:var(--bg)}
 @supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
 .stage-pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}

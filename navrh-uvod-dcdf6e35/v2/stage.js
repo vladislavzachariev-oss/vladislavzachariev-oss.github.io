@@ -21,7 +21,7 @@
   const ease = t => t * t * (3 - 2 * t), lerp = (a, b, t) => a + (b - a) * t;
   const REST = Math.round(N * .045);                   // klidový snímek (auto zepředu z boku)
   const BEHIND = 4, DEC = 3;                         // okno předem dekódovaných snímků: vzadu 4, vpředu podle rychlosti (12–30)
-  let AHEAD = 12, KEEP = 22;
+  let AHEAD = 12, KEEP = 22, STRIDE = 1, vel = 0;   // STRIDE: při rychlé jízdě se dopředu dekóduje každý n-tý snímek (rovnoměrné kroky místo nahodilých skoků)
 
   const SETS = {
     a: { k: 'a', dir: st.dataset.dir, car: { cx: .595, cy: .53, w: .77, h: .47 } },
@@ -70,9 +70,9 @@
   }
   /* dekódovat snímky kolem polohy, ve směru jízdy víc; vzdálené zavřít (paměť tabletu) */
   function feed() {
-    const c = Math.round(cur), lo = dirn > 0 ? BEHIND : AHEAD, hi = dirn > 0 ? AHEAD : BEHIND;
-    for (let d = 0; d <= Math.max(lo, hi) && decoding < DEC; d++) {
-      for (const i of d ? [c + d * dirn, c - d * dirn] : [c]) {
+    const c = Math.round(cur), A = Math.min(AHEAD * STRIDE, 90), lo = dirn > 0 ? BEHIND : A, hi = dirn > 0 ? A : BEHIND;
+    for (let d = 0; d <= Math.max(AHEAD, BEHIND) && decoding < DEC; d++) {
+      for (const i of d ? [c + d * STRIDE * dirn, c - d * dirn] : [c]) {
         if (i < 0 || i >= N || i < c - lo || i > c + hi || bms.has(i) || busy.has(i) || !blobs[i] || decoding >= DEC) continue;
         busy.add(i); decoding++;
         const mine = set;
@@ -168,7 +168,10 @@
     const drive = (N - 1) * c01((p - .035) / .935), target = clamp(REST * (1 - c01(p / .14)) + drive, 0, N - 1);
     const gap = target - cur;
     AHEAD = Math.round(clamp(12 + Math.abs(gap) * .6, 12, 30)); KEEP = AHEAD + BEHIND + 6;
+    const was = cur;
     if (Math.abs(gap) > 150) cur = target; else if (Math.abs(gap) > .02) cur += gap * (1 - Math.exp(-dt * 7.5)); else cur = target;
+    if (dt > 0) vel += (Math.abs(cur - was) / dt - vel) * .25;            // snímků za sekundu
+    STRIDE = Math.round(clamp(vel / 40, 1, 6));                          // ~40 dekódování/s stihne i pomalý tablet (změřeno 14. 11.)
     if (Math.abs(gap) > .3) dirn = gap > 0 ? 1 : -1;
     const want = Math.round(cur);
     if (want !== shown || bms.has(want) && shown !== want) feed();
