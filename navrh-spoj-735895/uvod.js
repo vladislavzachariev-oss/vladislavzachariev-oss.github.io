@@ -62,7 +62,7 @@ const LZ = 1.2;                                   // výška čočky nad papíre
 const toW = (px, py, z = 0) => [((px - W / 2) * K) * (CZ - z) / CZ, ((H / 2 - py) * K) * (CZ - z) / CZ];
 
 function layoutText() {
-  const dpr = Math.min(devicePixelRatio, 2);
+  const dpr = Math.min(3, Math.max(2, devicePixelRatio), 4096 / Math.max(W, H));   // ostré písmo i při průletu
   tc.width = Math.round(W * dpr); tc.height = Math.round(H * dpr);
   tx.setTransform(dpr, 0, 0, dpr, 0, 0);
   tx.fillStyle = BG; tx.fillRect(0, 0, W, H);
@@ -144,7 +144,7 @@ function frame(now) {
   const r0 = minS * (portrait ? 0.2 : 0.17) * (1 + 0.04 * Math.sin(clock * 0.9));
   const rVas = vasRect ? Math.max(r0, vasRect.w * 0.78) : r0;
   const rpx = mix(r0, rVas, go);
-  const cx = mix(px, vx, go) + away * rpx * 3.2, cy = mix(py, vy, go) - away * rpx * 1.4;   // čočka uhne doprava nahoru
+  const cx = mix(px, vx, go) + away * rpx * 7, cy = mix(py, vy, go) - away * rpx * 3;   // čočka uhne doprava nahoru
   const [lx, ly] = toW(cx, cy, LZ);
   const R = rpx * K * (CZ - LZ) / CZ;
   lens.position.set(lx, ly, LZ);
@@ -160,7 +160,7 @@ function frame(now) {
   const strokePx = ink ? ink.r * 2 : 20, zEnd = CZ * Math.min(0.5, strokePx / (Math.hypot(W, vh) * 1.3));
   const zc = CZ * Math.pow(zEnd / CZ, e), c = easeInOut(Math.min(1, e * 1.5));
   camera.position.set(T[0] * c, T[1] * c, zc);
-  lens.visible = zc > LZ + 0.15;
+  lens.visible = away < 0.97 && zc > LZ + 0.15;
   shadow.material.opacity = caustic.material.opacity = 1 - away;
 
   hero.style.setProperty('--fade', String(1 - smooth(0.02, 0.16, p)));
