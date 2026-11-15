@@ -63,7 +63,7 @@ const WORKS = [
   const nums = [...document.querySelectorAll('.num')];
   const tl = gsap.timeline({ scrollTrigger: { trigger: '.p3', pin: '.p3 .pin', start: 'top top', end: '+=' + innerHeight * 2.4, scrub: 0.5 } });
   nums.forEach((el, i) => {
-    const b = el.querySelector('b'), to = +b.dataset.to, o = { v: i ? 100 : 0 };
+    const b = el.querySelector('b'), to = +b.dataset.to, o = { v: 0 };
     tl.fromTo(el, { opacity: 0, y: 60, filter: 'blur(10px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5 }, i * 1.2)
       .to(o, { v: to, duration: 0.6, ease: 'power2.out', onUpdate: () => b.textContent = Math.round(o.v).toLocaleString('cs-CZ') }, i * 1.2)
       .to(el, { opacity: i === nums.length - 1 ? 1 : 0, y: i === nums.length - 1 ? 0 : -60, filter: i === nums.length - 1 ? 'blur(0px)' : 'blur(10px)', duration: 0.4 }, i * 1.2 + 0.8);
