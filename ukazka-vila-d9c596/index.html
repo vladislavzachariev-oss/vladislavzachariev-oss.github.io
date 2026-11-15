@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vily Laguna — ukázka Whyte Lynx</title>
+<meta name="description" content="Šest soukromých vil mezi lagunou a mořem. Ukázka hotelové stránky od Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#151413">
+<link rel="preload" as="image" href="seq/d/0000.webp" media="(min-aspect-ratio: 4/5)">
+<link rel="preload" as="image" href="seq/p/0000.webp" media="(max-aspect-ratio: 4/5)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Vily Laguna — ukázka (J 15. 11. 2026). Podle návodu, který poslal Z (reel DcyIAIvMTwk, stránka „VEYRA“): nahoře připnutý
+   průlet řízený posunem, pod ním světlé klidné části. Průlet = 594 snímků ze skutečných záběrů (Alef Morais, Pexels),
+   přehrává je jeviště ze stránky Porsche (stahování dopředu, dekódování mimo hlavní vlákno, pružina dojezdu). */
+:root{--sand:#f5f2ec;--paper:#fbfaf7;--ink:#1c1a17;--ink2:rgba(28,26,23,.64);--line:rgba(28,26,23,.14);--sea:#1d4f4c;--sea2:#163f3d;
+  --edge:max(24px,calc(50% - 620px));--side:clamp(20px,4vw,72px)}
+*{box-sizing:border-box;margin:0}
+html{background:var(--sand);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{font:400 17px/1.6 Manrope,"Segoe UI",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+img{display:block;max-width:100%}
+h1,h2,h3{font-weight:400;letter-spacing:-.025em}
+h1{font-size:clamp(52px,min(8.4vw,15vh),132px);line-height:.98}
+h2{font-size:clamp(32px,min(4.2vw,8vh),62px);line-height:1.06}
+h3{font-size:clamp(22px,1.9vw,27px);line-height:1.2;letter-spacing:-.015em}
+.eye{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;background:var(--sea);color:#fff;font-size:16px;font-weight:500;text-decoration:none;border:0;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn:hover{background:var(--sea2)}
+.btn.ghost{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.btn.ghost:hover{background:rgba(255,255,255,.26)}
+.btn.line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.line:hover{background:rgba(28,26,23,.05)}
+a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #4f8f8a;outline-offset:3px}
+
+/* lišta: nad průletem průhledná a bílá, nad světlými částmi světlý podklad */
+nav{position:fixed;inset:0 0 auto 0;height:72px;padding:0 var(--side);display:flex;align-items:center;justify-content:space-between;z-index:6;color:#fff;transition:background-color .3s,color .3s,box-shadow .3s}
+nav.lt{background:rgba(251,250,247,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+nav .brand{font-size:19px;font-weight:600;letter-spacing:-.01em;text-decoration:none}
+nav .brand small{font-weight:400;opacity:.7;margin-left:8px;font-size:14px}
+nav .links{display:flex;align-items:center;gap:30px;font-size:15px}
+nav .links a{text-decoration:none;opacity:.8;transition:opacity .2s}
+nav .links a:hover{opacity:1}
+nav .links .btn{opacity:1;padding:10px 20px;font-size:15px}
+nav:not(.lt) .links .btn{background:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+#prog{position:fixed;left:0;top:0;height:2px;width:100%;background:#8fb5b1;transform-origin:0 50%;transform:scaleX(0);z-index:7}
+
+/* jeviště (z Porsche): výška = největší okno + přesah, aby po schování lišty prohlížeče nezůstal pruh */
+.stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(720vh + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#11110f;color:#fff}
+@supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
+.stage+*{position:relative;z-index:1}
+.pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden;background:#11110f url(seq/d/0000.webp) center/cover no-repeat}
+.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pin::before{content:"";position:absolute;inset:0 0 auto 0;height:140px;background:linear-gradient(rgba(10,10,9,.45),rgba(10,10,9,0));pointer-events:none;z-index:1}
+.cap{position:absolute;left:0;right:0;bottom:var(--low);padding:24vh var(--side) clamp(44px,9vh,96px);opacity:0;visibility:hidden;will-change:opacity,transform;z-index:2;
+  background:linear-gradient(rgba(10,10,9,0),rgba(10,10,9,.34) 45%,rgba(10,10,9,.62));text-shadow:0 1px 24px rgba(0,0,0,.35)}
+.cap .eye{color:rgba(255,255,255,.78)}
+.cap p.sub{margin-top:18px;font-size:clamp(17px,1.35vw,20px);line-height:1.5;color:rgba(255,255,255,.86);max-width:30em}
+.cap h2{max-width:14ch}
+.cap .acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.cap.first{padding-bottom:clamp(56px,12vh,130px)}
+.cap.first h1{max-width:9ch}
+.cap.end{text-align:center}
+.cap.end h2{margin:0 auto}.cap.end p.sub{margin-inline:auto}.cap.end .acts{justify-content:center}
+.hint{display:inline-flex;align-items:center;gap:12px;margin-top:34px;font-size:14px;color:rgba(255,255,255,.78)}
+.hint i{width:1px;height:34px;background:linear-gradient(#fff,rgba(255,255,255,0));animation:hint 2.2s ease-in-out infinite;transform-origin:50% 0}
+@keyframes hint{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.scene{position:absolute;right:var(--side);bottom:calc(var(--low) + clamp(44px,9vh,96px));z-index:3;font-size:13px;letter-spacing:.06em;color:rgba(255,255,255,.8);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:12px}
+.scene b{font-weight:500}
+.scene span{display:block;width:72px;height:1px;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
+.scene span::after{content:"";position:absolute;inset:0;background:#fff;transform-origin:0 50%;transform:scaleX(var(--k,0))}
+
+/* světlé části */
+section{padding:clamp(96px,14vh,170px) var(--edge)}
+.intro{background:var(--paper);display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(36px,6vw,110px);align-items:end}
+.intro p{font-size:clamp(17px,1.3vw,19px);color:var(--ink2);max-width:34em}
+.intro p+p{margin-top:14px}
+.facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(28px,5vh,60px)}
+.facts div{border-top:1px solid var(--line);padding-top:20px;font-size:15px;color:var(--ink2)}
+.facts strong{display:block;font-weight:300;font-size:clamp(44px,5.2vw,80px);line-height:1;letter-spacing:-.04em;color:var(--ink);margin-bottom:10px;white-space:nowrap}
+
+.villas{background:var(--sand)}
+.head{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:clamp(36px,6vh,64px)}
+.head p{color:var(--ink2);max-width:28em}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,28px)}
+.card{background:var(--paper);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.card .ph{aspect-ratio:4/5;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img{transform:scale(1.04)}
+.card .tx{padding:24px 24px 26px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card .meta{font-size:14px;color:var(--ink2)}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.card .price{font-size:15px;color:var(--ink2)}
+.card .price b{color:var(--ink);font-weight:600;font-size:18px}
+.card .row a{font-size:15px;font-weight:500;color:var(--sea);text-decoration:none}
+.card .row a:hover{text-decoration:underline}
+
+.wide{position:relative;padding:0;height:min(92vh,980px);min-height:480px;overflow:hidden;color:#fff}
+.wide img{position:absolute;inset:-6% 0;width:100%;height:112%;object-fit:cover;will-change:transform}
+.wide .tx{position:absolute;left:var(--edge);right:var(--edge);bottom:clamp(40px,9vh,100px);text-shadow:0 1px 24px rgba(0,0,0,.35)}
+.wide::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(10,10,9,0) 45%,rgba(10,10,9,.55));pointer-events:none}
+.wide .tx{z-index:1}
+.wide p{margin-top:14px;max-width:30em;color:rgba(255,255,255,.88);font-size:clamp(17px,1.3vw,19px)}
+
+.inside{background:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(12px,1.6vw,22px)}
+.grid figure{position:relative;overflow:hidden;border-radius:14px}
+.grid figure img{width:100%;height:100%;object-fit:cover}
+.grid figcaption{position:absolute;left:16px;bottom:14px;font-size:14px;color:#fff;text-shadow:0 1px 14px rgba(0,0,0,.55)}
+.g1{grid-column:1/8;aspect-ratio:16/10}.g2{grid-column:8/13;aspect-ratio:auto}
+.g3{grid-column:1/6;aspect-ratio:auto}.g4{grid-column:6/13;aspect-ratio:16/10}
+
+.incl{background:var(--sand);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(36px,6vw,110px)}
+.incl ul{list-style:none;padding:0;columns:2;column-gap:40px}
+.incl li{break-inside:avoid;padding:18px 0;border-top:1px solid var(--line)}
+.incl li b{display:block;font-weight:500;font-size:18px}
+.incl li span{font-size:15px;color:var(--ink2)}
+.incl .extra{margin-top:28px;font-size:15px;color:var(--ink2)}
+
+.book{background:var(--sea);color:#fff;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(36px,6vw,110px)}
+.book .eye{color:rgba(255,255,255,.7)}
+.book>div>p{margin-top:18px;color:rgba(255,255,255,.8);max-width:28em}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;letter-spacing:.04em;color:rgba(255,255,255,.75)}
+label.full{grid-column:1/-1}
+input,select,textarea{font:inherit;font-size:16px;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:13px 14px;width:100%;color-scheme:dark}
+select option{color:var(--ink)}
+textarea{min-height:96px;resize:vertical}
+form .btn{grid-column:1/-1;justify-self:start;background:#fff;color:var(--sea);margin-top:6px}
+form .btn:hover{background:#e9efee}
+#ok{grid-column:1/-1;font-size:15px;color:#d8ebe8;min-height:1.6em}
+
+.about{background:var(--paper);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(36px,6vw,110px);align-items:start}
+.about p{color:var(--ink2);font-size:clamp(17px,1.3vw,19px)}
+.about p+p{margin-top:14px}
+.about p b{color:var(--ink);font-weight:500}
+.about .btn{margin-top:26px}
+
+footer{background:#151413;color:rgba(255,255,255,.62);padding:clamp(64px,10vh,110px) var(--edge) 36px;font-size:14px;overflow:hidden}
+footer .word{font-size:clamp(84px,20vw,330px);line-height:.8;letter-spacing:-.06em;color:#f5f2ec;font-weight:300;margin:0 0 clamp(36px,6vh,64px) -.04em;white-space:nowrap}
+footer .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px 40px;border-top:1px solid rgba(255,255,255,.14);padding-top:24px}
+footer b{color:#fff;font-weight:500}
+footer p{max-width:60em}
+
+/* pomalé odkrývání částí (jednou, bez opakování) */
+.rv{opacity:0;transform:translate3d(0,28px,0);transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:960px){
+  .cards{grid-template-columns:1fr 1fr}
+  .cards .card:last-child{grid-column:1/-1}
+  .cards .card:last-child .ph{aspect-ratio:16/10}
+  .incl ul{columns:1}
+}
+@media(max-width:760px){
+  nav{height:62px}
+  nav .links a:not(.btn){display:none}
+  nav .brand small{display:none}
+  .stage{height:calc(620vh + var(--bleed))}
+  .cap{padding-top:20vh}
+  .cap .acts .btn{flex:1 1 auto;justify-content:center}
+  .scene{left:var(--side);right:auto;bottom:calc(var(--low) + 18px)}
+  .cap{padding-bottom:64px}
+  .intro,.incl,.book,.about{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr;gap:22px}
+  .head{flex-direction:column;align-items:start}
+  .cards{grid-template-columns:1fr}
+  .cards .card .ph,.cards .card:last-child .ph{aspect-ratio:4/3}
+  .g1,.g2,.g3,.g4{grid-column:1/-1;aspect-ratio:4/3}
+  form{grid-template-columns:1fr}
+}
+@media(min-width:761px) and (max-height:700px){
+  .cap{padding-top:16vh}
+  h1{font-size:clamp(48px,min(7vw,13vh),96px)}
+  .hint{margin-top:18px}
+}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.hint i{animation:none}.card .ph img{transition:none}}
+</style>
+</head>
+<body>
+<i id="prog" aria-hidden="true"></i>
+<nav>
+  <a class="brand" href="#prulet">Vily Laguna<small>u moře</small></a>
+  <div class="links"><a href="#vily">Vily</a><a href="#uvnitr">Uvnitř</a><a href="#v-cene">Co je v ceně</a><a class="btn" href="#rezervace">Rezervace</a></div>
+</nav>
+
+<!-- průlet: seq/d (na šířku 1600×900) a seq/p (na výšku 720×1280), 0000–0593.webp; data-map = posun → čas -->
+<div class="stage" id="prulet" data-frames="594" data-dir="seq/d" data-dir-p="seq/p" data-map="0,0 .02,0 .985,1 1,1">
+  <div class="pin">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cap first" data-at="0">
+      <p class="eye">Šest vil mezi lagunou a mořem</p>
+      <h1>Vily Laguna</h1>
+      <p class="sub">Soukromý dům s&nbsp;bazénem, snídaní až na terasu a&nbsp;klidem, jaký hotel nenabídne.</p>
+      <span class="hint"><i></i>Posouvejte a&nbsp;projděte se</span>
+    </div>
+    <div class="cap" data-at=".15"><p class="eye">Poloha</p><h2>Na jedné straně laguna, na druhé moře</h2><p class="sub">Na pláž dojdete pěšky za tři minuty. Na lagunu se díváte z&nbsp;terasy.</p></div>
+    <div class="cap" data-at=".31"><p class="eye">Příjezd</p><h2>Vlastní vchod, vlastní zahrada</h2><p class="sub">Každá vila stojí sama. Žádné chodby, žádní sousedé za stěnou.</p></div>
+    <div class="cap" data-at=".47"><p class="eye">Bazén</p><h2>Bazén jen pro Vás</h2><p class="sub">Vyhřívaný, osvětlený a&nbsp;dva kroky od obýváku.</p></div>
+    <div class="cap" data-at=".665"><p class="eye">Uvnitř</p><h2>Obývák přes dvě patra</h2><p class="sub">Světlo od rána do večera, lněné závěsy a&nbsp;dub pod nohama.</p></div>
+    <div class="cap" data-at=".815"><p class="eye">Péče</p><h2>Připraveno, než přijedete</h2><p class="sub">Květiny, ovoce a&nbsp;káva na stole. Uklízíme každý den.</p></div>
+    <div class="cap end" data-at="1"><h2>Ráno s&nbsp;výhledem na lagunu</h2><p class="sub">Vyberte si vilu a&nbsp;termín. Odpovíme do druhého dne.</p><div class="acts"><a class="btn" href="#rezervace">Vybrat termín</a><a class="btn ghost" href="#vily">Prohlédnout vily</a></div></div>
+    <div class="scene" aria-hidden="true"><b id="sc-n">01</b><span id="sc-k"></span><b>06</b></div>
+  </div>
+</div>
+
+<section class="intro" id="o-nas">
+  <div class="rv"><p class="eye">Vily Laguna</p><h2>Soukromí vlastního domu, péče jako v&nbsp;hotelu</h2></div>
+  <div class="rv">
+    <p>Šest samostatných vil na břehu laguny, tři minuty pěšky od pláže. Každá má vlastní bazén, zahradu a&nbsp;terasu.</p>
+    <p>Snídani Vám přineseme do vily, uklidíme každý den a&nbsp;na přání zajistíme kuchaře, masáž nebo odvoz z&nbsp;letiště.</p>
+  </div>
+  <div class="facts rv">
+    <div><strong>6</strong>samostatných vil</div>
+    <div><strong>2–4</strong>ložnice v&nbsp;každé vile</div>
+    <div><strong>3&nbsp;min</strong>pěšky na pláž</div>
+    <div><strong>24&nbsp;h</strong>recepce na telefonu</div>
+  </div>
+</section>
+
+<section class="villas" id="vily">
+  <div class="head rv"><div><p class="eye">Vily</p><h2>Vyberte si svůj dům</h2></div><p>Všechny vily mají bazén, kuchyň, klimatizaci a&nbsp;terasu. Liší se velikostí a&nbsp;výhledem.</p></div>
+  <div class="cards">
+    <article class="card rv">
+      <div class="ph"><img src="img/vila-a-960.webp" srcset="img/vila-a-960.webp 960w,img/vila-a-2000.webp 2000w" sizes="(max-width:760px) 100vw,33vw" alt="Moderní dvoupatrová vila s palmami a schody k vchodu" loading="lazy" decoding="async"></div>
+      <div class="tx"><h3>Vila Mořská</h3><p class="meta">3 ložnice · 6 hostů · bazén 10&nbsp;m · výhled na moře</p>
+        <div class="row"><span class="price">od <b>12&nbsp;900&nbsp;Kč</b> / noc</span><a href="#rezervace" data-vila="Vila Mořská">Ověřit termín</a></div></div>
+    </article>
+    <article class="card rv">
+      <div class="ph"><img src="img/vila-b-960.webp" srcset="img/vila-b-960.webp 960w,img/vila-b-2000.webp 2000w" sizes="(max-width:760px) 100vw,33vw" alt="Vila z kamene a dřeva s rozsvícenými okny v zahradě" loading="lazy" decoding="async"></div>
+      <div class="tx"><h3>Vila Kamenná</h3><p class="meta">4 ložnice · 8 hostů · velká zahrada · klid na kraji</p>
+        <div class="row"><span class="price">od <b>15&nbsp;400&nbsp;Kč</b> / noc</span><a href="#rezervace" data-vila="Vila Kamenná">Ověřit termín</a></div></div>
+    </article>
+    <article class="card rv">
+      <div class="ph"><img src="img/vila-c-960.webp" srcset="img/vila-c-960.webp 960w,img/vila-c-2000.webp 2000w" sizes="(max-width:960px) 100vw,33vw" alt="Dvůr vily s bazénem, palmou a krytou terasou" loading="lazy" decoding="async"></div>
+      <div class="tx"><h3>Vila Palmová</h3><p class="meta">2 ložnice · 4 hosté · bazén ve dvoře · pro páry</p>
+        <div class="row"><span class="price">od <b>9&nbsp;800&nbsp;Kč</b> / noc</span><a href="#rezervace" data-vila="Vila Palmová">Ověřit termín</a></div></div>
+    </article>
+  </div>
+</section>
+
+<section class="wide" aria-label="Bazén u vily">
+  <img src="img/bazen-960.webp" srcset="img/bazen-960.webp 960w,img/bazen-2000.webp 2000w" sizes="100vw" alt="Bazén podél prosklené vily při západu slunce" loading="lazy" decoding="async" id="par">
+  <div class="tx rv"><h2>Odpoledne u vody</h2><p>Bazén, lehátka a&nbsp;zahrada jen pro Vás. Na lagunu si půjčíte paddleboard nebo kolo zdarma.</p></div>
+</section>
+
+<section class="inside" id="uvnitr">
+  <div class="head rv"><div><p class="eye">Uvnitř</p><h2>Světlé domy z&nbsp;kamene, dřeva a&nbsp;lnu</h2></div><p>Velká okna do zahrady, pohodlné postele a&nbsp;kuchyň, ve které se dá opravdu vařit.</p></div>
+  <div class="grid">
+    <figure class="g1 rv"><img src="img/in-1-960.webp" srcset="img/in-1-960.webp 960w,img/in-1-2000.webp 2000w" sizes="(max-width:760px) 100vw,58vw" alt="Obývák s velkou pohovkou a okny do zahrady" loading="lazy" decoding="async"><figcaption>Obývák s&nbsp;okny do zahrady</figcaption></figure>
+    <figure class="g2 rv"><img src="img/in-3-960.webp" srcset="img/in-3-960.webp 960w,img/in-3-2000.webp 2000w" sizes="(max-width:760px) 100vw,42vw" alt="Pohled z okna na bazén a palmy" loading="lazy" decoding="async"><figcaption>Z&nbsp;okna rovnou k&nbsp;bazénu</figcaption></figure>
+    <figure class="g3 rv"><img src="img/in-4-960.webp" srcset="img/in-4-960.webp 960w,img/in-4-2000.webp 2000w" sizes="(max-width:760px) 100vw,42vw" alt="Bazén v trávníku u vily" loading="lazy" decoding="async"><figcaption>Zahrada s&nbsp;bazénem</figcaption></figure>
+    <figure class="g4 rv"><img src="img/in-2-960.webp" srcset="img/in-2-960.webp 960w,img/in-2-2000.webp 2000w" sizes="(max-width:760px) 100vw,58vw" alt="Host odpočívá na velké pohovce u okna" loading="lazy" decoding="async"><figcaption>Místo na odpočinek</figcaption></figure>
+  </div>
+</section>
+
+<section class="incl" id="v-cene">
+  <div class="rv"><p class="eye">Co je v ceně</p><h2>Nemusíte řešit nic</h2></div>
+  <div class="rv">
+    <ul>
+      <li><b>Snídaně do vily</b><span>Každé ráno na terasu, kdy si řeknete</span></li>
+      <li><b>Úklid každý den</b><span>Čisté ručníky a povlečení</span></li>
+      <li><b>Vlastní bazén</b><span>Vyhřívaný a osvětlený</span></li>
+      <li><b>Kola a paddleboardy</b><span>Na lagunu i k moři</span></li>
+      <li><b>Plně vybavená kuchyň</b><span>Káva, čaj a ovoce na uvítanou</span></li>
+      <li><b>Recepce nonstop</b><span>Stačí zavolat nebo napsat</span></li>
+    </ul>
+    <p class="extra">Za příplatek: odvoz z&nbsp;letiště, soukromý kuchař na večeři a&nbsp;masáž přímo ve vile.</p>
+  </div>
+</section>
+
+<section class="book" id="rezervace">
+  <div class="rv"><p class="eye">Rezervace</p><h2>Napište nám termín</h2><p>Ozveme se do druhého dne s&nbsp;volnými vilami a&nbsp;přesnou cenou. Nic neplatíte předem.</p></div>
+  <form class="rv" id="form" novalidate>
+    <label>Příjezd<input type="date" name="od"></label>
+    <label>Odjezd<input type="date" name="do"></label>
+    <label>Počet hostů<select name="hoste"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
+    <label>Vila<select name="vila" id="vila"><option>Je mi to jedno</option><option>Vila Mořská</option><option>Vila Kamenná</option><option>Vila Palmová</option></select></label>
+    <label>Jméno<input type="text" name="jmeno" autocomplete="name"></label>
+    <label>E-mail<input type="email" name="email" autocomplete="email"></label>
+    <label class="full">Zpráva<textarea name="zprava" placeholder="Přání, dotazy, čas příjezdu…"></textarea></label>
+    <button class="btn" type="submit">Poslat poptávku</button>
+    <p id="ok" aria-live="polite"></p>
+  </form>
+</section>
+
+<section class="about" id="ukazka">
+  <div class="rv"><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;Vaše stránka</h2></div>
+  <div class="rv">
+    <p><b>Průlet nahoře tvoří 594 obrázků ze skutečných záběrů</b>, které se přehrávají podle posunu stránky. Díky tomu běží plynule na počítači i&nbsp;na telefonu.</p>
+    <p>Místo vily může být Váš penzion, hotel, chata nebo restaurace. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co nabízíte.</p>
+    <a class="btn" href="https://whytelynx.cz">Chci podobnou stránku</a>
+  </div>
+</section>
+
+<footer>
+  <p class="word" aria-hidden="true">Laguna</p>
+  <div class="cols">
+    <p><b>Ukázka práce — Vladislav Zachariev · Whyte Lynx</b>, <a href="https://whytelynx.cz">whytelynx.cz</a>.</p>
+    <p>Vily Laguna jsou smyšlený podnik, ceny a údaje jsou vymyšlené pro ukázku. Videa: <a href="https://www.pexels.com/@alef-morais-336305364/" target="_blank" rel="noopener">Alef Morais</a>, <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">licence Pexels</a>, sestříhaná a upravená.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const nums = (s, sep) => s.split(sep).map(Number);
+const portrait = () => innerWidth / innerHeight < 0.8;
+
+/* ---------- jeviště: převzato ze stránky Porsche (14. 11. 2026, změřené na 7 velikostech) ----------
+   Snímky se stahují jako data a dekódují předem mimo hlavní vlákno (createImageBitmap) jen v okně kolem polohy;
+   kreslí se jen hotové. Rozdíl: záběr vždy vyplní celou plochu (cover), žádné černé okraje. */
+let vh = 0;
+const probe = document.createElement('div');
+probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
+document.body.appendChild(probe);
+function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
+const stages = [...document.querySelectorAll('.stage')].map(el => {
+  const n = +el.dataset.frames, canvas = el.querySelector('canvas');
+  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
+    map: el.dataset.map.split(' ').map(p => nums(p, ',')),
+    caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
+    blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
+});
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=1`;
+const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
+  const im = new Image(), u = URL.createObjectURL(blob);
+  im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
+  im.onerror = no; im.src = u;
+});
+function load(s) {
+  const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
+  if (s.dir === dir) return;
+  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
+  s.pin.style.backgroundImage = `url(${dir}/0000.webp)`;
+  const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
+  const c = Math.round(s.t * (s.n - 1));
+  for (let i = c - 3; i <= c + 12; i++) push(i);
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
+  push(s.n - 1);
+  let k = 0, live = 0;
+  const next = () => {
+    while (live < 6 && k < order.length && gen === s.gen) {
+      const i = order[k++], url = src(s, i); live++;
+      const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
+      get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
+        .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
+        .then(() => { live--; next(); });
+    }
+  };
+  next();
+}
+function feed(s) {
+  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
+  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
+    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
+      if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
+      s.busy.add(i); s.dec++;
+      const gen = s.gen;
+      decode(s.blobs[i]).then(bm => {
+        if (gen !== s.gen) { bm.close && bm.close(); return; }
+        s.bms.set(i, bm); s.dirty = true; tick();
+      }, () => {}).then(() => { s.busy.delete(i); s.dec--; feed(s); });
+    }
+  }
+  if (s.bms.size > keep) {
+    const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
+    for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+  }
+}
+function nearest(s, i) {
+  if (s.bms.has(i)) return i;
+  for (let d = 1; d < s.n; d++) { if (s.bms.has(i - d)) return i - d; if (s.bms.has(i + d)) return i + d; }
+  return -1;
+}
+function size(s) {
+  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(probe.offsetHeight || innerHeight, Hc);
+  const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
+  if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
+    s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
+  }
+}
+function place(s, iw, ih) {                          // záběr vyplní celou plochu i s přesahem (cover), střed drží ve viditelném okně
+  const W = s.W, Hc = s.Hc, H = s.H, k = Math.max(W / iw, Hc / ih), w = iw * k, h = ih * k;
+  return [(W - w) / 2, clamp((H - h) / 2, Hc - h, 0), w, h];
+}
+function draw(s) {
+  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;
+  let i, b = -1, shownF;
+  if (s.slow && !window.__noBlend && a > .01 && a < .99 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { i = i0; b = i0 + 1; shownF = f; }
+  else { i = nearest(s, Math.round(f)); shownF = i; }
+  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
+  s.shown = i; s.shownF = shownF; s.dirty = false;
+  const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
+  g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+  g.drawImage(im, x, y, w, h);
+  if (b >= 0) { g.globalAlpha = a; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
+}
+function timeAt(s) {
+  const r = s.el.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, s.el.offsetHeight - s.pin.offsetHeight));
+  const m = s.map; let j = 0; while (j < m.length - 2 && p > m[j + 1][0]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1];
+  return t0 + (t1 - t0) * clamp((p - p0) / Math.max(1e-6, p1 - p0));
+}
+function captions(s) {
+  for (const k of s.caps) {
+    const d = Math.abs(s.t - k.at), o = 1 - smooth(0.024, 0.06, d);
+    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - s.t) * 300).toFixed(0)}px,0)`;
+    if (os !== k.o) k.c.style.opacity = k.o = os;
+    if (vs !== k.v) k.c.style.visibility = k.v = vs;
+    if (o > 0.01 && tr !== k.tr) k.c.style.transform = k.tr = tr;
+  }
+}
+/* číslo záběru vpravo dole: 6 záběrů, střihy na snímcích 145, 228, 329, 443, 509 */
+const CUTS = [0, 145, 228, 329, 443, 509, 594], scN = document.getElementById('sc-n'), scK = document.getElementById('sc-k');
+let scLast = '';
+function scene(s) {
+  const f = s.t * (s.n - 1); let j = 0; while (j < 5 && f >= CUTS[j + 1]) j++;
+  const k = clamp((f - CUTS[j]) / (CUTS[j + 1] - CUTS[j])), v = j + ':' + k.toFixed(2);
+  if (v === scLast) return; scLast = v;
+  scN.textContent = '0' + (j + 1); scK.style.setProperty('--k', k.toFixed(3));
+}
+
+/* ---------- světlé části: jednorázové odkrytí, mírný posun obrázku přes šířku ---------- */
+const rv = [...document.querySelectorAll('.rv')];
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
+  rv.forEach(el => io.observe(el));
+} else rv.forEach(el => el.classList.add('in'));
+const par = document.getElementById('par'), wide = par.parentElement;
+let parLast = '';
+function parallax() {
+  const r = wide.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+  const p = clamp((innerHeight - r.top) / (innerHeight + r.height)), v = `translate3d(0,${((p - .5) * -8).toFixed(2)}%,0)`;
+  if (v !== parLast) { parLast = v; par.style.transform = v; }
+}
+const prog = document.getElementById('prog'), navEl = document.querySelector('nav'), stageEl = document.getElementById('prulet');
+let bleed = -1;
+
+/* ---------- jedna smyčka: běží jen, dokud se něco hýbe ---------- */
+let raf = 0;
+function tick() { if (!raf) raf = requestAnimationFrame(step); }
+function step(now) {
+  raf = 0; let moving = false;
+  for (const s of stages) {
+    const r = s.el.getBoundingClientRect();
+    if (r.top < innerHeight * 2.5 && r.bottom > -innerHeight) load(s);
+    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
+    const w = timeAt(s);
+    if (s.raw === undefined || Math.abs(w - s.raw) * (s.n - 1) > 1e-3) { s.raw = w; s.moved = now; }
+    const rest = now - s.moved > 250;
+    s.want = rest ? Math.round(w * (s.n - 1)) / (s.n - 1) : w;
+    if (!rest) moving = true;
+    const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
+    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;
+    const OM = window.__om || 10;
+    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
+    if (Math.abs(d) > .25) { F = W; v = 0; }
+    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
+      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+    }
+    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
+    s.v = v; const t1 = F / (s.n - 1);
+    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;
+    if (gap > .3) s.dirn = d > 0 ? 1 : -1;
+    if (s.t !== s.want || v) moving = true;
+    size(s); feed(s); draw(s); captions(s); scene(s);
+  }
+  parallax();
+  if (bleed < 0) bleed = -parseFloat(getComputedStyle(stageEl).marginBottom) || 0;
+  const z = stageEl.getBoundingClientRect().bottom - bleed <= 72 ? 'lt' : '';
+  if (navEl.className !== z) navEl.className = z;
+  const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
+  if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
+  if (moving) tick(); else for (const s of stages) s.last = 0;
+}
+addEventListener('scroll', tick, { passive: true });
+addEventListener('resize', () => { setVh(); bleed = -1; tick(); });
+if (window.visualViewport) visualViewport.addEventListener('resize', setVh);
+setVh();
+
+/* ---------- odkazy: plynulý skok; „Ověřit termín“ předvyplní vilu ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  const el = document.querySelector(a.getAttribute('href')); if (!el) return;
+  e.preventDefault();
+  if (a.dataset.vila) document.getElementById('vila').value = a.dataset.vila;
+  scrollTo({ top: el.id === 'prulet' ? 0 : el.getBoundingClientRect().top + scrollY - 60, behavior: 'smooth' });
+}));
+document.getElementById('form').addEventListener('submit', e => {
+  e.preventDefault();
+  document.getElementById('ok').textContent = 'Děkujeme. Tohle je jen ukázka, poptávka se nikam neodeslala.';
+});
+
+/* pro kontrolu: posun stránky, při kterém průlet ukazuje čas t (0–1) */
+const scrollFor = (t, s = stages[0]) => { const m = s.map; let j = 0; while (j < m.length - 2 && t > m[j + 1][1]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1], p = p0 + (p1 - p0) * clamp((t - t0) / Math.max(1e-6, t1 - t0));
+  return Math.round(s.el.offsetTop + p * (s.el.offsetHeight - s.pin.offsetHeight)); };
+window.__P = { stages, tick, scrollFor };
+tick();
+})();
+</script>
+</body>
+</html>
