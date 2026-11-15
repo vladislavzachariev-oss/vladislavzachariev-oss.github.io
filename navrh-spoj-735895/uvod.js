@@ -1,145 +1,156 @@
-// Minimalistický 3D úvod (K3b, Z 15. 11. 2026 15:02: „něco víc minimalistického, ale 3D“).
-// Jeden bílý telefon na světlém pozadí, na displeji se střídají naše weby. Posun: telefon se natočí čelem,
-// kamera vjede do displeje, displej ztmavne a plynule přejde v tmavou část „slovo po slovu“.
+// Minimalistický 3D úvod v2 (K3c, Z 15. 11. 2026: „něco minimalistického a mega krásného, nemusí tam být naše weby“).
+// Bílá stránka, velký nadpis a nad ním se vznáší jedna skleněná čočka (lupa, která „hledá“). Láme písmo pod sebou,
+// okraje mají jemnou duhu, pod ní stín se světelnou skvrnou. Posun: čočka dojede na „Vás“, zvětší se přes celou
+// obrazovku a stránka přejde do tmavé části „Když někdo hledá…“.
+// Nadpis se kreslí do plátna podle polohy slov ve skutečném <h1> (to zůstává v HTML, jen průhledné: čtečky, hledání, výběr).
 import * as THREE from 'three';
 import { RoomEnvironment } from './addons/RoomEnvironment.js';
-import { RoundedBoxGeometry } from './addons/RoundedBoxGeometry.js';
 
-const SITES = ['zahourek', 'plna-naruc', 'zrno-a-zar', 'sedm-smrku', 'black-horse', 'letokruh', 'burger-empire', 'odlesk'];
 const stage = document.getElementById('uvod');
 const pin = stage.querySelector('.s3d-pin');
 const canvas = document.getElementById('gl');
 const hero = document.getElementById('hero');
+const h1 = hero.querySelector('h1');
 const veil = document.getElementById('veil');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+const BG = '#f1f0ec', INK = '#141414';
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 1.0;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#f1f0ec');
+scene.background = new THREE.Color(BG);
 const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
-const TAN = Math.tan(THREE.MathUtils.degToRad(15));
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+const FOV = 30, TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2)), CZ = 10;
+const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
+camera.position.set(0, 0, CZ);
 
-// telefon: zaoblený bílý kvádr + displej (plátno se zaoblenými rohy a výřezem)
-const W = 0.76, H = 1.58, D = 0.085, SW = W - 0.04, SH = H - 0.04;
-const phone = new THREE.Group(); scene.add(phone);
-const body = new THREE.Mesh(new RoundedBoxGeometry(W, H, D, 8, 0.115),
-  new THREE.MeshPhysicalMaterial({ color: '#f7f6f3', roughness: 0.34, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.22 }));
-phone.add(body);
-const CW = 600, CH = Math.round(CW * SH / SW), BZ = 16, R = 70;
-const sc = document.createElement('canvas'); sc.width = CW; sc.height = CH;
-const g = sc.getContext('2d');
-const tex = new THREE.CanvasTexture(sc);
-tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-const screen = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false }));
-screen.position.z = D / 2 + 0.0015; phone.add(screen);
+// papír s nadpisem (neprůhledný, aby ho sklo lámalo)
+const tc = document.createElement('canvas'), tx = tc.getContext('2d');
+const ttex = new THREE.CanvasTexture(tc);
+ttex.colorSpace = THREE.SRGBColorSpace; ttex.minFilter = THREE.LinearFilter; ttex.generateMipmaps = false;
+const paper = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: ttex, toneMapped: false }));
+scene.add(paper);
 
-// měkký stín pod telefonem (rozmazaná skvrna, žádné stínové mapy)
-const blob = (() => {
-  const c = document.createElement('canvas'); c.width = c.height = 128;
-  const x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gr.addColorStop(0, 'rgba(40,36,30,.32)'); gr.addColorStop(.5, 'rgba(40,36,30,.12)'); gr.addColorStop(1, 'rgba(40,36,30,0)');
-  x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
-  m.rotation.x = -Math.PI / 2; scene.add(m); return m;
-})();
+// stín čočky se světelnou skvrnou uprostřed (sklo světlo soustředí)
+const radial = stops => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'), g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+  stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+};
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
+  map: radial([[0, 'rgba(30,26,20,0)'], [0.45, 'rgba(30,26,20,.05)'], [0.72, 'rgba(30,26,20,.16)'], [0.86, 'rgba(30,26,20,.07)'], [1, 'rgba(30,26,20,0)']]),
+  transparent: true, depthWrite: false, toneMapped: false }));
+const caustic = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
+  map: radial([[0, 'rgba(255,248,230,.95)'], [0.25, 'rgba(255,244,220,.45)'], [0.6, 'rgba(255,240,210,.08)'], [1, 'rgba(255,240,210,0)']]),
+  transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
+shadow.position.z = 0.002; caustic.position.z = 0.004;
+scene.add(shadow, caustic);
 
-const rr = (x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
-const imgs = [];
-let shown = 0, next = 1, swap = 0, dark = 0, dirty = true;
-function draw() {
-  g.clearRect(0, 0, CW, CH);
-  g.fillStyle = '#0c0c0e'; rr(0, 0, CW, CH, R); g.fill();
-  g.save(); rr(BZ, BZ, CW - 2 * BZ, CH - 2 * BZ, R - BZ); g.clip();
-  const iw = CW - 2 * BZ, ih = CH - 2 * BZ;
-  const put = (im, dy) => { if (!im) return; const s = Math.max(iw / im.width, ih / im.height); g.drawImage(im, BZ + (iw - im.width * s) / 2, BZ + dy, im.width * s, im.height * s); };
-  const e = swap * swap * (3 - 2 * swap);
-  put(imgs[shown], -e * ih * 0.25);                 // starý web odjede nahoru, nový přijede zdola (jako posun prstem)
-  if (swap > 0) put(imgs[next], (1 - e) * ih);
-  if (dark > 0) { g.fillStyle = `rgba(8,9,13,${dark})`; g.fillRect(0, 0, CW, CH); }
-  g.restore();
-  g.fillStyle = '#0c0c0e'; rr(CW / 2 - 70, BZ + 14, 140, 38, 19); g.fill();   // výřez kamery
-  tex.needsUpdate = true; dirty = false;
-}
+// čočka: zploštělá koule (dvojvypuklá), čiré sklo s rozkladem světla na okraji
+const lens = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 64), new THREE.MeshPhysicalMaterial({
+  color: '#ffffff', metalness: 0, roughness: 0.03, transmission: 1, thickness: 1.1, ior: 1.52, dispersion: 3.5,
+  specularIntensity: 1, envMapIntensity: 1.25, clearcoat: 1, clearcoatRoughness: 0.04, attenuationColor: '#eef6f4', attenuationDistance: 6 }));
+scene.add(lens);
 
-const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-const mix = (a, b, t) => a + (b - a) * t;
-let aspect = 1, portrait = false;
+let W = 1, H = 1, K = 1, words = [], vasRect = null, portrait = false;
+const LZ = 1.2;                                   // výška čočky nad papírem (svět)
+const toW = (px, py, z = 0) => [((px - W / 2) * K) * (CZ - z) / CZ, ((H / 2 - py) * K) * (CZ - z) / CZ];
 
-function progress() {
-  const r = stage.getBoundingClientRect();
-  const span = stage.offsetHeight - pin.offsetHeight;
-  return Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
+function layoutText() {
+  const dpr = Math.min(devicePixelRatio, 2);
+  tc.width = Math.round(W * dpr); tc.height = Math.round(H * dpr);
+  tx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  tx.fillStyle = BG; tx.fillRect(0, 0, W, H);
+  const cs = getComputedStyle(h1), base = pin.getBoundingClientRect();
+  tx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  tx.fontStretch = 'condensed';
+  if ('letterSpacing' in tx) tx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
+  tx.fillStyle = INK; tx.textBaseline = 'alphabetic';
+  words = []; vasRect = null;
+  const walk = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT);
+  for (let n; (n = walk.nextNode());) {
+    const re = /[^\s ]+/g; let m;
+    while ((m = re.exec(n.data))) {
+      const r = document.createRange(); r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length);
+      const b = r.getClientRects()[0]; if (!b) continue;
+      const met = tx.measureText(m[0]);
+      const x = b.left - base.left, y = b.top - base.top + met.fontBoundingBoxAscent;
+      tx.fillText(m[0], x, y);
+      const w = { t: m[0], x, y: b.top - base.top, w: b.width, h: b.height };
+      words.push(w); if (m[0] === 'Vás') vasRect = w;
+    }
+  }
+  ttex.needsUpdate = true;
+  hero.classList.add('gl');                      // skutečný nadpis zprůhlednit, až je nakreslený
 }
 
 function resize() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setSize(w, h, false);
-  aspect = w / innerHeight; portrait = aspect < 0.8;
-  camera.aspect = w / h; camera.updateProjectionMatrix();
+  W = canvas.clientWidth; H = canvas.clientHeight;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 700 ? 1.75 : 2));
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H; camera.updateProjectionMatrix();
+  K = 2 * CZ * TAN / H;
+  paper.scale.set(W * K, H * K, 1);
+  portrait = W / innerHeight < 0.8;
+  layoutText();
 }
 
-let cur = 0, last = performance.now(), mx = 0, my = 0, tmx = 0, tmy = 0, clock = 0;
-if (fine) addEventListener('pointermove', e => { tmx = e.clientX / innerWidth - 0.5; tmy = e.clientY / innerHeight - 0.5; });
+const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const mix = (a, b, t) => a + (b - a) * t;
+
+function progress() {
+  const r = stage.getBoundingClientRect();
+  return Math.min(1, Math.max(0, -r.top / Math.max(1, stage.offsetHeight - pin.offsetHeight)));
+}
+
+let cur = 0, last = performance.now(), clock = 0, px = 0.5, py = 0.5, tpx = -1, tpy = -1;
+if (fine) addEventListener('pointermove', e => { tpx = e.clientX; tpy = e.clientY; });
 
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now; clock += dt;
   const want = reduce ? 0 : progress();
-  cur += (want - cur) * (1 - Math.exp(-dt * 8)); if (Math.abs(want - cur) < 1e-4) cur = want;
-  mx += (tmx - mx) * (1 - Math.exp(-dt * 4)); my += (tmy - my) * (1 - Math.exp(-dt * 4));
+  cur += (want - cur) * (1 - Math.exp(-dt * 7)); if (Math.abs(want - cur) < 1e-4) cur = want;
   const p = cur;
-  const turn = easeInOut(smooth(0.06, 0.5, p));        // natočení čelem a do středu
-  const dive = smooth(0.48, 0.96, p);                   // kamera vjede do displeje
-  const live = 1 - turn;                                // klidový pohyb a náklon za myší jen na začátku
+  const vh = innerHeight, minS = Math.min(W, vh);
+  // klidová poloha: nad nadpisem, pomalu krouží; na počítači jde za myší
+  const hb = words.length ? words.reduce((a, w) => ({ l: Math.min(a.l, w.x), t: Math.min(a.t, w.y), r: Math.max(a.r, w.x + w.w), b: Math.max(a.b, w.y + w.h) }), { l: 1e9, t: 1e9, r: -1e9, b: -1e9 }) : { l: W * .1, t: vh * .4, r: W * .6, b: vh * .7 };
+  let ix = mix(hb.l, hb.r, portrait ? 0.62 : 0.56) + Math.sin(clock * 0.31) * minS * 0.06;
+  let iy = mix(hb.t, hb.b, portrait ? 0.34 : 0.42) + Math.sin(clock * 0.47 + 1) * minS * 0.035;
+  if (tpx >= 0) { ix = mix(ix, Math.min(Math.max(tpx, hb.l), hb.r), 0.75); iy = mix(iy, Math.min(Math.max(tpy, hb.t), hb.b), 0.75); }   // za myší, ale jen nad nadpisem
+  px += (ix - px) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2))); py += (iy - py) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2)));
+  if (clock < 0.1) { px = ix; py = iy; }
+  // posun: 0–0,34 na „Vás“, 0,34–0,82 čočka vyroste přes celou plochu, 0,8–0,96 tma
+  const go = easeInOut(smooth(0.04, 0.34, p)), grow = easeInOut(smooth(0.36, 0.84, p));
+  const vx = vasRect ? vasRect.x + vasRect.w / 2 : W / 2, vy = vasRect ? vasRect.y + vasRect.h * 0.52 : vh / 2;
+  const cx = mix(mix(px, vx, go), W / 2, grow), cy = mix(mix(py, vy, go), vh / 2, grow);
+  const r0 = minS * (portrait ? 0.2 : 0.17) * (1 + 0.04 * Math.sin(clock * 0.9));
+  const rVas = vasRect ? Math.max(r0, vasRect.w * 0.78) : r0;
+  const rpx = mix(mix(r0, rVas, go), Math.hypot(W, vh) * 0.75, grow);
+  const z = LZ * (1 - 0.6 * grow);
+  const [lx, ly] = toW(cx, cy, z);
+  const R = rpx * K * (CZ - z) / CZ;
+  lens.position.set(lx, ly, z);
+  lens.scale.set(R, R, R * 0.36);
+  lens.rotation.set(0.18 * Math.sin(clock * 0.37) * (1 - go), 0.22 * Math.sin(clock * 0.29 + 2) * (1 - go), 0);
+  // stín dopadá dolů vpravo (světlo zleva shora), skvrna světla uvnitř stínu
+  const [sx, sy] = toW(cx + rpx * 0.16, cy + rpx * 0.22, 0);
+  shadow.position.x = sx; shadow.position.y = sy; shadow.scale.setScalar(rpx * K * 2.35);
+  caustic.position.x = sx + rpx * K * 0.06; caustic.position.y = sy - rpx * K * 0.04; caustic.scale.setScalar(rpx * K * 0.95);
+  shadow.material.opacity = caustic.material.opacity = 1 - grow;
 
-  // výchozí poloha: počítač telefon vpravo od nadpisu, telefon na výšku nahoře nad nadpisem
-  const z0 = portrait ? 1.58 / (0.42 * 2 * TAN) : 1.58 / (0.74 * 2 * TAN);
-  const halfW = z0 * TAN * aspect;
-  const sx = portrait ? 0 : Math.min(halfW * 0.5, halfW - 0.75);
-  const sy = portrait ? z0 * TAN * 0.4 : 0.02;
-  const s0 = portrait ? 0.9 : 1;
-  phone.position.set(mix(sx, 0, turn), mix(sy, 0, turn) + live * 0.035 * Math.sin(clock * 0.9), 0);
-  phone.rotation.set(mix(0.12, 0, turn) + live * (my * 0.18), mix(-0.62, 0, turn) + live * (0.05 * Math.sin(clock * 0.5) + mx * 0.3), mix(0.07, 0, turn));
-  phone.scale.setScalar(mix(s0, 1, turn));
-  blob.position.set(phone.position.x, -H / 2 - 0.2, -0.05);
-  blob.scale.set(1.25, 0.5, 1); blob.material.opacity = (1 - dive) * (0.75 + 0.25 * Math.sin(clock * 0.9));
-
-  // kamera: ze vzdálenosti z0 až těsně před displej (displej pokryje celé okno)
-  const zEnd = D / 2 + Math.min(SW / (2 * TAN * camera.aspect), SH / (2 * TAN)) * 0.9;
-  const zMid = 1.58 / (0.8 * 2 * TAN);
-  camera.position.set(0, 0, dive > 0 ? mix(mix(z0, zMid, turn), zEnd, easeInOut(dive)) : mix(z0, zMid, turn));
-  camera.lookAt(0, 0, 0);
-  const vw = canvas.width, vh = canvas.height;
-  const dy = Math.max(0, vh - Math.round(innerHeight * renderer.getPixelRatio())) / 2;   // rezerva pod oknem: střed obrazu do viditelné části
-  if (dy > 0.5) camera.setViewOffset(vw, vh, 0, dy, vw, vh); else if (camera.view && camera.view.enabled) camera.clearViewOffset();
-
-  // displej: weby se střídají po 2,4 s, při vjezdu ztmavne
-  const per = 2.4, ph = (clock % per) / per, k = Math.floor(clock / per) % SITES.length;
-  const sw = smooth(0.78, 1, ph);
-  if (k !== shown && sw === 0) { shown = k; dirty = true; }
-  if (sw !== swap) { swap = sw; next = (shown + 1) % SITES.length; dirty = true; }
-  const dk = smooth(0.6, 0.86, p);
-  if (dk !== dark) { dark = dk; dirty = true; }
-  if (dirty) draw();
-
-  hero.style.opacity = String(1 - smooth(0.02, 0.14, p));
-  hero.style.transform = `translateY(${-40 * smooth(0.02, 0.14, p)}px)`;
-  veil.style.opacity = String(smooth(0.86, 0.98, p));
-  window.wlHeadHero && window.wlHeadHero(p < 0.8);
+  hero.style.setProperty('--fade', String(1 - smooth(0.02, 0.16, p)));
+  veil.style.opacity = String(smooth(0.8, 0.96, p));
+  window.wlHeadHero && window.wlHeadHero(p < 0.78);
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
 
-addEventListener('resize', resize);
-resize();
-const load = s => new Promise(r => { const i = new Image(); i.decoding = 'async'; i.onload = () => r(i); i.onerror = () => r(null); i.src = s; });
-Promise.all(SITES.map(s => load(`img/${s}-m.webp`))).then(a => { a.forEach((im, i) => imgs[i] = im); dirty = true; });
-draw();
-requestAnimationFrame(frame);
+addEventListener('resize', () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 120); });
+(document.fonts ? document.fonts.load(`800 100px Archivo`, 'Vás zákazníci').then(() => document.fonts.ready) : Promise.resolve())
+  .then(() => { resize(); requestAnimationFrame(frame); });
