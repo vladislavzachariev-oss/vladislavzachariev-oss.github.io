@@ -1,6 +1,6 @@
 @font-face{font-family:Archivo;src:url(fonts/archivo-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:swap}
 @font-face{font-family:Archivo;src:url(fonts/archivo-latin.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF}
-:root{--bg:#fff;--bg2:#f5f4f1;--ink:#161616;--mute:#6f6d68;--amber:#d9902a;--line:#e6e4df;--ff:Archivo,system-ui,sans-serif;--vh:1vh}
+:root{--bleed:max(64px,10vh);--bg:#fff;--bg2:#f5f4f1;--ink:#161616;--mute:#6f6d68;--amber:#d9902a;--line:#e6e4df;--ff:Archivo,system-ui,sans-serif;--vh:1vh}
 *{box-sizing:border-box;margin:0}
 html{-webkit-tap-highlight-color:transparent;background:var(--bg)}
 html.lenis,html.lenis body{height:auto}
@@ -13,11 +13,12 @@ img{display:block;max-width:100%}
 h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weight:700}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-weight:600;margin-top:22px}
 .p{position:relative}
-.pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden}
+.pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden;box-sizing:content-box;border-bottom:var(--bleed) solid var(--pbg,#fff)}
+/* rezerva pod jevištěm: rámeček v barvě sekce, obsah se dál měří od viditelného okna */
 .foot{padding:40px clamp(16px,4vw,40px);font-size:13px;color:var(--mute);border-top:1px solid var(--line)}
 
 /* P1 balíček */
-.p1{background:#111;color:#fff}
+.p1{--pbg:#111;background:#111;color:#fff}
 .p1-head{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:0;padding:0 16px;pointer-events:none}
 .p1-head .tag{position:absolute;top:clamp(64px,10vh,100px);left:0;right:0}
 .p1-head h2{font-size:clamp(56px,13vw,230px);line-height:.86;text-transform:uppercase;color:#2a2a28;letter-spacing:-.04em}
@@ -31,7 +32,7 @@ h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weigh
 @media (max-width:700px){.deck{width:min(70vw,(100lvh - 220px)*.53);aspect-ratio:390/760;top:52%}.card img.d{display:none}.card .m{display:block}}
 
 /* P2 uvolnění */
-.p2{background:var(--bg)}
+.p2{--pbg:var(--bg);background:var(--bg)}
 .p2-img{position:absolute;inset:0;margin:0;overflow:hidden;will-change:clip-path}
 .p2-img img{width:100%;height:100%;object-fit:cover}
 .p2-txt{position:absolute;right:0;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(16px,4vw,64px);opacity:0}
@@ -40,7 +41,7 @@ h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weigh
 @media (max-width:700px){.p2-txt{left:0;width:auto;top:auto;height:46%;justify-content:flex-start;padding-top:14px}.p2-txt h2{font-size:clamp(24px,7vw,32px)}.p2-txt p:not(.tag){margin-top:10px;font-size:15px}.p2-txt .btn{margin-top:14px}}
 
 /* P3 čísla */
-.p3{background:#0e0e0d;color:#fff}
+.p3{--pbg:#0e0e0d;background:#0e0e0d;color:#fff}
 .p3 .tag{position:absolute;top:clamp(70px,12vh,110px);left:clamp(16px,4vw,40px)}
 .nums{position:absolute;inset:0}
 .num{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;opacity:0}
@@ -53,7 +54,7 @@ h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weigh
 .ring .arc{stroke:var(--amber);stroke-width:1;stroke-dasharray:578;stroke-dashoffset:578;transform:rotate(-90deg);transform-origin:center}
 
 /* P4 karta */
-.p4{background:var(--bg2)}
+.p4{--pbg:var(--bg2);background:var(--bg2)}
 .p4-head{position:absolute;top:clamp(70px,13vh,130px);left:clamp(16px,4vw,40px);right:clamp(16px,4vw,40px)}
 .reel{position:absolute;left:50%;top:62%;width:min(52vw,640px);aspect-ratio:16/10;translate:-50% -50%;border-radius:22px;overflow:hidden;background:#000;will-change:width,height}
 .reel-in{position:absolute;inset:0}
@@ -63,7 +64,7 @@ h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weigh
 @media (max-width:700px){.reel{width:84vw;aspect-ratio:3/4;top:64%}}
 
 /* P5 mapa */
-.p5{background:var(--bg2)}
+.p5{--pbg:var(--bg2);background:var(--bg2)}
 .p5-txt{position:absolute;top:clamp(70px,13vh,130px);left:clamp(16px,4vw,40px);max-width:min(540px,90vw);z-index:2}
 .p5-txt h2{font-size:clamp(28px,3.6vw,54px)}
 .map{position:absolute;left:50%;top:56%;width:min(92vw,(100lvh - 140px)*1.74,1400px);translate:-50% -50%;overflow:visible}
@@ -107,4 +108,5 @@ h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weigh
 .rot{display:inline-grid;vertical-align:bottom;overflow:hidden;color:var(--amber);transition:width .7s cubic-bezier(.7,0,.2,1)}
 .rot-in{display:grid;grid-template-columns:max-content}
 .rot-in b{grid-area:1/1;justify-self:start;font-weight:700;transform:translateY(105%);transition:transform .7s cubic-bezier(.7,0,.2,1);white-space:nowrap}
+.rot-in b{visibility:hidden}.rot-in b.on,.rot-in b.out{visibility:visible}
 .rot-in b.on{transform:none}.rot-in b.out{transform:translateY(-105%)}
