@@ -19,23 +19,19 @@ body.lt .logo{color:#141414}body.lt .cta{background:#141414;color:#fff}
 .btn{display:inline-flex;align-items:center;gap:.5em;padding:.9em 1.4em;border-radius:999px;background:var(--paper);color:#151515;font-weight:700;text-decoration:none;font-size:16px;user-select:none}
 .btn.ghost{background:rgba(255,255,255,.08);color:var(--paper);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 
-/* 1) 3D úvod (navrh-3d-6199ff), vlastní lepení přes sticky */
-.s3d{position:relative;height:max(640vh,4800px);background:var(--dark);color:var(--paper)}
+/* 1) Minimalistický 3D úvod: jeden bílý telefon na světlém pozadí (uvod.js), lepení přes sticky */
+.s3d{position:relative;height:max(330vh,2400px);background:#f1f0ec;color:#141414;--bleed:max(64px,10vh)}
 .s3d-pin{position:sticky;top:0;height:calc(max(100lvh,var(--vh)*100) + var(--bleed));overflow:hidden}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
-.shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 80% at 50% 110%,rgba(8,9,13,.92) 8%,rgba(8,9,13,0) 55%)}
-.capshade{position:absolute;left:0;right:0;bottom:var(--bleed);height:62%;pointer-events:none;opacity:0;background:linear-gradient(to top,rgba(8,9,13,.94) 0%,rgba(8,9,13,.8) 30%,rgba(8,9,13,0) 100%)}
-.hero{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 9vh;pointer-events:none;isolation:isolate}
-/* tmavý přechod zleva pod nadpisem: na notebooku a tabletu na šířku psal nadpis přes okno s webem (demo_check 15. 11.) */
-.hero::before{content:"";position:absolute;inset:-18vh 0 0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(8,9,13,.92) 0%,rgba(8,9,13,.78) 38%,rgba(8,9,13,0) 64%)}
-.hero h1{margin:0;max-width:min(13.5em,54vw);font-size:clamp(40px,6.6vw,112px);font-weight:800;font-stretch:78%;line-height:.92;letter-spacing:-.015em}
-.hero p{margin:22px 0 26px;max-width:34em;font-size:clamp(16px,1.35vw,20px);line-height:1.45;color:var(--mut2)}
+.hero{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 10vh;pointer-events:none}
+.hero h1{margin:0;max-width:min(12em,50vw);font-size:clamp(40px,6.2vw,108px);font-weight:800;font-stretch:78%;line-height:.92;letter-spacing:-.015em}
+.hero p{margin:22px 0 26px;max-width:34em;font-size:clamp(16px,1.3vw,19px);line-height:1.45;color:var(--mute)}
 .hero .acts{display:flex;flex-wrap:wrap;gap:12px;pointer-events:auto}
-.cap{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 10vh;pointer-events:none;opacity:0;transform:translateY(16px)}
-.cap b{text-shadow:0 2px 28px rgba(8,9,13,.85);display:block;font-size:clamp(30px,4.4vw,76px);font-weight:800;font-stretch:80%;line-height:.95;letter-spacing:-.01em;max-width:14em}
-.cap span{display:block;margin-top:12px;color:var(--mut2);font-size:clamp(15px,1.2vw,18px)}
+.hero .btn{background:#141414;color:#fff}
+.hero .btn.ghost{background:transparent;color:#141414;box-shadow:inset 0 0 0 1px rgba(20,20,20,.25);backdrop-filter:none;-webkit-backdrop-filter:none}
+.veil{position:absolute;inset:0;background:var(--dark);opacity:0;pointer-events:none}
 @media (orientation:landscape) and (max-height:650px){.hero h1{font-size:clamp(34px,5.3vw,80px)}}
-@media (max-aspect-ratio:4/5){.hero h1{max-width:13.5em}.hero{padding-bottom:7vh}.hero p{margin:16px 0 20px}}
+@media (max-aspect-ratio:4/5){.hero h1{max-width:13em}.hero{padding-bottom:6vh}.hero p{margin:14px 0 18px}}
 
 /* připnuté jeviště pro GSAP: rezerva pod oknem rámečkem v barvě sekce (lišta prohlížeče) */
 .pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden;box-sizing:content-box;border-bottom:var(--bleed) solid var(--pbg,#fff)}

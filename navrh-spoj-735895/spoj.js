@@ -11,8 +11,9 @@ if (!touch && window.Lenis && !/nolenis/.test(location.search)) {
 }
 
 /* hlavička: tmavé písmo na světlých plochách (jantarový a bílý krok slov, všechno od věty s obrázky dolů) */
-let stepLight = false, afterLight = false;
-const head = () => document.body.classList.toggle('lt', stepLight || afterLight);
+let stepLight = false, afterLight = false, heroLight = true;
+const head = () => document.body.classList.toggle('lt', heroLight || stepLight || afterLight);
+window.wlHeadHero = v => { if (v !== heroLight) { heroLight = v; head(); } };
 ScrollTrigger.create({ trigger: '#veta', start: 'top 40px', end: 'max', onToggle: s => { afterLight = s.isActive; head(); } });
 
 /* Slovo po slovu: jeden krok = půl obrazovky posunu, tvrdý střih jako u předlohy; nové slovo vyjede, úderné přebarví plochu */
