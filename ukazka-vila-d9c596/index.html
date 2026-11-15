@@ -50,7 +50,7 @@ nav:not(.lt) .links .btn{background:rgba(255,255,255,.16);-webkit-backdrop-filte
 
 /* jeviště (z Porsche): výška = největší okno + přesah, aby po schování lišty prohlížeče nezůstal pruh */
 .stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
-  position:relative;height:calc(720vh + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#11110f;color:#fff}
+  position:relative;height:calc(max(720vh,6000px) + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#11110f;color:#fff}
 @supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
 .stage+*{position:relative;z-index:1}
 .pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden;background:#11110f url(seq/d/0000.webp) center/cover no-repeat}
@@ -141,7 +141,7 @@ form .btn:hover{background:#e9efee}
 .about .btn{margin-top:26px}
 
 footer{background:#151413;color:rgba(255,255,255,.62);padding:clamp(64px,10vh,110px) var(--edge) 36px;font-size:14px;overflow:hidden}
-footer .word{font-size:clamp(84px,20vw,330px);line-height:.8;letter-spacing:-.06em;color:#f5f2ec;font-weight:300;margin:0 0 clamp(36px,6vh,64px) -.04em;white-space:nowrap}
+footer .word{font-size:clamp(84px,20vw,330px);line-height:.9;letter-spacing:-.06em;color:#f5f2ec;font-weight:300;padding-bottom:.06em;margin:0 0 clamp(36px,6vh,64px) -.04em;white-space:nowrap}
 footer .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px 40px;border-top:1px solid rgba(255,255,255,.14);padding-top:24px}
 footer b{color:#fff;font-weight:500}
 footer p{max-width:60em}
@@ -160,7 +160,7 @@ footer p{max-width:60em}
   nav{height:62px}
   nav .links a:not(.btn){display:none}
   nav .brand small{display:none}
-  .stage{height:calc(620vh + var(--bleed))}
+  .stage{height:calc(max(620vh,5300px) + var(--bleed))}
   .cap{padding-top:20vh}
   .cap .acts .btn{flex:1 1 auto;justify-content:center}
   .scene{left:var(--side);right:auto;bottom:calc(var(--low) + 18px)}
