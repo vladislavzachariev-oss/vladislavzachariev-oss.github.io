@@ -65,6 +65,6 @@
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/lenis.min.js"></script>
 <script src="spoj.js?v=5"></script>
-<script type="module" src="uvod.js?v=7"></script>
+<script type="module">const u=(new URLSearchParams(location.search).get('u')||'a').replace(/[^a-z]/g,'').slice(0,1)||'a';document.documentElement.dataset.u=u;import(u==='a'?'./uvod.js?v=8':'./uvod-'+u+'.js?v=1').catch(e=>console.error(e))</script>
 </body>
 </html>
