@@ -1,0 +1,90 @@
+/* Whyte Lynx – návrh: 3D úvod + slovo po slovu + věta s obrázky + kreslení Česka (J 15. 11. 2026, K3) */
+@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;font-display:swap;src:url(fonts/archivo-cs.woff2) format('woff2');unicode-range:U+010C-010F,U+011A-011B,U+0139-013E,U+0147-0148,U+0154-0155,U+0158-0161,U+0164-0165,U+016E-016F,U+0179-017E}
+@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;font-display:swap;src:url(fonts/archivo-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;font-display:swap;src:url(fonts/archivo-latin-ext.woff2) format('woff2');unicode-range:U+0100-024F}
+:root{--bleed:max(64px,10vh);--bg:#fff;--bg2:#f5f4f1;--ink:#161616;--mute:#6f6d68;--amber:#d9902a;--line:#e6e4df;--dark:#08090d;--paper:#f5f2ec;--mut2:#a7a39b;--ff:'Archivo',system-ui,sans-serif;--vh:1vh}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--dark)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--ff);color:var(--ink);background:var(--bg);overflow-x:clip;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+
+/* hlavička: logo a tlačítko se samy přebarví podle podkladu (tmavý úvod / bílé sekce) */
+.logo{position:fixed;z-index:60;top:18px;left:5vw;font-weight:800;font-stretch:85%;letter-spacing:.01em;font-size:19px;text-decoration:none;color:#fff;mix-blend-mode:difference}
+.cta{position:fixed;z-index:60;top:12px;right:5vw;display:inline-flex;padding:.65em 1.1em;border-radius:999px;background:#fff;color:#000;font-weight:700;font-size:14px;text-decoration:none;mix-blend-mode:difference}
+.btn{display:inline-flex;align-items:center;gap:.5em;padding:.9em 1.4em;border-radius:999px;background:var(--paper);color:#151515;font-weight:700;text-decoration:none;font-size:16px;user-select:none}
+.btn.ghost{background:rgba(255,255,255,.08);color:var(--paper);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+/* 1) 3D úvod (navrh-3d-6199ff), vlastní lepení přes sticky */
+.s3d{position:relative;height:max(640vh,4800px);background:var(--dark);color:var(--paper)}
+.s3d-pin{position:sticky;top:0;height:calc(max(100lvh,var(--vh)*100) + var(--bleed));overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 80% at 50% 110%,rgba(8,9,13,.92) 8%,rgba(8,9,13,0) 55%)}
+.capshade{position:absolute;left:0;right:0;bottom:var(--bleed);height:62%;pointer-events:none;opacity:0;background:linear-gradient(to top,rgba(8,9,13,.94) 0%,rgba(8,9,13,.8) 30%,rgba(8,9,13,0) 100%)}
+.hero{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 9vh;pointer-events:none}
+.hero h1{margin:0;max-width:min(13.5em,54vw);font-size:clamp(40px,6.6vw,112px);font-weight:800;font-stretch:78%;line-height:.92;letter-spacing:-.015em}
+.hero p{margin:22px 0 26px;max-width:34em;font-size:clamp(16px,1.35vw,20px);line-height:1.45;color:var(--mut2)}
+.hero .acts{display:flex;flex-wrap:wrap;gap:12px;pointer-events:auto}
+.cap{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 10vh;pointer-events:none;opacity:0;transform:translateY(16px)}
+.cap b{text-shadow:0 2px 28px rgba(8,9,13,.85);display:block;font-size:clamp(30px,4.4vw,76px);font-weight:800;font-stretch:80%;line-height:.95;letter-spacing:-.01em;max-width:14em}
+.cap span{display:block;margin-top:12px;color:var(--mut2);font-size:clamp(15px,1.2vw,18px)}
+@media (max-aspect-ratio:4/5){.hero h1{max-width:13.5em}.hero{padding-bottom:7vh}.hero p{margin:16px 0 20px}}
+
+/* připnuté jeviště pro GSAP: rezerva pod oknem rámečkem v barvě sekce (lišta prohlížeče) */
+.pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden;box-sizing:content-box;border-bottom:var(--bleed) solid var(--pbg,#fff)}
+
+/* 2) Slovo po slovu (podle the-other-side-of-truth): slova přibývají, úderné slovo přebarví celou plochu */
+.sl .pin{--sb:var(--dark);--sc:var(--paper);background:var(--sb);color:var(--sc);border-bottom-color:var(--sb)}
+.sl .pin[data-bg=a]{--sb:var(--amber);--sc:#141414}
+.sl .pin[data-bg=w]{--sb:#fff;--sc:#141414}
+.sl-grain{position:absolute;inset:0;pointer-events:none;opacity:.07;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.sl .pin[data-bg=w] .sl-grain{opacity:.035}
+.st{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:0 5vw;text-align:center}
+.st.on{display:flex}
+.st.l{justify-content:flex-start;text-align:left}
+.st p{min-width:0;max-width:100%;font-weight:800;font-stretch:78%;text-transform:uppercase;line-height:.9;letter-spacing:-.012em;font-size:64px}
+.st .nw{display:inline-block;animation:wup .38s cubic-bezier(.2,.7,.2,1) both}
+.st.big .nw{animation:wbig .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes wup{from{opacity:0;transform:translateY(.28em)}}
+@keyframes wbig{from{opacity:0;transform:scale(.84)}}
+.sl-x{position:absolute;left:5vw;right:5vw;bottom:15%;height:1px;background:currentColor;opacity:.16;pointer-events:none}
+.sl-x::before,.sl-x::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;translate:-50% -50%}
+.sl-x::before{width:23px;height:1px}.sl-x::after{width:1px;height:23px}
+.sl-n{position:absolute;left:5vw;bottom:calc(15% + 14px);font-size:12px;letter-spacing:.16em;opacity:.6;font-variant-numeric:tabular-nums}
+.sl-h{position:absolute;right:5vw;bottom:calc(15% + 14px);font-size:12px;letter-spacing:.16em;opacity:.6;text-transform:uppercase}
+
+/* 3) Věta s obrázky (podle watson.la) */
+.p8{background:var(--bg);padding:clamp(90px,16vh,170px) 5vw}
+.tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:10px}
+.v8{font-size:clamp(34px,6.2vw,104px);line-height:1.08;letter-spacing:-.035em;font-weight:700}
+.chip{display:inline-block;width:1.9em;height:.82em;border-radius:.2em;vertical-align:-.04em;background:#ddd var(--img) center/cover;position:relative;overflow:hidden}
+.chip i{position:absolute;inset:0;background:center/cover;clip-path:inset(100% 0 0 0);transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+.chip i.on{clip-path:inset(0 0 0 0)}
+.rot{display:inline-grid;vertical-align:bottom;color:var(--amber);transition:width .35s cubic-bezier(.4,0,.2,1)}
+.rot-in{display:grid;grid-template-columns:max-content}
+.rot-in b{grid-area:1/1;justify-self:start;font-weight:700;opacity:0;transform:translateY(.25em);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.7,.2,1);white-space:nowrap}
+.rot-in b{visibility:hidden}.rot-in b.on,.rot-in b.out{visibility:visible}
+.rot-in b.on{opacity:1;transform:none;transition-delay:.2s}.rot-in b.out{opacity:0;transform:translateY(-.25em);transition-duration:.18s,.25s}
+
+/* 4) Kreslení Česka: obrys se nakreslí a vyplní, rozsvítí se Liberec. Bez přiblížení a bez dalších měst (Z 14:32) */
+.p5{--pbg:var(--bg2);background:var(--bg2)}
+.p5-txt{position:absolute;top:clamp(70px,13vh,130px);left:5vw;max-width:min(540px,90vw);z-index:2}
+.p5-txt h2{font-size:clamp(28px,3.6vw,54px);line-height:1;letter-spacing:-.03em;font-weight:700}
+.map{position:absolute;left:50%;top:58%;width:min(90vw,(100lvh - 200px)*1.74,1300px);translate:-50% -50%;overflow:visible}
+.cz{fill:#ebe8e1;stroke:#8d887e;stroke-width:1.2;stroke-linejoin:round}
+.town{opacity:0}
+.town circle{fill:var(--amber)}
+.town .halo{fill:none;stroke:var(--amber);stroke-width:1.5;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;animation:halo 2s ease-out infinite}
+@keyframes halo{from{transform:scale(1);opacity:.9}to{transform:scale(4);opacity:0}}
+.town text{font:700 20px var(--ff);fill:var(--ink)}
+.town text.s{font-weight:500;font-size:14px;fill:var(--mute)}
+@media (max-width:700px){.map{top:60%;width:94vw}.town text{font-size:34px}.town text.s{font-size:28px}}
+
+/* pokračování dnešního webu + patička */
+.after{background:var(--paper);color:#151515;padding:14vh 5vw 16vh}
+.after h2{margin:0 0 14px;font-size:clamp(28px,3.6vw,56px);font-weight:800;font-stretch:80%;line-height:1}
+.after p{max-width:40em;font-size:18px;line-height:1.5;color:#55524c}
+.foot{padding:40px 5vw;font-size:13px;color:var(--mute);background:var(--bg);border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){.s3d{height:auto}.s3d-pin{position:relative}.st .nw{animation:none}}
