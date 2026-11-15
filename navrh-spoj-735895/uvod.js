@@ -57,7 +57,12 @@ const lens = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 64), new THREE.Mesh
   specularIntensity: 1, envMapIntensity: 0.9, clearcoat: 1, clearcoatRoughness: 0.04, attenuationColor: '#eef6f4', attenuationDistance: 6 }));
 scene.add(lens);
 
-let W = 1, H = 1, K = 1, words = [], vasRect = null, portrait = false, ink = null;
+let W = 1, H = 1, K = 1, words = [], vasRect = null, portrait = false, ink = null, font = '', ls = '0px';
+// průlet do písmene: obyčejné 2D plátno nad 3D plátnem. Písmo se v každém snímku kreslí znovu jako tvar (ne zvětšený
+// obrázek), takže okraje zůstanou ostré i při stonásobném zvětšení (Z 15:52 z telefonu: rozmazané fleky „není hezké“).
+const dv = document.createElement('canvas'), dx = dv.getContext('2d');
+dv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;visibility:hidden;pointer-events:none';
+canvas.after(dv);
 const LZ = 1.2;                                   // výška čočky nad papírem (svět)
 const toW = (px, py, z = 0) => [((px - W / 2) * K) * (CZ - z) / CZ, ((H / 2 - py) * K) * (CZ - z) / CZ];
 
@@ -67,9 +72,10 @@ function layoutText() {
   tx.setTransform(dpr, 0, 0, dpr, 0, 0);
   tx.fillStyle = BG; tx.fillRect(0, 0, W, H);
   const cs = getComputedStyle(h1), base = pin.getBoundingClientRect();
-  tx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  tx.font = font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
   tx.fontStretch = 'condensed';
-  if ('letterSpacing' in tx) tx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
+  ls = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
+  if ('letterSpacing' in tx) tx.letterSpacing = ls;
   tx.fillStyle = INK; tx.textBaseline = 'alphabetic';
   words = []; vasRect = null;
   const walk = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT);
@@ -81,7 +87,7 @@ function layoutText() {
       const met = tx.measureText(m[0]);
       const x = b.left - base.left, y = b.top - base.top + met.fontBoundingBoxAscent;
       tx.fillText(m[0], x, y);
-      const w = { t: m[0], x, y: b.top - base.top, w: b.width, h: b.height };
+      const w = { t: m[0], x, y: b.top - base.top, w: b.width, h: b.height, by: y };
       words.push(w); if (m[0] === 'Vás') vasRect = w;
     }
   }
@@ -109,7 +115,24 @@ function resize() {
   K = 2 * CZ * TAN / H;
   paper.scale.set(W * K, H * K, 1);
   portrait = W / innerHeight < 0.8;
+  dd = Math.min(devicePixelRatio, 2); dv.width = Math.round(W * dd); dv.height = Math.round(H * dd);
   layoutText();
+}
+let dd = 1;
+
+// jeden snímek průletu: měřítko s kolem bodu (ox, oy) papíru, který je uprostřed obrazovky
+function drawDive(s, ox, oy) {
+  dx.setTransform(1, 0, 0, 1, 0, 0);
+  dx.fillStyle = BG; dx.fillRect(0, 0, dv.width, dv.height);
+  const a = dd * s, e = dd * (W / 2 - ox * s), f = dd * (H / 2 - oy * s);
+  dx.setTransform(a, 0, 0, a, e, f);
+  dx.font = font; dx.fontStretch = 'condensed'; if ('letterSpacing' in dx) dx.letterSpacing = ls;
+  dx.fillStyle = INK; dx.textBaseline = 'alphabetic';
+  for (const w of words) {                        // jen slova, která jsou vidět
+    const l = w.x * a + e, r = (w.x + w.w) * a + e, t = w.y * a + f, b = (w.y + w.h * 1.2) * a + f;
+    if (r < 0 || l > dv.width || b < 0 || t > dv.height) continue;
+    dx.fillText(w.t, w.x, w.by);
+  }
 }
 
 const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -137,36 +160,40 @@ function frame(now) {
   if (tpx >= 0) { ix = mix(ix, Math.min(Math.max(tpx, hb.l), hb.r), 0.75); iy = mix(iy, Math.min(Math.max(tpy, hb.t), hb.b), 0.75); }   // za myší, ale jen nad nadpisem
   px += (ix - px) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2))); py += (iy - py) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2)));
   if (clock < 0.1) { px = ix; py = iy; }
-  // posun: 0–0,32 čočka dojede na „Vás“ a zvětší ho; 0,34–0,92 kamera proletí kolem čočky do černého tahu písmene,
-  // inkoust zaplní obrazovku a z tmy vyjede další část
-  const go = easeInOut(smooth(0.04, 0.32, p)), dive = smooth(0.34, 0.92, p), away = easeInOut(smooth(0.34, 0.6, p));
+  // posun: 0–0,3 čočka dojede na „Vás“ a zvětší ho; 0,3–0,44 čočka odplave; 0,44–0,92 kamera vletí do černého tahu
+  // písmene (ostré 2D), inkoust zaplní obrazovku a z tmy vyjede další část
+  const go = easeInOut(smooth(0.04, 0.3, p)), away = easeInOut(smooth(0.3, 0.44, p)), dive = smooth(0.44, 0.92, p);
   const vx = vasRect ? vasRect.x + vasRect.w / 2 : W / 2, vy = vasRect ? vasRect.y + vasRect.h * 0.52 : vh / 2;
-  const r0 = minS * (portrait ? 0.2 : 0.17) * (1 + 0.04 * Math.sin(clock * 0.9));
-  const rVas = vasRect ? Math.max(r0, vasRect.w * 0.78) : r0;
-  const rpx = mix(r0, rVas, go);
-  const cx = mix(px, vx, go) + away * rpx * 7, cy = mix(py, vy, go) - away * rpx * 3;   // čočka uhne doprava nahoru
-  const [lx, ly] = toW(cx, cy, LZ);
-  const R = rpx * K * (CZ - LZ) / CZ;
-  lens.position.set(lx, ly, LZ);
-  lens.scale.set(R, R, R * 0.36);
-  lens.rotation.set(0.18 * Math.sin(clock * 0.37) * (1 - go), 0.22 * Math.sin(clock * 0.29 + 2) * (1 - go) + away * 0.5, 0);
-  // stín dopadá dolů vpravo (světlo zleva shora), skvrna světla uvnitř stínu
-  const [sx, sy] = toW(cx + rpx * 0.16, cy + rpx * 0.22, 0);
-  shadow.position.x = sx; shadow.position.y = sy; shadow.scale.setScalar(rpx * K * 2.35);
-  caustic.position.x = sx + rpx * K * 0.06; caustic.position.y = sy - rpx * K * 0.04; caustic.scale.setScalar(rpx * K * 0.95);
-  // kamera: exponenciální přiblížení k bodu v inkoustu, bod se zároveň stáhne do středu
-  const e = dive * dive * (3 - 2 * dive);
-  const T = ink ? toW(ink.x, ink.y, 0) : toW(vx, vy, 0);
-  const strokePx = ink ? ink.r * 2 : 20, zEnd = CZ * Math.min(0.5, strokePx / (Math.hypot(W, vh) * 1.3));
-  const zc = CZ * Math.pow(zEnd / CZ, e), c = easeInOut(Math.min(1, e * 1.5));
-  camera.position.set(T[0] * c, T[1] * c, zc);
-  lens.visible = away < 0.97 && zc > LZ + 0.15;
-  shadow.material.opacity = caustic.material.opacity = 1 - away;
+  if (dive > 0) {
+    const e = dive * dive * (3 - 2 * dive);
+    const tx0 = ink ? ink.x : vx, ty0 = ink ? ink.y : vy;
+    const smax = Math.max(1.0001, Math.hypot(W, vh) * 1.3 / (ink ? ink.r * 2 : 20));
+    const s = Math.pow(smax, e), c = easeInOut(Math.min(1, e * 1.5));
+    drawDive(s, mix(W / 2, tx0, c), mix(H / 2, ty0, c));
+    if (dv.style.visibility !== 'visible') { dv.style.visibility = 'visible'; canvas.style.visibility = 'hidden'; }
+  } else {
+    if (dv.style.visibility === 'visible') { dv.style.visibility = 'hidden'; canvas.style.visibility = ''; }
+    const r0 = minS * (portrait ? 0.2 : 0.17) * (1 + 0.04 * Math.sin(clock * 0.9));
+    const rVas = vasRect ? Math.max(r0, vasRect.w * 0.78) : r0;
+    const rpx = mix(r0, rVas, go);
+    const cx = mix(px, vx, go) + away * Math.max(W, vh) * 0.9, cy = mix(py, vy, go) - away * vh * 0.35;   // čočka odplave doprava nahoru
+    const [lx, ly] = toW(cx, cy, LZ);
+    const R = rpx * K * (CZ - LZ) / CZ;
+    lens.position.set(lx, ly, LZ);
+    lens.scale.set(R, R, R * 0.36);
+    lens.rotation.set(0.18 * Math.sin(clock * 0.37) * (1 - go), 0.22 * Math.sin(clock * 0.29 + 2) * (1 - go) + away * 0.6, 0);
+    // stín dopadá dolů vpravo (světlo zleva shora), skvrna světla uvnitř stínu
+    const [sx, sy] = toW(cx + rpx * 0.16, cy + rpx * 0.22, 0);
+    shadow.position.x = sx; shadow.position.y = sy; shadow.scale.setScalar(rpx * K * 2.35);
+    caustic.position.x = sx + rpx * K * 0.06; caustic.position.y = sy - rpx * K * 0.04; caustic.scale.setScalar(rpx * K * 0.95);
+    shadow.material.opacity = caustic.material.opacity = 1 - away;
+    lens.visible = away < 0.995;
+    renderer.render(scene, camera);
+  }
 
   hero.style.setProperty('--fade', String(1 - smooth(0.02, 0.16, p)));
   veil.style.opacity = String(smooth(0.86, 0.97, p));
   window.wlHeadHero && window.wlHeadHero(p < 0.78);
-  renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
 
