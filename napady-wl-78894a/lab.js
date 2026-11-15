@@ -84,16 +84,15 @@ const WORKS = [
     .to('.reel-l', { scale: mob ? 1.1 : 1.4, duration: 1 }, 0);
 })();
 
-/* P5 mapa: obrys republiky se nakreslí, pohled se přiblíží na sever, čára propojí města */
+/* P5 mapa: obrys republiky se nakreslí, pohled se přiblíží na sever, města se rozsvítí jedno po druhém */
 (() => {
-  const g = document.querySelector('.map-g'), cz = document.querySelector('.cz'), route = document.querySelector('.route');
+  const g = document.querySelector('.map-g'), cz = document.querySelector('.cz');
   const towns = [...document.querySelectorAll('.town')];
-  const lc = cz.getTotalLength(), lr = route.getTotalLength();
+  const lc = cz.getTotalLength();
   gsap.set(cz, { strokeDasharray: lc, strokeDashoffset: lc, fillOpacity: 0 });
-  gsap.set(route, { strokeDasharray: lr, strokeDashoffset: lr });
   const cam = { s: 1, x: 500, y: 287.5 };
   const mob = innerWidth <= 700;
-  const put = () => { g.setAttribute('transform', `translate(500 287.5) scale(${cam.s}) translate(${-cam.x} ${-cam.y})`); cz.style.strokeWidth = (mob ? 1.6 : 1) / cam.s; route.style.strokeWidth = (mob ? 3.2 : 2) / cam.s; };
+  const put = () => { g.setAttribute('transform', `translate(500 287.5) scale(${cam.s}) translate(${-cam.x} ${-cam.y})`); cz.style.strokeWidth = (mob ? 1.6 : 1) / cam.s; };
   put();
   if (mob) towns[1].querySelectorAll('text').forEach((tx, i) => { tx.setAttribute('x', 5); tx.setAttribute('y', i ? 16 : 10); tx.setAttribute('text-anchor', 'start'); });
   const tl = gsap.timeline({ scrollTrigger: { trigger: '.p5', pin: '.p5 .pin', start: 'top top', end: '+=' + innerHeight * 2.4, scrub: 0.6 } });
@@ -101,32 +100,9 @@ const WORKS = [
     .to(cz, { fillOpacity: 1, duration: 0.4 }, 0.7)
     .to(cam, { s: mob ? 3.4 : 2.3, x: mob ? 395 : 320, y: 150, duration: 1.2, ease: 'power2.inOut', onUpdate: put }, 1.1)
     .to(towns[0], { opacity: 1, duration: 0.2 }, 1.9)
-    .to(route, { strokeDashoffset: lr * 0.42, duration: 0.6, ease: 'none' }, 2.1)
-    .to(towns[1], { opacity: 1, duration: 0.2 }, 2.6)
-    .to(route, { strokeDashoffset: 0, duration: 0.8, ease: 'none' }, 2.8)
-    .to(towns[2], { opacity: 1, duration: 0.2 }, 3.5)
+    .to(towns[1], { opacity: 1, duration: 0.2 }, 2.3)
+    .to(towns[2], { opacity: 1, duration: 0.2 }, 2.7)
     .to({}, { duration: 0.4 });
-})();
-
-/* P6 běžící patička: dva pásy jedou proti sobě, scroll je zrychlí a otočí směr */
-(() => {
-  const rows = [...document.querySelectorAll('.mq-row')].map((el, i) => ({ el, x: 0, dir: i ? 1 : -1, w: 0 }));
-  const measure = () => rows.forEach(r => r.w = r.el.scrollWidth / 2);
-  measure(); addEventListener('resize', measure);
-  let boost = 0, sign = 1, last = scrollY;
-  const io = { on: false };
-  new IntersectionObserver(e => io.on = e[0].isIntersecting).observe(document.querySelector('.p6'));
-  gsap.ticker.add((t, dt) => {
-    const y = scrollY, v = y - last; last = y;
-    if (v) sign = v > 0 ? 1 : -1;
-    boost += (Math.min(Math.abs(v), 60) - boost) * 0.1;
-    if (!io.on) return;
-    rows.forEach(r => {
-      r.x += r.dir * sign * (0.6 + boost * 0.25) * dt / 16.7;
-      if (r.x < -r.w) r.x += r.w; if (r.x > 0) r.x -= r.w;
-      r.el.style.transform = `translate3d(${r.x}px,0,0)`;
-    });
-  });
 })();
 
 /* P8 věta s obrázky: slovo a obrázek se střídají spolu, nové vyjede zdola */
@@ -142,7 +118,7 @@ const WORKS = [
   setInterval(() => {
     if (!vis) return;
     const n = (k + 1) % items.length;
-    words[k].classList.replace('on', 'out'); const old = words[k]; setTimeout(() => old.classList.remove('out'), 750);
+    words[k].classList.replace('on', 'out'); const old = words[k]; setTimeout(() => old.classList.remove('out'), 500);
     words[n].classList.add('on'); fit(n);
     imgs[n].style.zIndex = 2; imgs[k].style.zIndex = 1; imgs[n].classList.add('on'); const oi = imgs[k]; setTimeout(() => oi.classList.remove('on'), 750);
     k = n;
