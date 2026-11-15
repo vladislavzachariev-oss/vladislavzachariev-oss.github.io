@@ -48,8 +48,8 @@ p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:va
 .pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
 .pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s ease}
 .ready .pin canvas{opacity:1}
-.pin .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.0;transition:opacity .9s}
-.nogl .pin .poster{opacity:1}
+.pin .poster{position:absolute;left:0;top:0;width:100%;height:calc(100% - var(--bleed));object-fit:cover;opacity:1;transition:opacity .9s}   /* do načtení modelu stejný záběr jako render */
+.ready .pin .poster{opacity:0}
 .load{position:absolute;left:var(--side);right:var(--side);bottom:calc(var(--low) + 28px);height:1px;background:rgba(255,255,255,.14);transition:opacity .6s}
 .load i{display:block;height:100%;background:#fbfcff;transform-origin:0 50%;transform:scaleX(var(--load,0));transition:transform .2s}
 .ready .load,.nogl .load{opacity:0}
@@ -139,7 +139,7 @@ footer p+p{margin-top:8px}
 <div class="stage" id="jizda"
      data-map="0,0 .035,0 .20,.17 .27,.21 .40,.36 .47,.40 .58,.555 .65,.60 .78,.785 .85,.83 .93,.96 1,1">
   <div class="pin">
-    <img class="poster" src="poster.webp" alt="" aria-hidden="true">
+    <picture><source media="(max-aspect-ratio: 4/5)" srcset="poster-p.webp"><img class="poster" src="poster.webp" alt="" aria-hidden="true" fetchpriority="high"></picture>
     <canvas aria-hidden="true"></canvas>
     <div class="load" aria-hidden="true"><i></i></div>
     <div class="cap l" data-at="0"><p class="eye">Ukázka · Whyte Lynx</p><h1>911 Turbo&nbsp;S</h1><p class="sub">Projeďte si ho celý, kolem dokola a&nbsp;pak dovnitř.</p><span class="hint"><i></i>Posouvejte dolů</span></div>
@@ -208,6 +208,7 @@ footer p+p{margin-top:8px}
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /* I2 15. 11. 2026 (Z: „Oryzo se neseká, nám se Porsche seká“): jízda už není řada obrázků. Auto se kreslí živě,
    kamera jede po stejných klíčích jako render (blender/scena.py → turbos.json), čas jízdy jde přes pružinu,
@@ -232,7 +233,7 @@ function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; st
 
 /* ---------- renderer ---------- */
 let renderer;
-try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 2, powerPreference: 'high-performance' }); }   // na hustém displeji vyhlazuje hustota, MSAA by jen bral výkon
 catch (e) { document.documentElement.classList.add('nogl'); throw e; }
 renderer.toneMapping = q.get('tm') === 'agx' ? THREE.AgXToneMapping : q.get('tm') === 'neutral' ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = +(q.get('ex') || 1.0);
@@ -307,15 +308,42 @@ car.traverse(o => {
   if (!envMats.has(m)) envOn(m, n === 'body_main' ? Lk('paint', 1.4) : 1);
   if (n.startsWith('ui_')) { m.toneMapped = false; m.emissiveIntensity = 0.9; }
 });
+/* díly se stejným materiálem slít do jednoho tělesa (78 → ~40 kreslení): na slabém procesoru drží jízda 60/s.
+   Dveře řidiče (a co se s nimi otáčí) zůstávají samostatně. */
+{
+  const doorRoot = car.getObjectByName(INFO.door), keep = new Set(INFO.extra);
+  const under = o => { for (let x = o; x; x = x.parent) if (x === doorRoot || keep.has(x.name)) return true; return false; };
+  car.updateMatrixWorld(true);
+  const groups = new Map();
+  car.traverse(o => {
+    if (!o.isMesh || !o.visible || under(o) || o.material.transparent) return;
+    const g = o.geometry, sig = o.material.uuid + '|' + Object.keys(g.attributes).sort().join(',') + '|' + (g.index ? 1 : 0);
+    if (!groups.has(sig)) groups.set(sig, []); groups.get(sig).push(o);
+  });
+  for (const list of groups.values()) {
+    if (list.length < 2) continue;
+    const geos = list.map(o => { const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); for (const k of Object.keys(g.morphAttributes)) delete g.morphAttributes[k]; return g; });
+    const m = mergeGeometries(geos, false); if (!m) continue;
+    const mesh = new THREE.Mesh(m, list[0].material); mesh.name = 'slito_' + list[0].material.name;
+    for (const o of list) { o.parent.remove(o); o.geometry.dispose(); }
+    for (const g of geos) g.dispose();
+    car.add(mesh);
+  }
+}
 /* odraz v černé lesklé podlaze: převrácená kopie auta pod průhlednou podlahou (render má podlahu jako zrcadlo s útlumem) */
 const mirror = new THREE.Group(); mirror.scale.y = -1; const carM = car.clone(true); mirror.add(carM); scene.add(mirror);
-carM.traverse(o => { if (o.isMesh && o.material.transparent) o.visible = false; });
+// v odrazu je vidět jen vnějšek: kabina, sedadla a displeje se do kopie nekreslí (polovina kreslení navíc ušetřena)
+const INSIDE = /leather|upholstery|monitor|^ui_|rug|belts|carbon_int|dynamics|bl_pl_M_int|chrom_int|pl_leather|interior|perforated|LOGO1|Mirror|black_metal/;
+carM.traverse(o => { if (o.isMesh && (o.material.transparent || INSIDE.test(o.material.name))) o.visible = false; });
 /* dveře řidiče: v souboru zavřené; otáčí se kolem pantu (svislá osa) jako v renderu */
 const door = car.getObjectByName(INFO.door);
 const doorParts = [door, ...INFO.extra.map(n => car.getObjectByName(n)).filter(o => o && !isUnder(o, door))];
 function isUnder(o, p) { for (let x = o.parent; x; x = x.parent) if (x === p) return true; return false; }
 car.updateMatrixWorld(true);
 const closed = doorParts.map(o => ({ o, W: o.matrixWorld.clone() }));
+// auto stojí: matice všech dílů spočítat jednou; za jízdy se přepočítají jen dveře (dřív ~300 uzlů v každém obnovení)
+scene.traverse(o => { o.updateMatrix(); o.matrixAutoUpdate = false; });
+scene.updateMatrixWorld(true); scene.matrixWorldAutoUpdate = false;
 const H = B(INFO.hinge), mT = new THREE.Matrix4(), mR = new THREE.Matrix4(), mB = new THREE.Matrix4(), mP = new THREE.Matrix4();
 let doorDeg = -1;
 function setDoor(deg) {
@@ -324,8 +352,8 @@ function setDoor(deg) {
   const M = mT.multiply(mR).multiply(mB);
   for (const { o, W } of closed) {
     mP.copy(o.parent.matrixWorld).invert().multiply(M).multiply(W);
-    o.matrixAutoUpdate = false; o.matrix.copy(mP); o.matrixWorldNeedsUpdate = true;
-    const m = carM.getObjectByName(o.name); if (m) { m.matrixAutoUpdate = false; m.matrix.copy(mP); m.matrixWorldNeedsUpdate = true; }
+    o.matrixAutoUpdate = false; o.matrix.copy(mP); o.updateMatrixWorld(true);
+    const m = carM.getObjectByName(o.name); if (m) { m.matrixAutoUpdate = false; m.matrix.copy(mP); m.updateMatrixWorld(true); }
   }
 }
 
@@ -349,9 +377,18 @@ function pose(f) {
   return P;
 }
 let Wc = 0, Hc = 0, Hv = 0, dpr = 1;
+/* hustota obrazu podle výkonu: když jízda kreslí pomaleji než ~50/s, sníží se o krok (až na 0,75 hustoty displeje), na rychlém stroji se vrátí */
+let dprMax = Math.min(devicePixelRatio || 1, 2), dprK = +(q.get('dpr') || 1), slowN = 0, fastN = 0, noMirror = q.has('nomirror');
+function perf(ms) {
+  if (q.has('dpr')) return;
+  if (ms > 21) { slowN++; fastN = 0; } else if (ms < 13) { fastN++; slowN = 0; } else { slowN = Math.max(0, slowN - 1); }
+  if (slowN > 20 && dprK > 0.55) { dprK = Math.max(0.55, dprK - 0.15); slowN = 0; dirty = true; }
+  else if (slowN > 20 && !noMirror) { noMirror = true; slowN = 0; dirty = true; }   // ani nižší hustota nestačí (procesor) → bez odrazu v podlaze, půl kreslení
+  else if (fastN > 120 && dprK < 1) { dprK = Math.min(1, dprK + 0.1); fastN = 0; dirty = true; }
+}
 function size() {
   const w = pin.clientWidth, h = pin.clientHeight, hv = Math.min(probe.offsetHeight || innerHeight, h);
-  const d = Math.min(devicePixelRatio || 1, w < 700 ? 2 : 1.5);
+  const d = Math.max(0.75, Math.min(dprMax, w < 700 ? 2 : 1.5) * dprK);
   if (w === Wc && h === Hc && hv === Hv && d === dpr) return false;
   Wc = w; Hc = h; Hv = hv; dpr = d;
   renderer.setPixelRatio(d); renderer.setSize(w, h, false);
@@ -371,10 +408,11 @@ function frame(t) {
   // plátno přesahuje okno dolů o --bleed: střed obrazu posunout nahoru, aby auto sedělo ve viditelném okně
   cam.projectionMatrix.elements[9] = -(Hc - Hv) / Hc;
   cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
-  setDoor(p.dvere); mirror.visible = f < 395;                     // zevnitř odraz vidět není, ušetří půl kreslení
+  setDoor(p.dvere); mirror.visible = f < 395 && !noMirror;                     // zevnitř odraz vidět není, ušetří půl kreslení
   cabin.intensity = INFO.kabina * 0.06 * clamp((f - 300) / 80);
   envScale(lerp(1, 0.75, u));
   renderer.render(scene, cam);
+  if (q.has('info')) document.title = `calls ${renderer.info.render.calls} tris ${renderer.info.render.triangles} dpr ${renderer.getPixelRatio().toFixed(2)}`;
 }
 
 /* ---------- posun stránky → čas jízdy ---------- */
@@ -432,6 +470,7 @@ function step(now) {
   }
   if (Math.abs(W - F) < 0.004 && Math.abs(v) < 0.05) { F = W; v = 0; }
   t = F / N; if (v || t !== want) moving = true;
+  if (moving && dt < 64 && last) perf(dt);
   if (vis) {
     if (size()) dirty = true;
     if (dirty || Math.abs(t - drawn) > 1e-6) { frame(t); drawn = t; dirty = false; }
@@ -452,6 +491,8 @@ setVh();
 /* všechny shadery a textury připravit předem: otevření dveří ani vjezd dovnitř pak nic nedohrává za jízdy */
 size();
 for (const f of [1, 300, 470]) { frame((f - 1) / (LAST - 1)); }
+/* průhledné oboustranné materiály three kreslí 2× a pokaždé s needsUpdate = přepočet programu v každém snímku (měřeno: 16 % času) → jedním průchodem */
+scene.traverse(o => { if (o.material) for (const m of [].concat(o.material)) if (m.transparent && m.side === THREE.DoubleSide) m.forceSinglePass = true; });
 await renderer.compileAsync(scene, cam);
 frame(t); drawn = t;
 document.documentElement.classList.add('ready');
@@ -487,7 +528,10 @@ function pick(b) {
 dots.forEach(b => b.addEventListener('click', () => pick(b)));
 paint('stribrna');
 
-window.__P = { tick, scrollFor, frame, renderer, get t() { return t; } };
+// pro demo_check --motion (stejné rozhraní jako dřív u snímků): poloha v jednotkách „snímků“ staré jízdy (1039)
+const NF = 1039, PS = { n: NF, el: stage, get shownF() { return drawn * (NF - 1); }, get shown() { return drawn * (NF - 1); },
+  get want() { return fix !== null ? fix : timeAt(); } };
+window.__P = { stages: [PS], tick, scrollFor, frame, renderer, scene, get t() { return t; } };
 tick();
 </script>
 </body>
