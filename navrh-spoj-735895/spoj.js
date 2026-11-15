@@ -4,7 +4,7 @@ const touch = matchMedia('(hover:none)').matches;
 const setVh = () => document.documentElement.style.setProperty('--vh', innerHeight / 100 + 'px');
 setVh(); addEventListener('resize', setVh);
 let lenis = null;
-if (!touch && window.Lenis) {
+if (!touch && window.Lenis && !/nolenis/.test(location.search)) {
   lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
