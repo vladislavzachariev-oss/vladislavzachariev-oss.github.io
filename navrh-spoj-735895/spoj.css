@@ -34,6 +34,7 @@ body.lt .logo{color:#141414}body.lt .cta{background:#141414;color:#fff}
 .cap{position:absolute;left:0;right:0;bottom:calc(100lvh - 100svh + var(--bleed));padding:0 5vw 10vh;pointer-events:none;opacity:0;transform:translateY(16px)}
 .cap b{text-shadow:0 2px 28px rgba(8,9,13,.85);display:block;font-size:clamp(30px,4.4vw,76px);font-weight:800;font-stretch:80%;line-height:.95;letter-spacing:-.01em;max-width:14em}
 .cap span{display:block;margin-top:12px;color:var(--mut2);font-size:clamp(15px,1.2vw,18px)}
+@media (orientation:landscape) and (max-height:650px){.hero h1{font-size:clamp(34px,5.3vw,80px)}}
 @media (max-aspect-ratio:4/5){.hero h1{max-width:13.5em}.hero{padding-bottom:7vh}.hero p{margin:16px 0 20px}}
 
 /* připnuté jeviště pro GSAP: rezerva pod oknem rámečkem v barvě sekce (lišta prohlížeče) */
