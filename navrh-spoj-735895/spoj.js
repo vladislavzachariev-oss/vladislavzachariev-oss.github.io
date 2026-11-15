@@ -10,6 +10,11 @@ if (!touch && window.Lenis) {
   gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
 }
 
+/* hlavička: tmavé písmo na světlých plochách (jantarový a bílý krok slov, všechno od věty s obrázky dolů) */
+let stepLight = false, afterLight = false;
+const head = () => document.body.classList.toggle('lt', stepLight || afterLight);
+ScrollTrigger.create({ trigger: '#veta', start: 'top 40px', end: 'max', onToggle: s => { afterLight = s.isActive; head(); } });
+
 /* Slovo po slovu: jeden krok = půl obrazovky posunu, tvrdý střih jako u předlohy; nové slovo vyjede, úderné přebarví plochu */
 (() => {
   const sec = document.querySelector('.sl'), pin = sec.querySelector('.pin');
@@ -43,7 +48,7 @@ if (!touch && window.Lenis) {
     if (cur >= 0) steps[cur].classList.remove('on');
     steps[i].classList.add('on');
     if (steps[i].dataset.bg) pin.dataset.bg = steps[i].dataset.bg; else delete pin.dataset.bg;
-    document.body.classList.toggle('amb', steps[i].dataset.bg === 'a');
+    stepLight = !!steps[i].dataset.bg; head();
     num.textContent = pad2(i + 1) + ' / ' + pad2(n);
     cur = i;
   };
