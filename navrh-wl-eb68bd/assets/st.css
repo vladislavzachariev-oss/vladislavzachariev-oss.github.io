@@ -1,0 +1,52 @@
+/* Whyte Lynx — 3D úvod (J 2026-11-15) */
+.st{position:relative;padding:0;height:560vh;height:560lvh;background:radial-gradient(120% 80% at 50% 62%,#fbfaf8 0%,#f1efeb 55%,#e7e4de 100%)}
+:root[data-theme="dark"] .st{background:radial-gradient(120% 80% at 50% 62%,#2a2927 0%,#1b1a19 60%,#121212 100%)}
+.st-pin{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden}
+.st canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s ease}
+.st.ready canvas{opacity:1}
+.st-load{position:absolute;left:50%;bottom:44px;width:120px;height:2px;margin-left:-60px;background:rgba(0,0,0,.08);border-radius:2px;overflow:hidden;transition:opacity .5s}
+.st-load::after{content:"";position:absolute;inset:0;background:var(--ink);transform-origin:0 50%;transform:scaleX(var(--load,.15));transition:transform .4s}
+.st.ready .st-load,.st.nogl .st-load{opacity:0}
+
+/* úvodní text: vlevo vedle notebooku (na výšku nahoře) */
+.st-hero{position:absolute;top:0;left:0;right:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:68px;pointer-events:none;will-change:opacity,transform}
+.st-hero>*{pointer-events:auto;max-width:min(560px,46%)}
+.st-hero h1{font-size:clamp(38px,min(4.4vw,8svh),72px);max-width:13ch}
+.st-hero .lead{max-width:470px}
+
+/* popisky během posunu: na šířku vlevo vedle notebooku, na výšku nahoře uprostřed */
+.st-cap{position:absolute;top:68px;height:calc(100vh - 68px);height:calc(100svh - 68px);left:max(var(--pad),calc((100% - var(--wrap)) / 2 + var(--pad)));width:min(440px,36%);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;opacity:0;visibility:hidden;pointer-events:none;will-change:opacity,transform}
+.st-cap h2{font-size:clamp(30px,min(3.4vw,7svh),56px);max-width:12ch}
+.st-cap p:not(.label){margin-left:0!important}
+.st-cap .label{margin-bottom:10px}
+.st-cap p:not(.label){color:var(--ink2);font-size:clamp(16px,1.25vw,19px);margin:12px auto 0;max-width:46ch}
+.st-cap .btn{margin-top:20px;pointer-events:auto}
+
+/* obsah se drží viditelné výšky (svh), plátno velké výšky (lvh) — poučení z Porsche */
+/* bez WebGL: jen text, bez dlouhého posunu */
+.st.nogl{height:auto}
+.st.nogl .st-pin{position:relative;height:auto;min-height:100svh}
+.st.nogl .st-hero{position:relative;min-height:100svh;opacity:1!important;visibility:visible!important;transform:none!important}
+.st.nogl .st-hero>*{max-width:600px}
+.st.nogl canvas,.st.nogl .st-cap{display:none}
+
+.hero-2{padding-top:clamp(72px,10vw,128px)}
+.hero-2 h2{font-size:clamp(34px,4.2vw,64px);max-width:15ch}
+@media (max-width:860px){.hero-2 .hero-copy>h2{order:2}}
+
+@media (max-aspect-ratio:9/10){
+  .st-hero{justify-content:flex-start;padding-top:calc(68px + 3vh)}
+  .st-hero>*{max-width:none}
+  .st-hero h1{font-size:clamp(32px,9.4vw,52px)}
+  .st-hero .lead{font-size:16px;margin-top:14px}
+  .st-hero .actions{margin-top:20px}
+  .st-hero .price-line{display:none}
+  .st-cap{top:calc(60px + 2.5vh);height:auto;left:0;width:auto;right:0;align-items:center;text-align:center;padding:0 var(--pad)}
+  .st-cap h2{max-width:16ch;margin:0 auto}
+  .st-cap p:not(.label){margin-left:auto!important}
+  .st-cap h2{font-size:clamp(28px,8.4vw,44px)}
+}
+@media (max-aspect-ratio:9/10) and (max-height:760px){
+  .st-hero .lead{display:none}
+}
+@media (prefers-reduced-motion:reduce){.st canvas{transition:none}}
