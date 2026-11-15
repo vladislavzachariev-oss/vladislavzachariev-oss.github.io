@@ -1,0 +1,110 @@
+@font-face{font-family:Archivo;src:url(fonts/archivo-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:Archivo;src:url(fonts/archivo-latin.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF}
+:root{--bg:#fff;--bg2:#f5f4f1;--ink:#161616;--mute:#6f6d68;--amber:#d9902a;--line:#e6e4df;--ff:Archivo,system-ui,sans-serif;--vh:1vh}
+*{box-sizing:border-box;margin:0}
+html{-webkit-tap-highlight-color:transparent;background:var(--bg)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--ff);color:var(--ink);background:var(--bg);overflow-x:clip}
+img{display:block;max-width:100%}
+.top{position:fixed;inset:0 0 auto;z-index:50;display:flex;gap:16px;align-items:center;padding:14px clamp(16px,4vw,40px);font-size:13px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px)}
+.top span{color:var(--mute)}
+.tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:10px}
+h2{font-size:clamp(30px,5vw,68px);line-height:1;letter-spacing:-.03em;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-weight:600;margin-top:22px}
+.p{position:relative}
+.pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden}
+.foot{padding:40px clamp(16px,4vw,40px);font-size:13px;color:var(--mute);border-top:1px solid var(--line)}
+
+/* P1 balíček */
+.p1{background:#111;color:#fff}
+.p1-head{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:0;padding:0 16px;pointer-events:none}
+.p1-head .tag{position:absolute;top:clamp(64px,10vh,100px);left:0;right:0}
+.p1-head h2{font-size:clamp(56px,13vw,230px);line-height:.86;text-transform:uppercase;color:#2a2a28;letter-spacing:-.04em}
+.deck{position:absolute;left:50%;top:52%;width:min(56vw,700px,(100lvh - 230px)*1.6);aspect-ratio:16/10;translate:-50% -50%;z-index:2}
+.card{position:absolute;inset:0;border-radius:14px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.45);border:8px solid var(--c,#fff);background:#222;will-change:transform}
+.card img{width:100%;height:100%;object-fit:cover}
+.card .m{display:none}
+.p1-cap{position:absolute;left:0;right:0;bottom:clamp(16px,4vh,44px);text-align:center;z-index:5}
+.p1-cap b{display:block;font-size:clamp(20px,2.4vw,30px)}
+.p1-cap span{color:#aaa;font-size:14px}
+@media (max-width:700px){.deck{width:min(70vw,(100lvh - 220px)*.53);aspect-ratio:390/760;top:52%}.card img.d{display:none}.card .m{display:block}}
+
+/* P2 uvolnění */
+.p2{background:var(--bg)}
+.p2-img{position:absolute;inset:0;margin:0;overflow:hidden;will-change:clip-path}
+.p2-img img{width:100%;height:100%;object-fit:cover}
+.p2-txt{position:absolute;right:0;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(16px,4vw,64px);opacity:0}
+.p2-txt p:not(.tag){color:var(--mute);font-size:clamp(15px,1.3vw,18px);line-height:1.5;margin-top:18px;max-width:44ch}
+.p2-txt h2{font-size:clamp(28px,3.6vw,56px)}
+@media (max-width:700px){.p2-txt{left:0;width:auto;top:auto;height:46%;justify-content:flex-start;padding-top:14px}.p2-txt h2{font-size:clamp(24px,7vw,32px)}.p2-txt p:not(.tag){margin-top:10px;font-size:15px}.p2-txt .btn{margin-top:14px}}
+
+/* P3 čísla */
+.p3{background:#0e0e0d;color:#fff}
+.p3 .tag{position:absolute;top:clamp(70px,12vh,110px);left:clamp(16px,4vw,40px)}
+.nums{position:absolute;inset:0}
+.num{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;opacity:0}
+.num i{font-style:normal;font-size:13px;color:#888;letter-spacing:.2em;margin-bottom:8px}
+.num b{font-size:clamp(90px,22vw,330px);line-height:.85;letter-spacing:-.05em;font-weight:800;font-variant-numeric:tabular-nums}
+.num em{font-style:normal;font-size:clamp(22px,3vw,40px);color:var(--amber);font-weight:700;margin-top:6px}
+.num span{margin-top:14px;color:#bbb;font-size:clamp(15px,1.4vw,19px);max-width:30ch}
+.ring{position:absolute;left:50%;top:50%;width:min(80vh,86vw);translate:-50% -50%;opacity:.35;pointer-events:none}
+.ring circle{fill:none;stroke:#333;stroke-width:.6}
+.ring .arc{stroke:var(--amber);stroke-width:1;stroke-dasharray:578;stroke-dashoffset:578;transform:rotate(-90deg);transform-origin:center}
+
+/* P4 karta */
+.p4{background:var(--bg2)}
+.p4-head{position:absolute;top:clamp(70px,13vh,130px);left:clamp(16px,4vw,40px);right:clamp(16px,4vw,40px)}
+.reel{position:absolute;left:50%;top:62%;width:min(52vw,640px);aspect-ratio:16/10;translate:-50% -50%;border-radius:22px;overflow:hidden;background:#000;will-change:width,height}
+.reel-in{position:absolute;inset:0}
+.reel-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.reel-in img.on{opacity:1}
+.reel-l{position:absolute;left:50%;top:50%;translate:-50% -50%;color:#fff;font-weight:700;font-size:clamp(20px,3vw,44px);letter-spacing:-.02em;padding:10px 26px;border-radius:999px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);white-space:nowrap}
+@media (max-width:700px){.reel{width:84vw;aspect-ratio:3/4;top:64%}}
+
+/* P5 mapa */
+.p5{background:var(--bg2)}
+.p5-txt{position:absolute;top:clamp(70px,13vh,130px);left:clamp(16px,4vw,40px);max-width:min(540px,90vw);z-index:2}
+.p5-txt h2{font-size:clamp(28px,3.6vw,54px)}
+.map{position:absolute;left:50%;top:56%;width:min(92vw,(100lvh - 140px)*1.74,1400px);translate:-50% -50%;overflow:visible}
+.cz{fill:#ebe8e1;stroke:#9c978d;stroke-width:1;stroke-linejoin:round}
+.route{fill:none;stroke:var(--amber);stroke-width:2;stroke-linecap:round}
+.town{opacity:0}
+.town circle{fill:var(--amber)}
+.town .halo{fill:none;stroke:var(--amber);stroke-width:1;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;animation:halo 2s ease-out infinite}
+@keyframes halo{from{transform:scale(1);opacity:.9}to{transform:scale(4);opacity:0}}
+.town text{font:700 9px var(--ff);fill:var(--ink)}
+.town text.s{font-weight:500;font-size:6px;fill:var(--mute)}
+@media (max-width:700px){.map{top:62%;width:94vw}.town text{font-size:10px}.town text.s{font-size:6.6px}}
+
+/* P6 běžící patička */
+.p6{background:var(--ink);color:#fff;padding:clamp(60px,10vh,110px) 0 clamp(40px,7vh,80px);overflow:hidden}
+.p6 .tag{padding:0 clamp(16px,4vw,40px)}
+.mq{white-space:nowrap;line-height:.95;margin-top:8px}
+.mq-row{display:inline-flex;gap:.35em;font-size:clamp(64px,12vw,200px);letter-spacing:-.04em;text-transform:uppercase;will-change:transform}
+.mq span{font-weight:800}
+.mq .o{color:transparent;-webkit-text-stroke:1.5px #fff}
+.mq .t{font-weight:200}
+.mq .a{color:var(--amber);font-weight:500}
+.mq.rev .mq-row{font-size:clamp(40px,7vw,120px)}
+.tel{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(36px,7vh,70px) clamp(16px,4vw,40px) 0;color:#fff;text-decoration:none}
+.tel i{font-style:normal;color:var(--amber);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
+.tel b{font-size:clamp(48px,11vw,190px);letter-spacing:-.05em;line-height:1;font-weight:800;transition:color .3s}
+.tel:hover b{color:var(--amber)}
+
+/* P7 čára rukou */
+.mk{position:relative;white-space:nowrap;display:inline-block}
+.mk svg{position:absolute;left:-12%;top:-22%;width:124%;height:144%;overflow:visible;pointer-events:none}
+.mk.u svg{left:-2%;top:auto;bottom:-.32em;width:104%;height:.42em}
+.mk path{fill:none;stroke:var(--amber);stroke-width:3.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+
+/* P8 věta s obrázky */
+.p8{background:var(--bg);padding:clamp(90px,16vh,170px) clamp(16px,4vw,40px)}
+.v8{font-size:clamp(34px,6.2vw,104px);line-height:1.08;letter-spacing:-.035em;font-weight:700}
+.chip{display:inline-block;width:1.9em;height:.82em;border-radius:.2em;vertical-align:-.04em;background:#ddd var(--img) center/cover;position:relative;overflow:hidden}
+.chip i{position:absolute;inset:0;background:center/cover;clip-path:inset(100% 0 0 0);transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+.chip i.on{clip-path:inset(0 0 0 0)}
+.rot{display:inline-grid;vertical-align:bottom;overflow:hidden;color:var(--amber);transition:width .7s cubic-bezier(.7,0,.2,1)}
+.rot-in{display:grid;grid-template-columns:max-content}
+.rot-in b{grid-area:1/1;justify-self:start;font-weight:700;transform:translateY(105%);transition:transform .7s cubic-bezier(.7,0,.2,1);white-space:nowrap}
+.rot-in b.on{transform:none}.rot-in b.out{transform:translateY(-105%)}
