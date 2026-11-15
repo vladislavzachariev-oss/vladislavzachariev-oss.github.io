@@ -25,7 +25,7 @@ scene.background = new THREE.Color(BG);
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
 const FOV = 30, TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2)), CZ = 10;
-const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(FOV, 1, 0.01, 100);
 camera.position.set(0, 0, CZ);
 
 // papír s nadpisem (neprůhledný, aby ho sklo lámalo)
@@ -43,7 +43,7 @@ const radial = stops => {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 };
 const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
-  map: radial([[0, 'rgba(30,26,20,0)'], [0.45, 'rgba(30,26,20,.05)'], [0.72, 'rgba(30,26,20,.16)'], [0.86, 'rgba(30,26,20,.07)'], [1, 'rgba(30,26,20,0)']]),
+  map: radial([[0, 'rgba(30,26,20,.02)'], [0.45, 'rgba(30,26,20,.09)'], [0.7, 'rgba(30,26,20,.26)'], [0.85, 'rgba(30,26,20,.11)'], [1, 'rgba(30,26,20,0)']]),
   transparent: true, depthWrite: false, toneMapped: false }));
 const caustic = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
   map: radial([[0, 'rgba(255,248,230,.95)'], [0.25, 'rgba(255,244,220,.45)'], [0.6, 'rgba(255,240,210,.08)'], [1, 'rgba(255,240,210,0)']]),
@@ -53,11 +53,11 @@ scene.add(shadow, caustic);
 
 // čočka: zploštělá koule (dvojvypuklá), čiré sklo s rozkladem světla na okraji
 const lens = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 64), new THREE.MeshPhysicalMaterial({
-  color: '#ffffff', metalness: 0, roughness: 0.03, transmission: 1, thickness: 1.1, ior: 1.52, dispersion: 3.5,
-  specularIntensity: 1, envMapIntensity: 1.25, clearcoat: 1, clearcoatRoughness: 0.04, attenuationColor: '#eef6f4', attenuationDistance: 6 }));
+  color: '#ffffff', metalness: 0, roughness: 0.03, transmission: 1, thickness: 1.1, ior: 1.52, dispersion: 2.4,
+  specularIntensity: 1, envMapIntensity: 0.9, clearcoat: 1, clearcoatRoughness: 0.04, attenuationColor: '#eef6f4', attenuationDistance: 6 }));
 scene.add(lens);
 
-let W = 1, H = 1, K = 1, words = [], vasRect = null, portrait = false;
+let W = 1, H = 1, K = 1, words = [], vasRect = null, portrait = false, ink = null;
 const LZ = 1.2;                                   // výška čočky nad papírem (svět)
 const toW = (px, py, z = 0) => [((px - W / 2) * K) * (CZ - z) / CZ, ((H / 2 - py) * K) * (CZ - z) / CZ];
 
@@ -84,6 +84,18 @@ function layoutText() {
       const w = { t: m[0], x, y: b.top - base.top, w: b.width, h: b.height };
       words.push(w); if (m[0] === 'Vás') vasRect = w;
     }
+  }
+  ink = null;
+  if (vasRect) {
+    const x0 = Math.floor(vasRect.x * dpr), y0 = Math.floor(vasRect.y * dpr), w = Math.ceil(vasRect.w * dpr), h = Math.ceil(vasRect.h * dpr);
+    const d = tx.getImageData(x0, y0, w, h).data, D = new Float32Array(w * h);
+    for (let i = 0; i < w * h; i++) D[i] = d[i * 4] < 90 ? 1e6 : 0;          // inkoust = tmavý pixel
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (!D[i]) continue;   // vzdálenost od kraje tahu (2 průchody)
+      D[i] = Math.min(D[i], x ? D[i - 1] + 1 : 1, y ? D[i - w] + 1 : 1); }
+    let best = -1, bi = 0;
+    for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) { const i = y * w + x; if (!D[i]) continue;
+      D[i] = Math.min(D[i], x < w - 1 ? D[i + 1] + 1 : 1, y < h - 1 ? D[i + w] + 1 : 1); if (D[i] > best) { best = D[i]; bi = i; } }
+    if (best > 0) ink = { x: (x0 + bi % w) / dpr, y: (y0 + Math.floor(bi / w)) / dpr, r: best / dpr };
   }
   ttex.needsUpdate = true;
   hero.classList.add('gl');                      // skutečný nadpis zprůhlednit, až je nakreslený
@@ -125,27 +137,34 @@ function frame(now) {
   if (tpx >= 0) { ix = mix(ix, Math.min(Math.max(tpx, hb.l), hb.r), 0.75); iy = mix(iy, Math.min(Math.max(tpy, hb.t), hb.b), 0.75); }   // za myší, ale jen nad nadpisem
   px += (ix - px) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2))); py += (iy - py) * (1 - Math.exp(-dt * (tpx >= 0 ? 3.2 : 2)));
   if (clock < 0.1) { px = ix; py = iy; }
-  // posun: 0–0,34 na „Vás“, 0,34–0,82 čočka vyroste přes celou plochu, 0,8–0,96 tma
-  const go = easeInOut(smooth(0.04, 0.34, p)), grow = easeInOut(smooth(0.36, 0.84, p));
+  // posun: 0–0,32 čočka dojede na „Vás“ a zvětší ho; 0,34–0,92 kamera proletí kolem čočky do černého tahu písmene,
+  // inkoust zaplní obrazovku a z tmy vyjede další část
+  const go = easeInOut(smooth(0.04, 0.32, p)), dive = smooth(0.34, 0.92, p), away = easeInOut(smooth(0.34, 0.6, p));
   const vx = vasRect ? vasRect.x + vasRect.w / 2 : W / 2, vy = vasRect ? vasRect.y + vasRect.h * 0.52 : vh / 2;
-  const cx = mix(mix(px, vx, go), W / 2, grow), cy = mix(mix(py, vy, go), vh / 2, grow);
   const r0 = minS * (portrait ? 0.2 : 0.17) * (1 + 0.04 * Math.sin(clock * 0.9));
   const rVas = vasRect ? Math.max(r0, vasRect.w * 0.78) : r0;
-  const rpx = mix(mix(r0, rVas, go), Math.hypot(W, vh) * 0.75, grow);
-  const z = LZ * (1 - 0.6 * grow);
-  const [lx, ly] = toW(cx, cy, z);
-  const R = rpx * K * (CZ - z) / CZ;
-  lens.position.set(lx, ly, z);
+  const rpx = mix(r0, rVas, go);
+  const cx = mix(px, vx, go) + away * rpx * 3.2, cy = mix(py, vy, go) - away * rpx * 1.4;   // čočka uhne doprava nahoru
+  const [lx, ly] = toW(cx, cy, LZ);
+  const R = rpx * K * (CZ - LZ) / CZ;
+  lens.position.set(lx, ly, LZ);
   lens.scale.set(R, R, R * 0.36);
-  lens.rotation.set(0.18 * Math.sin(clock * 0.37) * (1 - go), 0.22 * Math.sin(clock * 0.29 + 2) * (1 - go), 0);
+  lens.rotation.set(0.18 * Math.sin(clock * 0.37) * (1 - go), 0.22 * Math.sin(clock * 0.29 + 2) * (1 - go) + away * 0.5, 0);
   // stín dopadá dolů vpravo (světlo zleva shora), skvrna světla uvnitř stínu
   const [sx, sy] = toW(cx + rpx * 0.16, cy + rpx * 0.22, 0);
   shadow.position.x = sx; shadow.position.y = sy; shadow.scale.setScalar(rpx * K * 2.35);
   caustic.position.x = sx + rpx * K * 0.06; caustic.position.y = sy - rpx * K * 0.04; caustic.scale.setScalar(rpx * K * 0.95);
-  shadow.material.opacity = caustic.material.opacity = 1 - grow;
+  // kamera: exponenciální přiblížení k bodu v inkoustu, bod se zároveň stáhne do středu
+  const e = dive * dive * (3 - 2 * dive);
+  const T = ink ? toW(ink.x, ink.y, 0) : toW(vx, vy, 0);
+  const strokePx = ink ? ink.r * 2 : 20, zEnd = CZ * Math.min(0.5, strokePx / (Math.hypot(W, vh) * 1.3));
+  const zc = CZ * Math.pow(zEnd / CZ, e), c = easeInOut(Math.min(1, e * 1.5));
+  camera.position.set(T[0] * c, T[1] * c, zc);
+  lens.visible = zc > LZ + 0.15;
+  shadow.material.opacity = caustic.material.opacity = 1 - away;
 
   hero.style.setProperty('--fade', String(1 - smooth(0.02, 0.16, p)));
-  veil.style.opacity = String(smooth(0.8, 0.96, p));
+  veil.style.opacity = String(smooth(0.86, 0.97, p));
   window.wlHeadHero && window.wlHeadHero(p < 0.78);
   renderer.render(scene, camera);
   requestAnimationFrame(frame);

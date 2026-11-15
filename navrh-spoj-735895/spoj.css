@@ -32,8 +32,9 @@ body.lt .logo{color:#141414}body.lt .cta{background:#141414;color:#fff}
 .hero .btn{background:#141414;color:#fff}
 .hero .btn.ghost{background:transparent;color:#141414;box-shadow:inset 0 0 0 1px rgba(20,20,20,.25);backdrop-filter:none;-webkit-backdrop-filter:none}
 .veil{position:absolute;inset:0;background:var(--dark);opacity:0;pointer-events:none}
+.veil::after{content:"";position:absolute;inset:0;opacity:.07;background:inherit}
 @media (orientation:landscape) and (max-height:650px){.hero h1{font-size:clamp(38px,6.4vw,96px)}}
-@media (max-aspect-ratio:4/5){.hero{padding-bottom:6vh}.hero h1{font-size:clamp(46px,14.5vw,96px)}.hero p{margin:16px 0 18px}}
+@media (max-aspect-ratio:4/5){.hero{padding-bottom:6vh}.hero h1{font-size:clamp(44px,13vw,96px)}.hero p{margin:16px 0 18px}}
 
 /* připnuté jeviště pro GSAP: rezerva pod oknem rámečkem v barvě sekce (lišta prohlížeče) */
 .pin{position:relative;height:max(100lvh,calc(var(--vh)*100));overflow:hidden;box-sizing:content-box;border-bottom:var(--bleed) solid var(--pbg,#fff)}
