@@ -13,8 +13,8 @@
 <style>
 /* Rozvržení změřené 13. 11. 2026 na stránce 911 Turbo S (porsche.com): tmavá scéna s autem, bílé textové části,
    nadpis 66 px / 400, odstavec 20 px / 1,43, velká tenká čísla s malou jednotkou, karty s rohem 32 px, lišta s postupem.
-   Písmo značky je licencované, Barlow je volná náhrada. Na stránce neběží žádné 3D: jízda je řada předem připravených
-   obrázků kreslených do plátna podle posunu (blender/scena.py, _nastroje/webp.py). */
+   Písmo značky je licencované, Barlow je volná náhrada. Od 15. 11. 2026 se auto kreslí živě (three.js, _nastroje/web3d.js):
+   model i klíče kamery vyváží blender/scena.py (EXPORT=…glb), takže jízda vypadá jako render, ale nikdy nečeká na snímek. */
 :root{--bg:#000;--tx:#fbfcff;--tx2:rgba(251,252,255,.66);--ink:#0e0e12;--ink2:rgba(14,14,18,.62);--line:rgba(14,14,18,.14);--edge:max(24px,calc(50% - 600px));--side:clamp(24px,4vw,96px)}   /* --side: okraj lišty a popisků v jízdě; snímek je vždy přes celou šířku, auto začíná ve třetině, takže popisek nesmí jít se středem */
 *{box-sizing:border-box;margin:0}
 html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}   /* bez modrého pole po ťuknutí (Z 13. 11.) */
@@ -46,7 +46,13 @@ p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:va
 @supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
 .stage+section{z-index:1}
 .pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
-.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s ease}
+.ready .pin canvas{opacity:1}
+.pin .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.0;transition:opacity .9s}
+.nogl .pin .poster{opacity:1}
+.load{position:absolute;left:var(--side);right:var(--side);bottom:calc(var(--low) + 28px);height:1px;background:rgba(255,255,255,.14);transition:opacity .6s}
+.load i{display:block;height:100%;background:#fbfcff;transform-origin:0 50%;transform:scaleX(var(--load,0));transition:transform .2s}
+.ready .load,.nogl .load{opacity:0}
 .pin::after{content:"";position:absolute;inset:0 0 auto 0;height:104px;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0));pointer-events:none}   /* lišta zůstane čitelná i nad světlým interiérem */
 .cap{position:absolute;opacity:0;visibility:hidden;will-change:opacity,transform;text-shadow:0 1px 28px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.5)}
 .cap.l{left:var(--side);top:calc(var(--sv) / 2);width:min(440px,27vw);margin-top:-130px}
@@ -129,11 +135,13 @@ footer p+p{margin-top:8px}
 <i id="prog" aria-hidden="true"></i>
 <nav><b>911 Turbo S</b><div><a href="#jizda">Exteriér</a><a href="#jizda" data-t=".807">Interiér</a><a href="#technika">Technika</a><a href="#barvy">Barvy</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
 
-<!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas, dvojice „posun,čas“ (kde se čte text, jede obraz pomaleji, ale nezastaví) -->
-<div class="stage" id="jizda" data-frames="1039" data-dir="seq/a" data-dir-p="seq/p"
+<!-- data-map = posun → čas jízdy, dvojice „posun,čas“ (kde se čte text, jede obraz pomaleji, ale nezastaví) -->
+<div class="stage" id="jizda"
      data-map="0,0 .035,0 .20,.17 .27,.21 .40,.36 .47,.40 .58,.555 .65,.60 .78,.785 .85,.83 .93,.96 1,1">
   <div class="pin">
+    <img class="poster" src="poster.webp" alt="" aria-hidden="true">
     <canvas aria-hidden="true"></canvas>
+    <div class="load" aria-hidden="true"><i></i></div>
     <div class="cap l" data-at="0"><p class="eye">Ukázka · Whyte Lynx</p><h1>911 Turbo&nbsp;S</h1><p class="sub">Projeďte si ho celý, kolem dokola a&nbsp;pak dovnitř.</p><span class="hint"><i></i>Posouvejte dolů</span></div>
     <div class="cap t" data-at=".191"><h2>4&nbsp;535 mm jedné linie.</h2><p class="sub">Od světlometů po záď, na výšku jen 1&nbsp;303&nbsp;mm.</p></div>
     <div class="cap r" data-at=".383"><h2>Světelný pás přes celou záď.</h2><p class="sub">Záď je široká 1&nbsp;900&nbsp;mm a&nbsp;motor je hned za ní.</p></div>
@@ -183,7 +191,7 @@ footer p+p{margin-top:8px}
   <div class="about">
     <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;Vaše nabídka.</h2></div>
     <div>
-      <p><b>Celou jízdu tvoří 260 předem připravených obrázků</b>, které se přehrávají podle posunu stránky. Díky tomu běží plynule na počítači i&nbsp;na telefonu.</p>
+      <p><b>Auto se kreslí živě přímo ve Vašem prohlížeči</b> a&nbsp;kamera jede tak, jak posouváte stránkou. Proto se obraz nikde nezasekne, na počítači ani na telefonu, a&nbsp;lak můžete přebarvit rovnou na autě.</p>
       <p>Místo auta může být Váš výrobek, provozovna nebo dům. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co prodáváte.</p>
       <a class="btn dark" href="https://whytelynx.cz">Chci podobnou stránku</a>
     </div>
@@ -192,146 +200,209 @@ footer p+p{margin-top:8px}
 
 <footer>
   <p><b>Ukázka práce — Vladislav Zachariev · Whyte Lynx</b>, <a href="https://whytelynx.cz">whytelynx.cz</a>. Nezávislá studie, není to web značky Porsche, není spojená se společností Dr. Ing. h.c. F. Porsche AG a nic neprodává. Porsche a 911 jsou ochranné známky této společnosti.</p>
-  <p>Parametry: <a href="https://www.auto-data.net/en/porsche-911-992-turbo-s-3.8-650hp-pdk-39256" target="_blank" rel="noopener">auto-data.net</a>, 911 Turbo S (992) z let 2020–2024 (čteno 13. 11. 2026). 3D model: „Porsche 911 with interior“, autor <a href="https://sketchfab.com/3d-models/877b1bc1739f4a2bb65d62fd7ffd9f75" target="_blank" rel="noopener">n.brizitskaya</a>, licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; lak, skla, světla a studio jsou upravené, obraz na displejích je vlastní kresba. Záběry jsou předem vyrenderované.</p>
+  <p>Parametry: <a href="https://www.auto-data.net/en/porsche-911-992-turbo-s-3.8-650hp-pdk-39256" target="_blank" rel="noopener">auto-data.net</a>, 911 Turbo S (992) z let 2020–2024 (čteno 13. 11. 2026). 3D model: „Porsche 911 with interior“, autor <a href="https://sketchfab.com/3d-models/877b1bc1739f4a2bb65d62fd7ffd9f75" target="_blank" rel="noopener">n.brizitskaya</a>, licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; lak, skla, světla a studio jsou upravené, obraz na displejích je vlastní kresba. Jízda se kreslí živě, obrázky laků jsou předem vyrenderované.</p>
 </footer>
 
-<script>
-(() => {
-'use strict';
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+/* I2 15. 11. 2026 (Z: „Oryzo se neseká, nám se Porsche seká“): jízda už není řada obrázků. Auto se kreslí živě,
+   kamera jede po stejných klíčích jako render (blender/scena.py → turbos.json), čas jízdy jde přes pružinu,
+   takže obraz se mění spojitě v každém obnovení obrazovky a nikdy nečeká na dekódování snímku. */
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const lerp = (a, b, t) => a + (b - a) * t;
 const nums = (s, sep) => s.split(sep).map(Number);
-const portrait = () => innerWidth / innerHeight < 0.8;
+const B = v => new THREE.Vector3(v[0], v[2], -v[1]);            // Blender (Z nahoru) → three (Y nahoru)
+const q = new URLSearchParams(location.search);
 
-/* ---------- jeviště: řada obrázků kreslená do plátna, čas určuje posun stránky ----------
-   Přepis 14. 11. 2026 (Z: „hrozně trhané“): snímky se stahují jako data a dekódují předem mimo hlavní vlákno
-   (createImageBitmap) jen v okně kolem polohy, ve směru jízdy víc; kreslí se jen hotové. Dřív drawImage(Image) dekódoval
-   velký snímek při kreslení a stránka se zasekla na 50–120 ms (změřeno při 4× zpomaleném procesoru: 9,3 s z 24 s). */
+const stage = document.querySelector('.stage'), pin = stage.querySelector('.pin'), canvas = pin.querySelector('canvas');
+const map = stage.dataset.map.split(' ').map(p => nums(p, ','));
+const caps = [...stage.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' }));
+
+/* ---------- výška plochy (oprava 14. 11.: po schování lišty prohlížeče nesmí pod plochou zůstat pruh) ---------- */
 let vh = 0;
-const probe = document.createElement('div');                 // výška malého okna (s vysunutou lištou prohlížeče)
+const probe = document.createElement('div');
 probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
 document.body.appendChild(probe);
-function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
-const stages = [...document.querySelectorAll('.stage')].map(el => {
-  const n = +el.dataset.frames, canvas = el.querySelector('canvas');
-  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
-    map: el.dataset.map.split(' ').map(p => nums(p, ',')),
-    caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
-    blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
-});
-const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=4`;   // v = verze snímků; po novém renderu zvednout
-const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
-  const im = new Image(), u = URL.createObjectURL(blob);
-  im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
-  im.onerror = no; im.src = u;
-});
+function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; stage.style.setProperty('--vh', h + 'px'); } }
 
-function load(s) {                                   // nejdřív okolí polohy, pak každý 16., 8., 4., 2. a zbytek: i brzký posun ukáže pohyb
-  const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
-  if (s.dir === dir) return;
-  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
-  const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
-  const c = Math.round(s.t * (s.n - 1));
-  for (let i = c - 3; i <= c + 12; i++) push(i);
-  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
-  push(s.n - 1);
-  let k = 0, live = 0;
-  const next = () => {
-    while (live < 6 && k < order.length && gen === s.gen) {
-      const i = order[k++], url = src(s, i); live++;
-      const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
-      get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
-        .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
-        .then(() => { live--; next(); });
-    }
+/* ---------- renderer ---------- */
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+catch (e) { document.documentElement.classList.add('nogl'); throw e; }
+renderer.toneMapping = q.get('tm') === 'agx' ? THREE.AgXToneMapping : q.get('tm') === 'neutral' ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = +(q.get('ex') || 1.0);
+const Lk = (n, d) => +(q.get(n) || d);                 // ladění světel z adresy (?top=…&side=…), výchozí = změřené hodnoty
+renderer.setClearColor(0x000000, 1);
+
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 1, 0.02, 80);
+
+/* studio jako v renderu (scena.py lights_dark): velké měkké plochy nad a po stranách autem, kamera je nevidí, jen lak je zrcadlí */
+function studio() {
+  const s = new THREE.Scene(); s.background = new THREE.Color(0x000000);
+  const lf = (w, h, k, pos, at, c = 0xffffff) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k), side: THREE.DoubleSide }));
+    m.position.copy(B(pos)); m.lookAt(B(at)); s.add(m);
   };
-  next();
+  lf(7.0, 3.0, Lk('top', 3.2), [0, 0, 4.2], [0, 0, 0]);                     // strop
+  lf(9.0, 2.2, Lk('side', 0.9), [-5.5, 0, 1.7], [0, 0, 0.7]);                // boky
+  lf(9.0, 2.2, Lk('side', 0.9), [5.5, 0, 1.7], [0, 0, 0.7]);
+  lf(8.0, 0.3, Lk('strip', 14), [-3.6, 0, 3.0], [0, 0, 0.8]);                // úzké pruhy: dlouhé čisté odlesky přes karoserii
+  lf(8.0, 0.3, Lk('strip', 14), [3.6, 0, 3.0], [0, 0, 0.8]);
+  lf(4.5, 1.6, Lk('end', 1.4), [0, -7.0, 1.9], [0, -1, 0.6]);               // čela
+  lf(4.5, 1.6, Lk('end', 1.4), [0, 7.0, 1.9], [0, 1, 0.6]);
+  lf(30, 0.6, 0.05, [0, 0, 0.02], [0, 0, 5]);                    // slabý odraz podlahy
+  return s;
 }
-function feed(s) {                                   // dekódovat kolem polohy, ve směru jízdy víc; vzdálené zavřít (paměť tabletu)
-  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
-  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
-  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
-  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
-    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
-      if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
-      s.busy.add(i); s.dec++;
-      const gen = s.gen;
-      decode(s.blobs[i]).then(bm => {
-        if (gen !== s.gen) { bm.close && bm.close(); return; }
-        s.bms.set(i, bm); s.dirty = true; tick();
-      }, () => {}).then(() => { s.busy.delete(i); s.dec--; feed(s); });
-    }
+const pm = new THREE.PMREMGenerator(renderer);
+const ENV = pm.fromScene(studio(), 0.015).texture;
+scene.environment = ENV;
+// three ≥ r163: bez vlastního envMap bere materiál scene.environmentIntensity a jeho envMapIntensity se nepoužije → každý materiál dostane envMap
+const envMats = new Map();
+function envOn(m, k) { m.envMap = ENV; m.envMapIntensity = k; envMats.set(m, k); m.needsUpdate = true; }
+let envK = 1;
+function envScale(k) { if (Math.abs(k - envK) < 0.005) return; envK = k; for (const [m, b] of envMats) m.envMapIntensity = b * k; }
+const cabin = new THREE.PointLight(0xfff2e6, 0, 2.2, 1.6); cabin.position.copy(B([0.0, 0.15, 1.14])); scene.add(cabin);
+
+/* podlaha: černá, pod autem měkký stín, k okrajům se ztratí do tmy */
+function radial(stops) {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), k = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  for (const [o, col] of stops) k.addColorStop(o, col);
+  g.fillStyle = k; g.fillRect(0, 0, 256, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.3, metalness: 0, envMapIntensity: Lk('fenv', 0.08),
+  transparent: true, opacity: Lk('fop', 0.8), depthWrite: false });
+envOn(floorMat, Lk('fenv', 0.08));
+floorMat.alphaMap = radial([[0, '#fff'], [0.3, '#fff'], [1, '#000']]);   // za ~5 m od auta se podlaha ztratí do černé
+const floor = new THREE.Mesh(new THREE.CircleGeometry(16, 96), floorMat);
+floor.rotation.x = -Math.PI / 2; floor.renderOrder = -2; scene.add(floor);
+const shadowMat = new THREE.MeshBasicMaterial({ map: radial([[0, 'rgba(0,0,0,.92)'], [0.55, 'rgba(0,0,0,.75)'], [1, 'rgba(0,0,0,0)']]), transparent: true, depthWrite: false, toneMapped: false });
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 5.2), shadowMat);
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.002; shadow.renderOrder = -1; scene.add(shadow);
+
+/* ---------- auto ---------- */
+const INFO = await fetch('turbos.json?v=1').then(r => r.json());
+const K = INFO.keys.map(k => ({ ...k, L: B(k.loc), A: B(k.at) })), LAST = INFO.last;
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/');
+const gltf = await new Promise((ok, no) => new GLTFLoader().setDRACOLoader(draco).load('turbos.glb?v=1', ok,
+  e => { if (e.total) document.documentElement.style.setProperty('--load', (e.loaded / e.total).toFixed(3)); }, no));
+const car = gltf.scene; scene.add(car);
+car.traverse(o => {
+  if (!o.isMesh) return;
+  const m = o.material, n = m.name;
+  if (n === 'invisible_all') { o.visible = false; return; }
+  if (n === 'windows' || n === 'kryt_svetel') {
+    o.material = new THREE.MeshPhysicalMaterial({ color: n === 'windows' ? 0x0c0d10 : 0xffffff, roughness: 0.02, metalness: 0,
+      transparent: true, opacity: n === 'windows' ? Lk('glass', 0.62) : 0.12, depthWrite: false, envMapIntensity: 2.2, side: THREE.DoubleSide });
+    envOn(o.material, n === 'windows' ? 2.2 : 1.6); o.renderOrder = 2; return;
   }
-  if (s.bms.size > keep) {
-    const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
-    for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+  if (n === 'body_main') { m.clearcoat = 1; m.clearcoatRoughness = 0.03; }
+  if (!envMats.has(m)) envOn(m, n === 'body_main' ? Lk('paint', 1.4) : 1);
+  if (n.startsWith('ui_')) { m.toneMapped = false; m.emissiveIntensity = 0.9; }
+});
+/* odraz v černé lesklé podlaze: převrácená kopie auta pod průhlednou podlahou (render má podlahu jako zrcadlo s útlumem) */
+const mirror = new THREE.Group(); mirror.scale.y = -1; const carM = car.clone(true); mirror.add(carM); scene.add(mirror);
+carM.traverse(o => { if (o.isMesh && o.material.transparent) o.visible = false; });
+/* dveře řidiče: v souboru zavřené; otáčí se kolem pantu (svislá osa) jako v renderu */
+const door = car.getObjectByName(INFO.door);
+const doorParts = [door, ...INFO.extra.map(n => car.getObjectByName(n)).filter(o => o && !isUnder(o, door))];
+function isUnder(o, p) { for (let x = o.parent; x; x = x.parent) if (x === p) return true; return false; }
+car.updateMatrixWorld(true);
+const closed = doorParts.map(o => ({ o, W: o.matrixWorld.clone() }));
+const H = B(INFO.hinge), mT = new THREE.Matrix4(), mR = new THREE.Matrix4(), mB = new THREE.Matrix4(), mP = new THREE.Matrix4();
+let doorDeg = -1;
+function setDoor(deg) {
+  if (Math.abs(deg - doorDeg) < 1e-3) return; doorDeg = deg;
+  mT.makeTranslation(H.x, H.y, H.z); mR.makeRotationY(THREE.MathUtils.degToRad(deg) * INFO.sign); mB.makeTranslation(-H.x, -H.y, -H.z);
+  const M = mT.multiply(mR).multiply(mB);
+  for (const { o, W } of closed) {
+    mP.copy(o.parent.matrixWorld).invert().multiply(M).multiply(W);
+    o.matrixAutoUpdate = false; o.matrix.copy(mP); o.matrixWorldNeedsUpdate = true;
+    const m = carM.getObjectByName(o.name); if (m) { m.matrixAutoUpdate = false; m.matrix.copy(mP); m.matrixWorldNeedsUpdate = true; }
   }
 }
-function nearest(s, i) {                             // nejbližší snímek, který je už dekódovaný
-  if (s.bms.has(i)) return i;
-  for (let d = 1; d < s.n; d++) { if (s.bms.has(i - d)) return i - d; if (s.bms.has(i + d)) return i + d; }
-  return -1;
+
+/* ---------- kamera: stejné klíče a stejná interpolace jako scena.py pose() ---------- */
+const cat = (p0, p1, p2, p3, t, out) => {
+  const t2 = t * t, t3 = t2 * t;
+  return out.set(0, 0, 0).addScaledVector(p1, 2).addScaledVector(p0, -t).addScaledVector(p2, t)
+    .addScaledVector(p0, 2 * t2).addScaledVector(p1, -5 * t2).addScaledVector(p2, 4 * t2).addScaledVector(p3, -t2)
+    .addScaledVector(p0, -t3).addScaledVector(p1, 3 * t3).addScaledVector(p2, -3 * t3).addScaledVector(p3, t3).multiplyScalar(0.5);
+};
+const P = { loc: new THREE.Vector3(), at: new THREE.Vector3(), lens: 50, dvere: 0, sx: 0 };
+function pose(f) {
+  f = clamp(f, 1, LAST);
+  let i = 0; for (let k = 0; k < K.length; k++) if (K[k].f <= f) i = k;
+  i = Math.min(i, K.length - 2);
+  const a = K[i], b = K[i + 1], t = (f - a.f) / (b.f - a.f), p0 = K[Math.max(i - 1, 0)], p3 = K[Math.min(i + 2, K.length - 1)];
+  cat(p0.L, a.L, b.L, p3.L, t, P.loc); cat(p0.A, a.A, b.A, p3.A, t, P.at);
+  const s = t * t * (3 - 2 * t);
+  P.lens = Math.exp(Math.log(a.lens) * (1 - s) + Math.log(b.lens) * s);
+  P.dvere = lerp(a.dvere, b.dvere, s); P.sx = lerp(a.sx, b.sx, s);
+  return P;
 }
-function size(s) {                                   // plátno = celá plocha i s přesahem; obraz se rozvrhuje do malého okna (H)
-  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(probe.offsetHeight || innerHeight, Hc);
-  const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
-  if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
-    s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
-  }
+let Wc = 0, Hc = 0, Hv = 0, dpr = 1;
+function size() {
+  const w = pin.clientWidth, h = pin.clientHeight, hv = Math.min(probe.offsetHeight || innerHeight, h);
+  const d = Math.min(devicePixelRatio || 1, w < 700 ? 2 : 1.5);
+  if (w === Wc && h === Hc && hv === Hv && d === dpr) return false;
+  Wc = w; Hc = h; Hv = hv; dpr = d;
+  renderer.setPixelRatio(d); renderer.setSize(w, h, false);
+  return true;
 }
-function place(s, iw, ih) {                          // kam položit snímek (v px okna)
-  const W = s.W, H = s.H; let k, y;
-  if (iw < ih) { k = Math.max(W / iw, H / ih); y = (H - ih * k) / 2; }             // na výšku: vyplní telefon
-  else if (W / H >= iw / ih) { k = Math.min(W / iw, H * 1.12 / ih); y = -(ih * k - H) * .3; }   // široké okno: nanejvýš 12 % přes výšku, boky do černé
-  else { k = Math.min(H / ih, W * 1.06 / iw); y = H - ih * k; }                      // vyšší okno (tablet): celá šířka u spodního okraje, nahoře černá na popisky
-  return [(W - iw * k) / 2, y, iw * k, ih * k];
+function frame(t) {
+  const f = 1 + t * (LAST - 1), p = pose(f);
+  const asp = Wc / Hv, port = smooth(1.0, 0.62, asp);              // na výšku širší objektiv (render: PORTRET LENS_KE 0.60 / LENS_KI 0.78)
+  const u = smooth(250, 340, f), mul = lerp(lerp(1, Lk('ke', 0.6), port), lerp(1, Lk('ki', 0.78), port), u);   // export běžel bez PORTRET → v JSON je 1
+  const lens = p.lens * mul, half = 18 / lens;   // senzor 36 mm na delší straně okna
+  const vhalf = asp >= 1 ? half / asp : half;
+  cam.fov = THREE.MathUtils.radToDeg(2 * Math.atan(vhalf * (Hc / Hv)));       // plátno je o přesah vyšší než okno
+  cam.aspect = Wc / Hc; cam.position.copy(p.loc); cam.lookAt(p.at);
+  cam.updateProjectionMatrix();
+  const sx = p.sx * (1 - port) * (asp >= 1 ? 1 : 1 / asp);
+  cam.projectionMatrix.elements[8] = 2 * sx;                         // posun obrazu jako shift_x v Blenderu
+  // plátno přesahuje okno dolů o --bleed: střed obrazu posunout nahoru, aby auto sedělo ve viditelném okně
+  cam.projectionMatrix.elements[9] = -(Hc - Hv) / Hc;
+  cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
+  setDoor(p.dvere); mirror.visible = f < 395;                     // zevnitř odraz vidět není, ušetří půl kreslení
+  cabin.intensity = INFO.kabina * 0.06 * clamp((f - 300) / 80);
+  envScale(lerp(1, 0.75, u));
+  renderer.render(scene, cam);
 }
-function draw(s) {                                 // v pomalém pohybu prolnout dva sousední snímky (dojezd po švihnutí nestojí), v klidu vždy CELÝ snímek:
-  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;   // dvojité dveře a záď na snímcích Z 813/814 (14. 11.) bylo prolnutí, které zůstalo stát
-  let i, b = -1, shownF;                                         // v klidu; teď step() po 250 ms klidu dovede polohu na celý snímek
-  if (s.slow && !window.__noBlend && a > .01 && a < .99 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { i = i0; b = i0 + 1; shownF = f; }
-  else { i = nearest(s, Math.round(f)); shownF = i; }
-  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
-  s.shown = i; s.shownF = shownF; s.dirty = false;
-  const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
-  g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
-  g.fillStyle = '#000'; g.fillRect(0, 0, s.W, s.Hc);
-  g.drawImage(im, x, y, w, h);
-  if (b >= 0) { g.globalAlpha = a; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
-  const F = Math.min(w, h) * .14;                    // kde snímek nedosáhne k okraji plochy, rozpustí se jeho hrana do černé
-  if (x > .5) { fade(g, x, 0, x + F, 0, x, y, F, h); fade(g, x + w, 0, x + w - F, 0, x + w - F, y, F, h); }
-  if (y > .5) fade(g, 0, y, 0, y + F, x, y, w, F);
-  if (y + h < s.Hc - .5) fade(g, 0, y + h, 0, y + h - F, x, y + h - F, w, F);
-}
-function fade(g, x0, y0, x1, y1, rx, ry, rw, rh) {
-  const k = g.createLinearGradient(x0, y0, x1, y1); k.addColorStop(0, '#000'); k.addColorStop(1, 'rgba(0,0,0,0)');
-  g.fillStyle = k; g.fillRect(rx, ry, rw, rh);
-}
-function timeAt(s) {                                 // poloha uvnitř jeviště → čas 0..1 přes jeho mapu
-  const r = s.el.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, s.el.offsetHeight - s.pin.offsetHeight));
-  const m = s.map; let j = 0; while (j < m.length - 2 && p > m[j + 1][0]) j++;
-  const [p0, t0] = m[j], [p1, t1] = m[j + 1];
+
+/* ---------- posun stránky → čas jízdy ---------- */
+function timeAt() {
+  const r = stage.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, stage.offsetHeight - pin.offsetHeight));
+  let j = 0; while (j < map.length - 2 && p > map[j + 1][0]) j++;
+  const [p0, t0] = map[j], [p1, t1] = map[j + 1];
   return t0 + (t1 - t0) * clamp((p - p0) / Math.max(1e-6, p1 - p0));
 }
-function scrollFor(s, t) {                           // obráceně: čas → kam posunout stránku
-  const m = s.map; let j = 0; while (j < m.length - 2 && t > m[j + 1][1]) j++;
-  const [p0, t0] = m[j], [p1, t1] = m[j + 1], p = p0 + (p1 - p0) * clamp((t - t0) / Math.max(1e-6, t1 - t0));
-  return s.el.offsetTop + p * (s.el.offsetHeight - s.pin.offsetHeight);
+function scrollFor(t) {
+  let j = 0; while (j < map.length - 2 && t > map[j + 1][1]) j++;
+  const [p0, t0] = map[j], [p1, t1] = map[j + 1], p = p0 + (p1 - p0) * clamp((t - t0) / Math.max(1e-6, t1 - t0));
+  return stage.offsetTop + p * (stage.offsetHeight - pin.offsetHeight);
 }
-function captions(s) {                               // zapisuje jen změny (každý zápis stylu stojí přepočet)
-  for (const k of s.caps) {
-    const d = Math.abs(s.t - k.at), o = 1 - smooth(0.022, 0.06, d);
-    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - s.t) * 260).toFixed(0)}px,0)`;
+function captions(t) {
+  for (const k of caps) {
+    const d = Math.abs(t - k.at), o = 1 - smooth(0.022, 0.06, d);
+    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - t) * 260).toFixed(0)}px,0)`;
     if (os !== k.o) k.c.style.opacity = k.o = os;
     if (vs !== k.v) k.c.style.visibility = k.v = vs;
     if (o > 0.01 && tr !== k.tr) k.c.style.transform = k.tr = tr;
   }
 }
 
-/* ---------- bílé části: --p běží 0 → 1, jak část vjíždí do okna; čísla se dopočítají ---------- */
+/* ---------- bílé části, lišta, postup ---------- */
 const bands = [...document.querySelectorAll('section.band')];
 const counters = [...document.querySelectorAll('[data-n]')].map(el => ({ el, n: +el.dataset.n, d: +(el.dataset.d || 0), band: el.closest('section') }));
-const fmt = (v, d) => v.toFixed(d).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const fmt = (v, d) => v.toFixed(d).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 function reveal() {
   for (const b of bands) {
     const r = b.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue;
@@ -341,74 +412,83 @@ function reveal() {
 }
 const prog = document.getElementById('prog'), navEl = document.querySelector('nav'), zones = [...document.querySelectorAll('.band,footer,.paint')];
 
-/* ---------- jedna smyčka: běží jen, dokud se něco hýbe ---------- */
-let raf = 0;
+/* ---------- jedna smyčka, běží jen dokud se něco hýbe ----------
+   Čas jízdy dohání posun kriticky tlumenou pružinou (zpoždění 2/OM = 200 ms): po švihnutí obraz plynule dojede, bez skoků. */
+const N = 1000;                                       // jednotky pružiny (stejná tuhost jako dřív u 1039 snímků)
+let t = timeAt(), v = 0, last = 0, raf = 0, drawn = -1, dirty = true;
+const fix = q.has('t') ? +q.get('t') : null;
+if (fix !== null) t = fix;
 function tick() { if (!raf) raf = requestAnimationFrame(step); }
 function step(now) {
   raf = 0; let moving = false;
-  for (const s of stages) {
-    const r = s.el.getBoundingClientRect();
-    if (r.top < innerHeight * 2.5 && r.bottom > -innerHeight) load(s);
-    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
-    const w = timeAt(s);                                 // po 250 ms bez posunu cíl = nejbližší celý snímek (v klidu nikdy prolnutí)
-    if (s.raw === undefined || Math.abs(w - s.raw) * (s.n - 1) > 1e-3) { s.raw = w; s.moved = now; }
-    const rest = now - s.moved > 250;               // 250 ms = pod ~4 px/s, prakticky stání (kratší → kývání při pomalém dojezdu)
-    s.want = rest ? Math.round(w * (s.n - 1)) / (s.n - 1) : w;
-    if (!rest) moving = true;
-    const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
-    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;   // dojezd podle času, ne podle počtu obnovení (60 i 120 Hz stejně)
-    // Z 14. 11. večer: „plynulejší dojezd“. Dřív 1. řád (110 ms): obraz se po puštění zastavil skoro hned a rozjel se skokem.
-    // Teď kriticky tlumená pružina v jednotkách snímků: rychlost se mění spojitě, po puštění obraz plynule dojede (~0,5 s), bez překmitu.
-    const OM = window.__om || 10;                                          // tuhost [1/s]: zpoždění za posunem 2/OM = 200 ms
-    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
-    if (Math.abs(d) > .25) { F = W; v = 0; }                               // skok přes čtvrtinu jízdy (odkaz v liště) = rovnou
-    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
-      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
-    }
-    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
-    s.v = v; const t1 = F / (s.n - 1);
-    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;   // prolínat jen pomalý pohyb; v rychlém se snímek mění každé obnovení
-    if (gap > .3) s.dirn = d > 0 ? 1 : -1;
-    if (s.t !== s.want || v) moving = true;
-    size(s); feed(s); draw(s); captions(s);
+  const r = stage.getBoundingClientRect(), vis = r.bottom > -50 && r.top < innerHeight + 50;
+  const want = fix !== null ? fix : timeAt();
+  const dt = Math.min(64, last ? now - last : 16.7); last = now;
+  const OM = window.__om || 10;
+  let F = t * N, W = want * N;
+  if (Math.abs(want - t) > 0.25) { F = W; v = 0; }
+  else for (let left = dt / 1000; left > 1e-6; left -= 0.008) {
+    const h = Math.min(0.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+  }
+  if (Math.abs(W - F) < 0.004 && Math.abs(v) < 0.05) { F = W; v = 0; }
+  t = F / N; if (v || t !== want) moving = true;
+  if (vis) {
+    if (size()) dirty = true;
+    if (dirty || Math.abs(t - drawn) > 1e-6) { frame(t); drawn = t; dirty = false; }
+    captions(t);
   }
   reveal();
-  let z = ''; for (const el of zones) { const r = el.getBoundingClientRect(); if (r.top <= 58 && r.bottom > 58) z = el.classList.contains('paint') ? 'dk' : 'lt'; }
+  let z = ''; for (const el of zones) { const rr = el.getBoundingClientRect(); if (rr.top <= 58 && rr.bottom > 58) z = el.classList.contains('paint') ? 'dk' : 'lt'; }
   if (navEl.className !== z) navEl.className = z;
   const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
   if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
-  if (moving) tick(); else for (const s of stages) s.last = 0;
+  if (moving) tick(); else last = 0;
 }
 addEventListener('scroll', tick, { passive: true });
-addEventListener('resize', () => { setVh(); tick(); });
-if (window.visualViewport) visualViewport.addEventListener('resize', setVh);
+addEventListener('resize', () => { setVh(); dirty = true; tick(); });
+if (window.visualViewport) visualViewport.addEventListener('resize', () => { setVh(); dirty = true; tick(); });
 setVh();
 
-/* ---------- odkazy v liště: Interiér skočí doprostřed jízdy ---------- */
+/* všechny shadery a textury připravit předem: otevření dveří ani vjezd dovnitř pak nic nedohrává za jízdy */
+size();
+for (const f of [1, 300, 470]) { frame((f - 1) / (LAST - 1)); }
+await renderer.compileAsync(scene, cam);
+frame(t); drawn = t;
+document.documentElement.classList.add('ready');
+
 document.querySelectorAll('nav a[data-t]').forEach(a => a.addEventListener('click', e => {
-  e.preventDefault(); scrollTo({ top: scrollFor(stages[0], +a.dataset.t), behavior: 'smooth' });
+  e.preventDefault(); scrollTo({ top: scrollFor(+a.dataset.t), behavior: 'smooth' });
 }));
 document.querySelectorAll('a[href^="#"]:not([data-t])').forEach(a => a.addEventListener('click', e => {
   const el = document.querySelector(a.getAttribute('href')); if (!el) return;
   e.preventDefault(); scrollTo({ top: el.offsetTop, behavior: 'smooth' });
 }));
 
-/* ---------- barvy: obrázky laků se načtou, až se k nim stránka přiblíží, a prolínají se ---------- */
+/* ---------- barvy: lak se změní přímo na autě v jízdě i na obrázku ---------- */
+const PAINT = { stribrna: [0xb4b7bc, 0.9, 0.34], kridova: [0xbab9b1, 0, 0.45], cervena: [0xb8150f, 0, 0.4],
+  modra: [0x1d3470, 0.7, 0.35], zelena: [0x16452e, 0.6, 0.35], cerna: [0x1c1c1f, 0.7, 0.3] };
+const bodyMats = new Set(); car.traverse(o => { if (o.isMesh && o.material.name === 'body_main') bodyMats.add(o.material); });
 const shots = document.getElementById('shots'), lak = document.getElementById('lak'), dots = [...document.querySelectorAll('.dots button')], pics = { stribrna: shots.querySelector('img') };
+function paint(c) {
+  const [col, met, ro] = PAINT[c] || PAINT.stribrna;
+  for (const m of bodyMats) { m.color.setHex(col); m.metalness = met; m.roughness = ro; }
+  dirty = true; tick();
+}
 function pick(b) {
   dots.forEach(x => x.setAttribute('aria-pressed', x === b));
   lak.textContent = b.getAttribute('aria-label');
   const c = b.dataset.col, show = () => Object.entries(pics).forEach(([k, im]) => im.classList.toggle('on', k === c));
+  paint(c);
   if (pics[c]) return show();
   const im = new Image(); im.alt = '911 Turbo S, ' + b.getAttribute('aria-label').toLowerCase(); im.decoding = 'async';
   im.onload = () => { shots.appendChild(im); pics[c] = im; requestAnimationFrame(() => requestAnimationFrame(() => { if (b.getAttribute('aria-pressed') === 'true') show(); })); };
   im.src = `seq/barvy/${c}.webp`;
 }
 dots.forEach(b => b.addEventListener('click', () => pick(b)));
+paint('stribrna');
 
-window.__P = { stages, tick, scrollFor };
+window.__P = { tick, scrollFor, frame, renderer, get t() { return t; } };
 tick();
-})();
 </script>
 </body>
 </html>
