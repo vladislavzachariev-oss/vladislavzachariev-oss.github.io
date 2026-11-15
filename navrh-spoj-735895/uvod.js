@@ -100,10 +100,10 @@ function frame(now) {
   const live = 1 - turn;                                // klidový pohyb a náklon za myší jen na začátku
 
   // výchozí poloha: počítač telefon vpravo od nadpisu, telefon na výšku nahoře nad nadpisem
-  const z0 = portrait ? 1.58 / (0.5 * 2 * TAN) : 1.58 / (0.74 * 2 * TAN);
+  const z0 = portrait ? 1.58 / (0.42 * 2 * TAN) : 1.58 / (0.74 * 2 * TAN);
   const halfW = z0 * TAN * aspect;
   const sx = portrait ? 0 : Math.min(halfW * 0.5, halfW - 0.75);
-  const sy = portrait ? z0 * TAN * 0.42 : 0.02;
+  const sy = portrait ? z0 * TAN * 0.4 : 0.02;
   const s0 = portrait ? 0.9 : 1;
   phone.position.set(mix(sx, 0, turn), mix(sy, 0, turn) + live * 0.035 * Math.sin(clock * 0.9), 0);
   phone.rotation.set(mix(0.12, 0, turn) + live * (my * 0.18), mix(-0.62, 0, turn) + live * (0.05 * Math.sin(clock * 0.5) + mx * 0.3), mix(0.07, 0, turn));
