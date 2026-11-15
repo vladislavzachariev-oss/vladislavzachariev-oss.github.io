@@ -30,8 +30,11 @@ if (!touch && window.Lenis) {
         const m = (lo + hi) / 2; p.style.fontSize = m + 'px';
         if (p.scrollWidth <= W + 0.5 && p.offsetHeight <= H) lo = m; else hi = m;
       }
+      p.style.fontSize = Math.floor(lo) + 'px';
+      // blok skupiny stojí na místě: horní hrana podle nejdelšího kroku, nová slova jen přibývají (na mobilu to jinak poskakovalo)
+      const top = Math.max(0, (pin.clientHeight * 0.9 - p.offsetHeight) / 2);
       s.style.display = ''; s.style.visibility = '';
-      g.forEach(x => x.querySelector('p').style.fontSize = Math.floor(lo) + 'px');
+      g.forEach(x => { const q = x.querySelector('p'); q.style.fontSize = Math.floor(lo) + 'px'; q.style.marginTop = top + 'px'; });
     });
   };
   let cur = -1;
@@ -40,6 +43,7 @@ if (!touch && window.Lenis) {
     if (cur >= 0) steps[cur].classList.remove('on');
     steps[i].classList.add('on');
     if (steps[i].dataset.bg) pin.dataset.bg = steps[i].dataset.bg; else delete pin.dataset.bg;
+    document.body.classList.toggle('amb', steps[i].dataset.bg === 'a');
     num.textContent = pad2(i + 1) + ' / ' + pad2(n);
     cur = i;
   };
