@@ -13,10 +13,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/l/000.webp" media="(min-width:700px)" fetchpriority="high">
 <link rel="preload" as="image" href="img/s/000.webp" media="(max-width:699px)" fetchpriority="high">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -57,50 +57,105 @@
   <p class="lead__text reveal">Rozkvetlá kytice je nejkrásnější první den. Ta naše jím teprve začíná, protože nejhezčí chvíli prožije u&nbsp;vás doma, ne ve výloze.</p>
 </section>
 
-<section class="offer" id="nabidka">
-  <h2 class="offer__h reveal">Co pro vás uvážeme</h2>
-  <div class="cards">
-    <article class="card reveal">
-      <div class="card__img"><img src="img/kytice.webp" alt="Kytice bílých tulipánů zabalená do hnědého papíru" loading="lazy" width="1067" height="1600"></div>
-      <h3>Kytice</h3>
-      <p>K&nbsp;narozeninám, na rande nebo jen tak. Řekněte, pro koho je, a&nbsp;my vybereme, co ten den kvete nejhezčeji.</p>
-    </article>
-    <article class="card reveal">
-      <div class="card__img"><img src="img/svatby.webp" alt="Nevěsta drží svatební kytici" loading="lazy" width="1600" height="1067"></div>
-      <h3>Svatby</h3>
-      <p>Kytice pro nevěstu, korsáže, výzdoba stolů. Na schůzce projdeme barvy i&nbsp;místo a&nbsp;ukážeme vám květiny naživo.</p>
-    </article>
-    <article class="card reveal">
-      <div class="card__img"><img src="img/smutecni.webp" alt="Bílé lilie na kamenné desce" loading="lazy" width="1068" height="1600"></div>
-      <h3>Smuteční vazba</h3>
-      <p>Věnce a&nbsp;kytice na rozloučenou. Zavolejte, domluvíme vše po telefonu a&nbsp;květiny dovezeme, kam potřebujete.</p>
-    </article>
-    <article class="card reveal">
-      <div class="card__img"><img src="img/pokojovky.webp" alt="Sukulenty a kaktusy v keramických květináčích" loading="lazy" width="1600" height="1089"></div>
-      <h3>Pokojové rostliny</h3>
-      <p>Do bytu i&nbsp;do kanceláře. Poradíme, co vydrží na severním okně a&nbsp;co snese, když na zalévání zapomenete.</p>
-    </article>
+<section class="build" id="nabidka">
+  <div class="build__stage" id="stage2">
+    <div class="photo" id="photo">
+      <div class="photo__size" id="psize">
+        <img class="photo__img is-on" src="img/k/pudrova-1100.webp" srcset="img/k/pudrova-640.webp 640w, img/k/pudrova-1100.webp 1100w" sizes="(max-width:860px) 80vw, 46vw" alt="Kytice Pudrová: růže a karafiáty v barvě pudru s eukalyptem, v krémovém papíru" width="1100" height="1366">
+        <img class="photo__img" alt="" width="1100" height="1366">
+      </div>
+      <p class="photo__tag" id="ptag" aria-live="polite"><b>Pudrová</b> <span>M · 15 stonků</span></p>
+    </div>
+  </div>
+  <div class="build__copy">
+    <p class="kicker reveal">Kytice na míru</p>
+    <h2 class="build__h reveal">Uvažte si kytici.</h2>
+    <p class="build__sub reveal">Tři volby a&nbsp;uvidíte ji. Ráno toho dne ji uvážeme z&nbsp;poupat, aby se rozvinula až u&nbsp;vás.</p>
+
+    <fieldset class="pick reveal">
+      <legend><i>1</i>Pro koho a&nbsp;proč</legend>
+      <div class="chips" id="occ">
+        <button type="button" data-occ="narozeniny" data-pal="slunecna">K&nbsp;narozeninám</button>
+        <button type="button" data-occ="rande" data-pal="pudrova" aria-pressed="true">Na rande</button>
+        <button type="button" data-occ="vyroci" data-pal="hluboka">K&nbsp;výročí</button>
+        <button type="button" data-occ="dik" data-pal="zahradni">Jako poděkování</button>
+        <button type="button" data-occ="rozlouceni" data-pal="ticha">Na rozloučenou</button>
+      </div>
+    </fieldset>
+
+    <fieldset class="pick reveal">
+      <legend><i>2</i>Barvy podle nálady</legend>
+      <div class="pals" id="pal">
+        <button type="button" data-pal="pudrova" aria-pressed="true"><span class="sw" style="--a:#f3cfc6;--b:#e9a9a0;--c:#9fb5a4"></span><b>Pudrová</b><small>růže a&nbsp;karafiáty v&nbsp;barvě pudru</small></button>
+        <button type="button" data-pal="slunecna"><span class="sw" style="--a:#f7d83b;--b:#f4b81c;--c:#f6f1e3"></span><b>Slunečná</b><small>žluté tulipány a&nbsp;ranunkulky</small></button>
+        <button type="button" data-pal="zahradni"><span class="sw" style="--a:#f7f5ee;--b:#c9d8a8;--c:#6f8f4e"></span><b>Zahradní</b><small>bílé eustomy, heřmánek a&nbsp;zeleň</small></button>
+        <button type="button" data-pal="hluboka"><span class="sw" style="--a:#7d1426;--b:#a8213a;--c:#3d4f37"></span><b>Hluboká</b><small>bordó růže a&nbsp;ranunkulky</small></button>
+        <button type="button" data-pal="ticha"><span class="sw" style="--a:#fbfaf6;--b:#e4e7e2;--c:#9fb0aa"></span><b>Tichá</b><small>bílé růže, lilie a&nbsp;eukalyptus</small></button>
+      </div>
+    </fieldset>
+
+    <fieldset class="pick reveal">
+      <legend><i>3</i>Velikost</legend>
+      <div class="sizes" id="size">
+        <button type="button" data-size="S"><b>S</b><small>9 stonků</small></button>
+        <button type="button" data-size="M" aria-pressed="true"><b>M</b><small>15 stonků</small></button>
+        <button type="button" data-size="L"><b>L</b><small>25 stonků</small></button>
+      </div>
+    </fieldset>
+
+    <div class="sum reveal">
+      <p class="sum__price"><small>od</small> <b id="price">1&nbsp;090</b>&nbsp;Kč</p>
+      <a class="btn" href="#objednat">Napsat vzkaz na kartičku</a>
+    </div>
   </div>
 </section>
 
-<section class="band" id="objednat">
-  <div class="band__img"><img class="drift" src="img/dilna.webp" alt="Květinářky v zástěrách vážou kytici, pohled shora" loading="lazy" width="1600" height="1067"></div>
-  <div class="band__copy">
-    <h2 class="reveal">Jak objednat</h2>
-    <ol class="how">
-      <li class="reveal"><i>1</i><div><h3>Zavolejte nebo napište</h3><p>Pro koho kytice je, kdy ji chcete a&nbsp;jaké barvy má ten člověk rád.</p></div></li>
-      <li class="reveal"><i>2</i><div><h3>Uvážeme ji ráno toho dne</h3><p>Z&nbsp;poupat, aby se rozvinula až u&nbsp;vás. Fotku vám pošleme, než vyjde ze dveří.</p></div></li>
-      <li class="reveal"><i>3</i><div><h3>Vyzvednete, nebo dovezeme</h3><p>Po Liberci ji dovezeme až ke dveřím. Ke kytici přidáme kartičku s&nbsp;vaším vzkazem.</p></div></li>
-    </ol>
-  </div>
+<section class="also" aria-label="Další, co vážeme">
+  <a class="also__item reveal" href="#kde" data-also="svatba"><img src="img/svatby.webp" alt="" loading="lazy" width="1600" height="1067"><span><b>Svatby</b>Kytice pro nevěstu, korsáže i&nbsp;stoly. Barvy projdeme na schůzce, alespoň měsíc předem.</span></a>
+  <a class="also__item reveal" href="#objednat" data-also="smutek"><img src="img/smutecni.webp" alt="" loading="lazy" width="1068" height="1600"><span><b>Smuteční vazba</b>Věnce a&nbsp;kytice na rozloučenou. Domluvíme po telefonu a&nbsp;dovezeme, kam potřebujete.</span></a>
+  <a class="also__item reveal" href="#kde" data-also="pokoj"><img src="img/pokojovky.webp" alt="" loading="lazy" width="1600" height="1089"><span><b>Pokojové rostliny</b>Poradíme, co vydrží na severním okně a&nbsp;co snese, když na zalévání zapomenete.</span></a>
 </section>
 
-<section class="where" id="kde">
-  <div class="where__img"><img class="drift" data-k="-.05" src="img/tulipany.webp" alt="Žluté tulipány zabalené v hnědém papíru" loading="lazy" width="1067" height="1600"></div>
-  <div class="where__copy">
-    <p class="where__kicker reveal">Objednávky a&nbsp;dotazy</p>
-    <p class="where__tel reveal" data-audit-skip><span>+420 123 456 789</span></p>
-    <div class="where__cols reveal">
+<section class="end" id="objednat">
+  <div class="end__in">
+    <div class="end__card">
+      <div class="note" id="note">
+        <span class="note__hole" aria-hidden="true"></span>
+        <p class="note__msg" id="noteMsg">Těším se na večer.</p>
+        <p class="note__sig" id="noteSig">— M.</p>
+      </div>
+      <p class="slip" id="slip"><b>Pudrová · M</b> 15 stonků · od 1&nbsp;090&nbsp;Kč · <a href="#nabidka">změnit</a></p>
+    </div>
+    <form class="end__form" id="order" novalidate>
+      <h2 class="end__h reveal">Co napíšeme na kartičku?</h2>
+      <label class="fld"><span>Vzkaz</span><textarea id="msg" rows="3" maxlength="160" placeholder="Těším se na večer."></textarea><small id="left">160 znaků</small></label>
+      <label class="fld"><span>Podpis</span><input id="sig" maxlength="40" placeholder="M." autocomplete="off"></label>
+      <div class="fld"><span>Kdy</span>
+        <div class="chips chips--on" id="when">
+          <button type="button" data-when="dnes">Dnes</button>
+          <button type="button" data-when="zítra" aria-pressed="true">Zítra</button>
+          <button type="button" data-when="jindy">Jindy</button>
+        </div>
+        <input id="date" type="date" hidden aria-label="Datum">
+      </div>
+      <div class="fld"><span>Jak</span>
+        <div class="chips chips--on" id="how">
+          <button type="button" data-how="vyzvednu" aria-pressed="true">Vyzvednu v&nbsp;Květné 9</button>
+          <button type="button" data-how="dovézt">Dovézt po Liberci +120&nbsp;Kč</button>
+        </div>
+        <input id="addr" hidden placeholder="Ulice a číslo, kam kytici dovezeme" autocomplete="street-address" aria-label="Adresa">
+      </div>
+      <div class="send">
+        <a class="btn" id="sms" href="sms:+420123456789">Poslat objednávku SMS</a>
+        <a class="btn btn--ghost" id="mail" href="mailto:kytice@poupe.example">nebo e-mailem</a>
+      </div>
+      <p class="end__fine">Zpráva se otevře hotová, ještě ji uvidíte, než ji odešlete. Kytici uvážeme ráno toho dne a&nbsp;fotku vám pošleme, než vyjde ze dveří.</p>
+    </form>
+  </div>
+
+  <div class="where" id="kde">
+    <p class="where__tel" data-audit-skip><a href="tel:+420123456789">+420 123 456 789</a></p>
+    <div class="where__cols">
       <div>
         <h3>Otevřeno</h3>
         <dl class="hours">
@@ -112,7 +167,7 @@
       </div>
       <div>
         <h3>Kde nás najdete</h3>
-        <p>Květinářství Poupě<br>Květná 9, Liberec<br>naproti zastávce tramvaje</p>
+        <p>Květná 9, Liberec<br>naproti zastávce tramvaje</p>
       </div>
       <div>
         <h3>Napište</h3>
@@ -129,7 +184,7 @@
 </footer>
 
 <script src="vendor/lenis.min.js"></script>
-<script src="main.js?v=4"></script>
+<script src="main.js?v=5"></script>
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
 </body>
 </html>

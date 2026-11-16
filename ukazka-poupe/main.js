@@ -144,10 +144,12 @@
     render();
     nav.classList.toggle('is-solid', y > hero.offsetTop + hero.offsetHeight - pin.offsetHeight + innerHeight - 64);
     drift();
+    const er = endSec ? endSec.getBoundingClientRect() : null;
+    nav.classList.toggle('is-dark', !!er && er.top < 64 && er.bottom > 64);
   }
 
   /* ---------- photos further down drift a little with the page ---------- */
-  const drifts = $$('.drift');
+  const drifts = $$('.drift'), endSec = $('#objednat');
   function drift() {
     drifts.forEach(el => {
       const r = el.parentElement.getBoundingClientRect();
@@ -186,6 +188,116 @@
     if (h && m < h[0]) { el.textContent = 'Teď je zavřeno, otevíráme dnes v ' + fmt(h[0]) + '.'; return; }
     let d = (day + 1) % 7, n = 1; while (!H(d)) { d = (d + 1) % 7; n++; }
     el.textContent = 'Teď je zavřeno, otevíráme ' + (n === 1 ? 'zítra' : 'v pondělí') + ' v ' + fmt(H(d)[0]) + '.';
+  })();
+
+  /* ---------- tie your own bouquet: occasion → colours → size, the photo follows ----------
+     Every bouquet is photographed the same way (same paper, backdrop, light), so switching changes only
+     the flowers. The size is the same photo seen closer: the files carry extra backdrop (mirrored margins), so S shows
+     all of it and the bouquet small, L zooms in to the original framing; no edge is ever revealed. */
+  (function build() {
+    const root = $('#nabidka'); if (!root) return;
+    const P = {
+      pudrova:  { n: 'Pudrová',  alt: 'růže a karafiáty v barvě pudru s eukalyptem', edge: '#c1b9b1', p: [690, 1090, 1690] },
+      slunecna: { n: 'Slunečná', alt: 'žluté tulipány, ranunkulky a bílé růžičky',   edge: '#bbb4ad', p: [590, 950, 1490] },
+      zahradni: { n: 'Zahradní', alt: 'bílé eustomy, heřmánek a hodně zeleně',       edge: '#c0b9b1', p: [640, 990, 1590] },
+      hluboka:  { n: 'Hluboká',  alt: 'bordó růže a tmavé ranunkulky',               edge: '#bdb5ad', p: [790, 1290, 1990] },
+      ticha:    { n: 'Tichá',    alt: 'bílé růže, lilie a eukalyptus',               edge: '#c2bbb3', p: [690, 1090, 1690] }
+    };
+    const SIZES = ['S', 'M', 'L'], STEMS = { S: 9, M: 15, L: 25 }, SCALE = { S: 1, M: 1.12, L: 1.24 };
+    const OCC = {
+      narozeniny: { t: 'k narozeninám',     m: 'Všechno nejlepší k narozeninám!' },
+      rande:      { t: 'na rande',          m: 'Těším se na večer.' },
+      vyroci:     { t: 'k výročí',          m: 'Další rok s tebou. Děkuju.' },
+      dik:        { t: 'jako poděkování',   m: 'Moc děkuju za všechno.' },
+      rozlouceni: { t: 'na rozloučenou',    m: 'Upřímnou soustrast. Myslíme na vás.' }
+    };
+    const S = { occ: 'rande', pal: 'pudrova', size: 'M', when: 'zítra', how: 'vyzvednu' };
+    const kc = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const price = () => P[S.pal].p[SIZES.indexOf(S.size)];
+
+    const photo = $('#photo'), psize = $('#psize'), imgs = $$('.photo__img', photo), tag = $('#ptag');
+    const set = (list, attr, val) => $$('button', list).forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
+    const src = (k, w) => 'img/k/' + k + '-' + w + '.webp';
+    let token = 0;
+    function showPhoto() {
+      const k = S.pal, on = imgs.find(i => i.classList.contains('is-on')), next = imgs.find(i => i !== on);
+      if (on && on.dataset.k === k) return;
+      const my = ++token;
+      next.srcset = src(k, 640) + ' 640w, ' + src(k, 1100) + ' 1100w';
+      next.sizes = on.sizes; next.src = src(k, 1100); next.dataset.k = k;
+      next.alt = 'Kytice ' + P[k].n + ': ' + P[k].alt + ', v krémovém papíru';
+      const swap = () => { if (my !== token) return; next.classList.add('is-on'); on.classList.remove('is-on'); on.alt = ''; };
+      (next.decode ? next.decode() : Promise.resolve()).then(swap, swap);
+    }
+    imgs[0].dataset.k = 'pudrova';
+    function update() {
+      set($('#occ'), 'occ', S.occ); set($('#pal'), 'pal', S.pal); set($('#size'), 'size', S.size);
+      showPhoto();
+      psize.style.setProperty('--s', SCALE[S.size]);
+      tag.innerHTML = '<b>' + P[S.pal].n + '</b> <span>' + S.size + ' · ' + STEMS[S.size] + ' stonků</span>';
+      $('#price').textContent = kc(price());
+      $('#slip').innerHTML = '<b>' + P[S.pal].n + ' · ' + S.size + '</b> ' + STEMS[S.size] + ' stonků · od ' + kc(price()) + ' Kč · <a href="#nabidka">změnit</a>';
+      card();
+    }
+    $('#occ').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.occ = b.dataset.occ; S.pal = b.dataset.pal; update(); });
+    $('#pal').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.pal = b.dataset.pal; update(); });
+    $('#size').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.size = b.dataset.size; update(); });
+    $$('.also__item[data-also="smutek"]').forEach(a => a.addEventListener('click', () => { S.occ = 'rozlouceni'; S.pal = 'ticha'; update(); }));
+    $('#slip').addEventListener('click', e => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); go($('#nabidka').getBoundingClientRect().top + scrollY - 40); });
+
+    /* the other colours load once the section is near, so the first switch is instant */
+    const pre = new IntersectionObserver(es => { if (!es.some(e => e.isIntersecting)) return; pre.disconnect();
+      const w = innerWidth * Math.min(2, devicePixelRatio || 1) * (innerWidth > 860 ? .46 : .5) > 700 ? 1100 : 640;
+      Object.keys(P).forEach(k => { const i = new Image(); i.src = src(k, w); });
+    }, { rootMargin: '600px 0px' });
+    pre.observe(root);
+
+    /* ---------- the card: what you type is written on it ---------- */
+    const note = $('#note'), msgEl = $('#noteMsg'), sigEl = $('#noteSig');
+    const msg = $('#msg'), sig = $('#sig'), left = $('#left'), date = $('#date'), addr = $('#addr');
+    const plural = n => n === 1 ? 'znak' : n >= 2 && n <= 4 ? 'znaky' : 'znaků';
+    let fitQ = 0;
+    function fit() {
+      cancelAnimationFrame(fitQ);
+      fitQ = requestAnimationFrame(() => {
+        const cs = getComputedStyle(note), room = note.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+        let ns = Math.min(52, note.clientWidth * .092);
+        note.style.setProperty('--ns', ns + 'px');
+        while (ns > 17 && msgEl.offsetHeight + sigEl.offsetHeight + ns * .5 > room) { ns -= 1.5; note.style.setProperty('--ns', ns + 'px'); }
+      });
+    }
+    function card() {
+      const m = msg.value.trim(), s = sig.value.trim();
+      msg.placeholder = OCC[S.occ].m;
+      msgEl.textContent = m || OCC[S.occ].m; msgEl.classList.toggle('is-ph', !m);
+      sigEl.textContent = '— ' + (s || 'M.'); sigEl.classList.toggle('is-ph', !s);
+      const n = 160 - msg.value.length; left.textContent = n + ' ' + plural(n);
+      fit(); links();
+    }
+    const grow = () => { msg.style.height = 'auto'; msg.style.height = msg.scrollHeight + 2 + 'px'; };
+    msg.addEventListener('input', () => { grow(); card(); }); sig.addEventListener('input', card);
+    $('#when').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.when = b.dataset.when; set($('#when'), 'when', S.when);
+      date.hidden = S.when !== 'jindy'; if (!date.hidden && !date.min) { const t = new Date(); t.setMinutes(t.getMinutes() - t.getTimezoneOffset()); date.min = t.toISOString().slice(0, 10); } links(); });
+    $('#how').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.how = b.dataset.how; set($('#how'), 'how', S.how); addr.hidden = S.how !== 'dovézt'; links(); });
+    date.addEventListener('input', links); addr.addEventListener('input', links);
+
+    function order() {
+      const p = P[S.pal], m = msg.value.trim() || OCC[S.occ].m, s = sig.value.trim();
+      const kdy = S.when === 'jindy' ? (date.value ? date.value.split('-').reverse().map(Number).join('. ') : 'datum doplním') : S.when;
+      const jak = S.how === 'dovézt' ? 'Dovézt na: ' + (addr.value.trim() || 'adresu doplním') + ' (+120 Kč)' : 'Vyzvednu v Květné 9.';
+      return 'Dobrý den, objednávám kytici ' + p.n + ', velikost ' + S.size + ' (' + STEMS[S.size] + ' stonků), od ' + kc(price()) + ' Kč, ' + OCC[S.occ].t + '.\n'
+        + 'Kdy: ' + kdy + '.\n' + jak + '\n'
+        + 'Vzkaz na kartičku: „' + m + '“' + (s ? ' — ' + s : '');
+    }
+    function links() {
+      const t = order();
+      $('#sms').href = 'sms:+420123456789?&body=' + encodeURIComponent(t);
+      $('#mail').href = 'mailto:kytice@poupe.example?subject=' + encodeURIComponent('Objednávka kytice ' + P[S.pal].n + ' ' + S.size) + '&body=' + encodeURIComponent(t);
+    }
+    addEventListener('resize', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    update();
+    window.__build = { S, order, update };
   })();
 
   /* ---------- reveal ---------- */
