@@ -393,6 +393,26 @@ void main(){
     const p = clamp((innerHeight * .78 - r.top) / (r.height + innerHeight * .28), 0, 1);
     track.style.setProperty('--p', p.toFixed(4));
     stepEls.forEach((li, i) => li.classList.toggle('is-on', p >= i / stepEls.length + .02));
+    stepsClock(p);
+  }
+  /* hodiny: Po 9:10 → Út 7:00 → 13:30 → 16:30, každý krok sedí na své tečce (J 16. 11.) */
+  const clk = $('.steps__time'), clkDay = $('.steps__day');
+  const K = [[.02, 9 * 60 + 10], [.27, 24 * 60 + 7 * 60], [.52, 24 * 60 + 13 * 60 + 30], [.77, 24 * 60 + 16 * 60 + 30]];
+  let lastMin = -1;
+  function stepsClock(p) {
+    if (!clk) return;
+    let m = K[0][1];
+    for (let i = 1; i < K.length; i++) {
+      if (p >= K[i][0]) { m = K[i][1]; continue; }
+      if (p > K[i - 1][0]) { const t = (p - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); m = K[i - 1][1] + (K[i][1] - K[i - 1][1]) * t; }
+      break;
+    }
+    m = Math.round(m);
+    if (m === lastMin) return;
+    lastMin = m;
+    const day = m >= 24 * 60 ? 'Úterý' : 'Pondělí', mm = m % (24 * 60);
+    clk.textContent = Math.floor(mm / 60) + ':' + String(mm % 60).padStart(2, '0');
+    if (clkDay.textContent !== day) clkDay.textContent = day;
   }
   addEventListener('scroll', stepsProgress, { passive: true });
   stepsProgress();
