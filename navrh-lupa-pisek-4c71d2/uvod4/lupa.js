@@ -54,7 +54,7 @@
   var shadow = document.createElement('div'); shadow.className = 'lp-shadow'; shadow.setAttribute('aria-hidden', 'true');
   document.body.appendChild(shadow); document.body.appendChild(lens);
   var holder = lens.querySelector('.lp-in'), clone = null, ckw = [];
-  var S = MODE === 'color' ? 1.3 : 1.55, D = 200, R = 100;
+  var S = MODE === 'color' ? 1.3 : 1.55, D = 200, R = 100, Dbase = 200, Dcur = 0;
 
   function makeClone() {
     var c = main.cloneNode(true);
@@ -75,8 +75,7 @@
   function size() {
     var m = Math.min(innerWidth, innerHeight);
     D = Math.round(Math.max(140, Math.min(MODE === 'color' ? 300 : 260, m * (innerWidth < 700 ? .42 : .26))));
-    R = D / 2;
-    lens.style.setProperty('--D', D + 'px'); shadow.style.setProperty('--D', D * 1.25 + 'px');
+    Dbase = D; setD(D);
     if (clone) clone.style.width = main.offsetWidth + 'px';
   }
 
@@ -85,6 +84,7 @@
   var mx = -1, my = -1, mt = -1e9;
   if (fine) addEventListener('pointermove', function (e) { mx = e.clientX; my = e.clientY; mt = performance.now(); }, { passive: true });
 
+  function setD(d) { if (Math.abs(d - Dcur) < .5) return; Dcur = d; D = d; R = d / 2; lens.style.setProperty('--D', d.toFixed(1) + 'px'); shadow.style.setProperty('--D', (d * 1.25).toFixed(1) + 'px'); }
   function center(el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }
   function pick() {          // klíčové slovo nejblíž výšce 45 % okna, které je celé vidět
     var vh = innerHeight, best = null, bd = 1e9;
@@ -110,6 +110,8 @@
         ty = b.c.y + sy + Math.sin(clock * .9 + 1) * R * .06 * wob;
       } else { tx = vw * .5 + sx; ty = vh * .45 + sy; }
     }
+    var want = b && !follow ? Math.min(vw * .92, Math.max(Dbase, b.c.w * S * 1.18)) : Dbase;   // lupa se zvětší, aby se slovo vešlo celé
+    setD(started ? D + (want - D) * (1 - Math.exp(-dt * 5)) : want);
     if (!started) { dx = tx; dy = ty; started = true; }
     var k = 1 - Math.exp(-dt * (follow ? 9 : 4.2));
     dx += (tx - dx) * k; dy += (ty - dy) * k;

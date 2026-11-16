@@ -21,19 +21,19 @@
     'const float PI = 3.14159265;\n' +
     'void main(){\n' +
     '  float d = clamp((aS.x - uBS.x)/max(1., uBS.z), 0., 1.);\n' +
-    '  float t1 = clamp((uK - .28 - d*.2 - aR.x*.04)/.24, 0., 1.);\n' +
+    '  float t1 = clamp((uK - .10 - d*.18 - aR.x*.04)/.22, 0., 1.);\n' +
     '  float dE = clamp((aE.x - uBE.x)/max(1., uBE.z), 0., 1.);\n' +
-    '  float g = clamp((uK - .42 - aR.y*.16 - dE*.06)/.3, 0., 1.);\n' +
+    '  float g = clamp((uK - .30 - aR.y*.2 - dE*.06)/.36, 0., 1.);\n' +
     '  float t2 = g < .5 ? 4.*g*g*g : 1. - pow(-2.*g + 2., 3.)/2.;\n' +
     '  float W = uRes.x, Hh = uRes.y;\n' +
     '  vec2 sw = vec2(sin(aS.y*.03 + aR.x*6.283 + t1*4.), cos(aS.x*.02 + aR.y*6.283 + t1*3.));\n' +
-    '  vec2 pb = aS + vec2(W*(.12 + .3*aR.x)*t1*t1, -Hh*.05*t1*(.3 + aR.y)) + sw*W*.02*t1;\n' +
+    '  vec2 pb = aS + vec2(W*(.06 + .16*aR.x)*t1*t1, -Hh*.04*t1*(.3 + aR.y)) + sw*W*.015*t1;\n' +
     '  vec2 dir = aE - pb; vec2 nrm = vec2(-dir.y, dir.x);\n' +
     '  vec2 pos = mix(pb, aE, t2) + nrm*sin(PI*t2)*(aR.y - .5)*.28;\n' +
     '  float fly = t1*(1. - t2);\n' +
     '  pos += vec2(sin(uT*1.3 + aR.x*40.), cos(uT*1.1 + aR.y*40.))*2.5*fly;\n' +
     '  pos.y -= uY;\n' +
-    '  float vis = step(.28 + d*.2 - .012, uK);\n' +
+    '  float vis = step(.10 + d*.18 - .012, uK);\n' +
     '  float a = vis*mix(.95, .8, fly)*(1. - smoothstep(.93, 1., uK));\n' +
     '  vC = vec4(mix(uCS, uCE, smoothstep(.1, .9, t2)), a);\n' +
     '  gl_PointSize = mix(mix(1.5, 1.2, fly), 1.7, t2)*uDpr;\n' +
@@ -89,7 +89,7 @@
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(Hh * dpr);
     if (!gl) return;
     gl.viewport(0, 0, canvas.width, canvas.height);
-    N = W < 700 ? 22000 : 46000; seed = 11;
+    N = W < 700 ? 30000 : 60000; seed = 11;
     H.forEach(function (h) {
       var p = sample(h); if (!p || !p.length) { h.buf = null; return; }
       var n0 = p.length / 2, A = new Float32Array(N * 2);
@@ -121,7 +121,7 @@
       var o = .13, mk = 'none';
       if (j === i) {
         o = 1;
-        var fr = (k - .28 + .012) / .2;
+        var fr = (k - .10 + .012) / .18;
         if (fr > 0) { var px = h.box.off + fr * h.box.w; mk = 'linear-gradient(90deg, transparent ' + px.toFixed(1) + 'px, #000 ' + (px + 1).toFixed(1) + 'px)'; }
       } else if (j === i + 1) o = .13 + .87 * sm(.9, 1, k);
       h.el.style.setProperty('--ho', o.toFixed(3));

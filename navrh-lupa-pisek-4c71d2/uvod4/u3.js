@@ -43,7 +43,7 @@
     '  float g = clamp((uP - .36 - aR.y*.14 - aE.x/W*.06)/.28, 0., 1.);\n' +
     '  float t2 = g < .5 ? 4.*g*g*g : 1. - pow(-2.*g + 2., 3.)/2.;\n' +
     '  vec2 sw = vec2(sin(aS.y*.012 + aR.x*6.283 + t1*4.2), cos(aS.x*.009 + aR.y*6.283 + t1*3.1));\n' +
-    '  vec2 pb = aS + vec2(W*(.22 + .6*aR.x)*t1*t1, -H*.14*t1*(.4 + aR.y)) + sw*W*.025*t1;\n' +
+    '  vec2 pb = aS + vec2(W*(.12 + .3*aR.x)*t1*t1, -H*.10*t1*(.4 + aR.y)) + sw*W*.02*t1;\n' +
     '  pb.y += sin(pb.x*.0042 + aS.y*.018 + aR.x*.8)*W*.04*t1;\n' +
     '  vec2 dir = aE - pb; vec2 nrm = vec2(-dir.y, dir.x);\n' +
     '  vec2 pos = mix(pb, aE, t2) + nrm*sin(PI*t2)*(aR.y - .5)*.3;\n' +
@@ -51,8 +51,8 @@
     '  pos += vec2(sin(uT*1.3 + aR.x*40.), cos(uT*1.1 + aR.y*40.))*3.*fly;\n' +
     '  float land = smoothstep(.7, 1., t2);\n' +
     '  int ci = int(aR.z*5. + .5);\n' +
-    '  vec3 col = mix(uInk, uC[ci], smoothstep(0., .55, t1));\n' +
-    '  float a = step(d0 - .012, uP)*mix(mix(.92, .7, fly), 1., land);\n' +
+    '  vec3 col = mix(uInk, uC[ci], smoothstep(.15, .85, t2));\n' +
+    '  float a = step(d0 - .012, uP)*mix(mix(.92, .85, fly), 1., land);\n' +
     '  vC = vec4(col, a);\n' +
     '  gl_PointSize = mix(mix(1.6, 1.3, fly), 3.4, land)*uDpr;\n' +
     '  gl_Position = vec4(pos.x/W*2. - 1., 1. - pos.y/H*2., 0., 1.);\n' +
