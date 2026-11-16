@@ -149,8 +149,13 @@
   .n2-in{grid-template-columns:minmax(0,1fr) auto;justify-items:stretch;align-items:center;padding-top:64px}
   .n2-copy{text-align:left}
   .n2-frame{--fw:calc((100svh - 84px) * 390 / 844)}
-  .n2-cap{text-align:left;margin-top:12px}
+  .n2-right{flex-direction:row-reverse;align-items:center;gap:22px}
+  .n2-cap{text-align:left;margin-top:0;max-width:240px}
   .n2-dots{justify-content:flex-start}
+}
+@media (max-height:520px) and (min-width:560px) and (max-width:760px){
+  .n2-in{padding-top:70px;padding-bottom:72px}
+  .n2-frame{--fw:calc((100svh - 150px) * 390 / 844)}
 }
 
 /* ============ 3) Před a po ============ */
