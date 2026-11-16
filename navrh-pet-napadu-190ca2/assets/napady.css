@@ -129,7 +129,7 @@
 .n2[data-step="5"] .kb .fin{opacity:1}
 .n2.static .kb .fin{opacity:1;transition:none}
 @media (max-width:900px),(max-height:520px) and (max-width:1000px){
-  .n2-in{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;gap:12px;padding-top:58px}
+  .n2-in{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;gap:12px;padding-top:66px}
   .n2-copy{text-align:center}
   .n2-copy .label,.n2-open{display:none}
   .n2-copy h2{font-size:clamp(26px,7vw,36px);max-width:none}
