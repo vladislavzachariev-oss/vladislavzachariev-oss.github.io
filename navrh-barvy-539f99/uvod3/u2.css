@@ -1,0 +1,18 @@
+/* U2 Kapka: jedna jantarová tečka za nadpisem vyroste přes celou obrazovku a zmenší se do tečky dalšího nadpisu; tečka pak končí každý nadpis stránky */
+html[data-u="2"]{color-scheme:light;--bg:#fff;--bg2:#fbf6ee;--ink:#141414;--ink2:#34322e;--mute:#6d6a63;--line:#ece6dc;--amber:#e7861b;--card:#fff;--on:#fff;--ink-h:#000;--hdr:rgba(255,255,255,.86);--hdr2:rgba(255,255,255,.94)}
+html[data-u="2"] .hero-phone,html[data-u="2"] .hero .arc{display:none}
+html[data-u="2"] .hero{min-height:100svh;display:flex;align-items:center;padding-bottom:clamp(40px,8vh,90px)}
+html[data-u="2"] .hero-grid{grid-template-columns:1fr}
+html[data-u="2"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8.2vw,11svh),128px);letter-spacing:-.035em;line-height:.98}
+html[data-u="2"] .hero .label{color:var(--amber)}
+html[data-u="2"] .btn:not(.ghost){background:var(--amber);border-color:var(--amber);color:#fff}
+.k-dot{display:inline-block;width:.2em;height:.2em;border-radius:50%;background:var(--amber);margin-left:.06em;vertical-align:baseline}
+h1 .k-dot{width:.19em;height:.19em}
+.k-gap{height:calc(var(--k-total,280) * 1svh)}
+.k-fill{position:fixed;inset:0;z-index:55;background:var(--amber);pointer-events:none;clip-path:circle(0 at 50% 50%);visibility:hidden;contain:strict}
+.k-fill.on{visibility:visible}
+.k-say{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 var(--pad);max-width:1200px;margin:0 auto;color:#fff;font-weight:800;letter-spacing:-.035em;line-height:.95;font-size:clamp(52px,min(10vw,14svh),170px)}
+.k-say span{display:block;opacity:0;transform:translateY(.25em);transition:opacity .5s,transform .7s cubic-bezier(.2,.7,.2,1)}
+.k-say span.in{opacity:1;transform:none}
+.k-say i{display:inline-block;width:.19em;height:.19em;border-radius:50%;background:#fff;margin-left:.05em}
+@media (prefers-reduced-motion:reduce){.k-gap,.k-fill{display:none}}

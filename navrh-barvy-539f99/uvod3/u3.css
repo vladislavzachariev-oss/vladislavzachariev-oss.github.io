@@ -1,0 +1,20 @@
+/* U3 Den: obloha za celou stránkou jde posunem od svítání po noc, slunce putuje po oblouku, hodiny v rohu ukazují čas dne */
+html[data-u="3"]{color-scheme:light;--bg:transparent;--bg2:rgba(255,255,255,.38);--card:rgba(255,255,255,.55);--line:rgba(20,20,30,.12);--amber:#c2501f;--hdr:rgba(255,255,255,.28);--hdr2:rgba(255,255,255,.5)}
+html[data-u="3"] body{background:#ffd9c0}
+html[data-u="3"] main,html[data-u="3"] .ft{position:relative;z-index:2}
+html[data-u="3"] .ft{background:transparent}
+html[data-u="3"] .hero-phone,html[data-u="3"] .hero .arc{display:none}
+html[data-u="3"] .hero{min-height:100svh;display:flex;align-items:center}
+html[data-u="3"] .hero-grid{grid-template-columns:1fr}
+html[data-u="3"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8vw,11svh),124px);letter-spacing:-.035em;line-height:.98}
+html[data-u="3"] .btn:not(.ghost){background:var(--ink);border-color:var(--ink);color:#fff}
+html[data-u="3"].night{--ink:#eef0f8;--ink2:#cdd1e2;--mute:#9aa0bb;--line:rgba(255,255,255,.14);--bg2:rgba(255,255,255,.06);--card:rgba(255,255,255,.07);--hdr:rgba(16,20,40,.35);--hdr2:rgba(16,20,40,.6);--ink-h:#fff;--field:#3a3f5c;--ph:#8d93ad;--amber:#ffb27a}
+html[data-u="3"].night .btn:not(.ghost){background:#fff;color:#141a33;border-color:#fff}
+html[data-u="3"] body,html[data-u="3"] .hdr{transition:color .8s}
+.d-sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,var(--s1,#ffd9c0),var(--s2,#fff1e3))}
+.d-sun{position:fixed;left:0;top:0;z-index:1;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;pointer-events:none;background:radial-gradient(circle at 50% 50%,var(--sun,#ff9d6b) 0 58%,transparent 72%);will-change:transform;--d:clamp(160px,34vmin,380px)}
+.d-sun.rise{animation:d-rise 2.2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes d-rise{from{translate:0 40vh;opacity:0}}
+.d-clock{position:fixed;right:var(--pad);bottom:22px;z-index:3;font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.04em;color:var(--ink);opacity:.75;pointer-events:none}
+.d-clock small{display:block;font-weight:500;font-size:12px;letter-spacing:0;opacity:.8}
+@media (max-width:760px){.d-clock{bottom:84px}}
