@@ -13,7 +13,7 @@
 
 /* ============ 1) Vaše firma v Googlu ============ */
 .n1-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center}
-.n1-phone{--tw:min(clamp(250px,22vw,290px),calc((100svh - 190px) * 300 / 630));display:flex;flex-direction:column;align-items:center}
+.n1-phone{--tw:max(230px,min(clamp(250px,22vw,290px),calc((100svh - 190px) * 300 / 630)));display:flex;flex-direction:column;align-items:center}
 .n1-form{margin-top:28px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px;max-width:560px}
 .n1-form label{display:block}
 .n1-form label span{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:0 0 6px 4px}
@@ -33,7 +33,7 @@
 .p1[data-s="0"] .p1-search,.p1[data-s="1"] .p1-site{opacity:1;visibility:visible;transition:opacity .45s}
 .p1-search{background:#fff;padding:calc(var(--u)*12) calc(var(--u)*12) 0}
 .p1 .card{position:relative;transition:box-shadow .3s}
-.p1 .card .no{position:absolute;right:calc(var(--u)*12);top:calc(var(--u)*12);font-size:calc(var(--u)*10);font-weight:700;color:#1f6b3a;background:#e3f2e7;padding:calc(var(--u)*3) calc(var(--u)*7);border-radius:calc(var(--u)*999)}
+.p1 .card .no{position:absolute;right:calc(var(--u)*12);top:calc(var(--u)*12);font-size:max(7px,calc(var(--u)*10));font-weight:700;color:#1f6b3a;background:#e3f2e7;padding:calc(var(--u)*3) calc(var(--u)*7);border-radius:calc(var(--u)*999)}
 .p1 .card b{padding-right:calc(var(--u)*56);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p1 .q-t{text-transform:none}
 .p1 p,.p1 h4{margin:0}
@@ -209,7 +209,7 @@
 
 /* ============ 5) Telefon do ruky ============ */
 .n5-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center}
-.n5-phone{--tw:min(clamp(250px,22vw,290px),calc((100svh - 300px) * 300 / 630));display:flex;flex-direction:column;align-items:center}
+.n5-phone{--tw:max(230px,min(clamp(250px,22vw,290px),calc((100svh - 300px) * 300 / 630)));display:flex;flex-direction:column;align-items:center}
 .n5 .phone{touch-action:manipulation}
 .n5 .chips .web,.n5 .lista-hit,.n5 .fv,.n5 .chip-hit{cursor:pointer}
 .n5 .sc-site .roll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -237,7 +237,7 @@
 .n5-again.on{opacity:1;visibility:visible}
 @media (max-width:860px){
   .n5-grid{grid-template-columns:minmax(0,1fr)}
-  .n5-phone{--tw:min(270px,calc(100vw - 48px),calc((100svh - 290px) * 300 / 630))}
+  .n5-phone{--tw:min(270px,calc(100vw - 48px),max(230px,calc((100svh - 290px) * 300 / 630)))}
   .n5-steps button{white-space:nowrap;font-size:11.5px;letter-spacing:-.01em}
 }
 
