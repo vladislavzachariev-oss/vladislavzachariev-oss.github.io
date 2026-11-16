@@ -1,0 +1,8 @@
+/* L1 Lupa hledá: skleněná lupa jede celou stránkou, zastaví na klíčovém slově každé části, zvětší ho a obarví (zvýraznění + barva části) */
+html[data-u="1"]{color-scheme:light;--bg:#fbfaf7;--bg2:#fbfaf7;--card:#fff;--ink:#141414;--ink2:#34322e;--mute:#6d6a63;--line:#e9e5dd;--amber:#141414;--on:#fff;--ink-h:#000;--hdr:rgba(251,250,247,.86);--hdr2:rgba(251,250,247,.95)}
+html[data-u="1"] .hero-phone,html[data-u="1"] .hero .arc{display:none}
+html[data-u="1"] .hero{min-height:100svh;display:flex;align-items:center}
+html[data-u="1"] .hero-grid{grid-template-columns:1fr}
+html[data-u="1"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8.2vw,11svh),128px);letter-spacing:-.035em;line-height:.98}
+html[data-u="1"] .btn:not(.ghost){background:var(--amber);border-color:var(--amber);color:#fff;transition:background-color .6s,border-color .6s}
+html[data-u="1"] .label{color:var(--amber);transition:color .6s}

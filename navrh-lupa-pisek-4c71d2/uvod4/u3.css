@@ -1,0 +1,16 @@
+/* P1 Barevný písek: nadpis se rozsype, zrnka v letu dostanou barvy a usadí se dole ve vrstvách jako písek v lahvi;
+   části stránky pod tím pokračují v barvách vrstev s vlnitým okrajem duny */
+html[data-u="3"]{color-scheme:light;--bg:#faf7f2;--bg2:#faf7f2;--card:rgba(255,255,255,.6);--ink:#16130f;--ink2:#3a352e;--mute:#6b645a;--line:rgba(22,19,15,.12);--amber:#16130f;--on:#fff;--ink-h:#000;--hdr:rgba(250,247,242,.82);--hdr2:rgba(250,247,242,.94)}
+html[data-u="3"] .hero-phone,html[data-u="3"] .hero .arc{display:none}
+html[data-u="3"] .btn:not(.ghost){background:var(--ink);border-color:var(--ink);color:#fff}
+.s-stage{position:relative;height:calc(100svh + 190svh)}
+html[data-u="3"] .s-stage>.hero{position:sticky;top:0;height:100svh;min-height:0;display:flex;align-items:center;overflow:hidden;padding-top:0;padding-bottom:0}
+html[data-u="3"] .hero-grid{grid-template-columns:1fr;position:relative;z-index:2;width:100%}
+html[data-u="3"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8.2vw,11svh),128px);letter-spacing:-.035em;line-height:.98}
+html[data-u="3"] .hero-copy>:not(h1){transition:none}
+.s-gl{position:absolute;inset:0;z-index:0;width:100%;height:100%;display:block;pointer-events:none}
+.s-bands{position:absolute;left:0;right:0;bottom:0;z-index:1;width:100%;pointer-events:none;opacity:0;display:block}
+html[data-u="3"] main>section:not(.hero){position:relative;background:var(--sc,var(--bg))}
+html[data-u="3"] main>section.s-dune::before{content:"";position:absolute;left:0;right:0;top:calc(var(--dh) * -1 + 1px);height:var(--dh);background:var(--sc);
+  -webkit-mask:var(--dm) center bottom/100% 100% no-repeat;mask:var(--dm) center bottom/100% 100% no-repeat;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.s-stage{height:auto}.s-gl,.s-bands{display:none}}

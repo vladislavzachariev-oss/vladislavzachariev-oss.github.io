@@ -1,0 +1,12 @@
+/* P2 Písek nadpisů: každý nadpis stránky je z písku; při posunu se rozsype a zrnka přeletí do dalšího nadpisu,
+   kde se usadí v jeho barvě. Nadpisy, ke kterým písek ještě nedoletěl, jsou jen slabě naznačené. */
+html[data-u="4"]{color-scheme:light;--bg:#fbfaf7;--bg2:#f6f3ee;--card:#fff;--ink:#141414;--ink2:#34322e;--mute:#6d6a63;--line:#e9e5dd;--amber:#141414;--on:#fff;--ink-h:#000;--hdr:rgba(251,250,247,.86);--hdr2:rgba(251,250,247,.95)}
+html[data-u="4"] .hero-phone,html[data-u="4"] .hero .arc{display:none}
+html[data-u="4"] .hero{min-height:100svh;display:flex;align-items:center}
+html[data-u="4"] .hero-grid{grid-template-columns:1fr}
+html[data-u="4"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8.2vw,11svh),128px);letter-spacing:-.035em;line-height:.98}
+html[data-u="4"] .btn:not(.ghost){background:var(--amber);border-color:var(--amber);color:#fff}
+html[data-u="4"] .label{color:var(--amber)}
+html[data-u="4"].sd-on .sd-h{color:var(--hc);opacity:var(--ho,1)}
+.sd-gl{position:fixed;inset:0;z-index:45;width:100%;height:100%;pointer-events:none;display:block}
+@media (prefers-reduced-motion:reduce){.sd-gl{display:none}}

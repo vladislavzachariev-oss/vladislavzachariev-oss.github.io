@@ -1,0 +1,24 @@
+/* L2 Lupa barví: celá stránka je černobílá, lupa ukáže stejné místo v barvách (na počítači jde za myší, jinak hledá klíčová slova) */
+html[data-u="2"]{color-scheme:light;--bg:#f6f6f4;--bg2:#efefec;--card:#fff;--ink:#141414;--ink2:#383838;--mute:#6e6e6e;--line:#e2e2df;--amber:#141414;--on:#fff;--ink-h:#000;--hdr:rgba(246,246,244,.86);--hdr2:rgba(246,246,244,.95)}
+html[data-u="2"] .hero-phone,html[data-u="2"] .hero .arc{display:none}
+html[data-u="2"] .hero{min-height:100svh;display:flex;align-items:center}
+html[data-u="2"] .hero-grid{grid-template-columns:1fr}
+html[data-u="2"] .hero h1{max-width:13ch;font-size:clamp(46px,min(8.2vw,11svh),128px);letter-spacing:-.035em;line-height:.98}
+html[data-u="2"] .btn:not(.ghost){background:var(--ink);border-color:var(--ink);color:#fff}
+html[data-u="2"] #top img{filter:grayscale(1) contrast(1.04)}
+html[data-u="2"] #top .wl a{--bc:#2a2a2a!important;--on:#fff!important}
+/* v lupě: barvy */
+.lp-clone.lp-color{--amber:#ff5a1f;--bg:#fff7ec;--bg2:#ffe9d6;--line:#f3d2b8}
+.lp-clone.lp-color img{filter:none!important}
+.lp-clone.lp-color>section:nth-of-type(1){background:#fff1dc}
+.lp-clone.lp-color>section:nth-of-type(2){background:#ffd9e6}
+.lp-clone.lp-color>section:nth-of-type(3){background:#d8ecff}
+.lp-clone.lp-color>section:nth-of-type(4){background:#fff0b8}
+.lp-clone.lp-color>section:nth-of-type(5){background:#d9f2df}
+.lp-clone.lp-color>section:nth-of-type(6){background:#e8defc}
+.lp-clone.lp-color>section:nth-of-type(7){background:#ffe0d2}
+.lp-clone.lp-color>section:nth-of-type(8){background:#d6f3f1}
+.lp-clone.lp-color>section:nth-of-type(9){background:#fff1dc}
+.lp-clone.lp-color h1,.lp-clone.lp-color h2{color:#1a1030}
+.lp-clone.lp-color .kw{color:#ff3d6e}
+.lp-clone.lp-color .btn:not(.ghost){background:#ff5a1f;border-color:#ff5a1f}
