@@ -51,14 +51,11 @@
   const range = () => hero.offsetHeight - pin.offsetHeight;   // the pin is taller than the window (reserve for a phone's bars)
   function measure() {
     const vw = stage.clientWidth, vh = stage.clientHeight, pad = Math.min(72, Math.max(20, vw * .046));
-    const tall = vw / vh < .8;
+    const tall = vw / vh < .8, big = vw >= 600, low = vh < 520;   // big = a tablet held upright, low = a phone on its side
     let D, fx, fy, col;
     if (tall) {
-      const top = 62;
-      D = Math.min(vw * .86, vh * .46);
-      fx = vw / 2; fy = top + D / 2 + Math.max(0, (vh * .56 - top - D) * .5);
-      col = vw - 2 * pad;
-      hero.style.setProperty('--ch', Math.max(210, vh - (fy + D / 2) - 14) + 'px');
+      D = Math.min(vw * .86, vh * (big ? .5 : .46));
+      fx = vw / 2; col = vw - 2 * pad;
     } else {
       D = Math.min(vh * .68, vw * .43);
       fx = vw * .685; fy = vh * .53;
@@ -68,13 +65,24 @@
     const probe = dishes[N - 1].querySelector('.dish__name');
     hero.style.setProperty('--name', '100px');
     let widest = 0;
-    dishes.forEach(d => { widest = Math.max(widest, d.querySelector('.dish__name').scrollWidth); });
-    const name = Math.min(col / (widest / 100) * .985, tall ? vh * .1 : vh * .3, 240);
+    /* measured across the letters themselves: the heading is a block, so its scrollWidth is never less than the column */
+    dishes.forEach(d => { const h = d.querySelector('.dish__name'); widest = Math.max(widest, h.lastElementChild.getBoundingClientRect().right - h.firstElementChild.getBoundingClientRect().left); });
+    const name = Math.min(col / (widest / 100) * .97, tall ? vh * (big ? .15 : .1) : vh * (low ? .25 : .3), 240);
+    if (tall) {
+      /* what is left over after the plate and the text is shared out above the plate and under the text */
+      const top = 62, text = 34 + name * 1.3 + (big ? 170 : 132), free = vh - top - D - 14 - text - 64;
+      fy = top + D / 2 + Math.max(0, free * .42);
+      hero.style.setProperty('--ch', Math.max(210, vh - (fy + D / 2) - 14) + 'px');
+    }
     hero.style.setProperty('--name', name.toFixed(1) + 'px');
     hero.style.setProperty('--col', col + 'px');
     hero.style.setProperty('--d', D.toFixed(1) + 'px');
     if (!tall) hero.style.setProperty('--dh', (name * 1.3 + 150) + 'px');
-    G = { D, fx, fy, R: D * 1.8, tall, probe };
+    const R = D * 1.8;
+    /* a plate that has left must clear the menu bar: far enough round the arc that its lower edge is above the window */
+    const out = tall ? 1 : Math.max(1.36, Math.asin(Math.min(1, (fy + D / 2 + 12) / R)) / STEP);
+    hero.classList.toggle('is-dots', !tall && col < 470);     // the words of the index would wrap: dots instead
+    G = { D, fx, fy, R, tall, probe, out };
   }
 
   let active = -1, lastY = -1, lastP = -1;
@@ -95,7 +103,7 @@
       const o = i - fe, near = Math.abs(o) < 1.75;
       plates[i].classList.toggle('is-near', near);
       if (!near) continue;
-      const a = o * STEP * (o < 0 && !G.tall ? 1.36 : 1);     // a plate that has left clears the menu bar
+      const a = o * STEP * (o < 0 ? G.out : 1);
       const x = G.tall ? G.fx + G.R * Math.sin(a) : G.fx + G.R * (1 - Math.cos(a));
       const y = G.tall ? G.fy + G.R * (1 - Math.cos(a)) : G.fy + G.R * Math.sin(a);
       plates[i].style.transform = 'translate3d(' + (x - G.D / 2).toFixed(1) + 'px,' + (y - G.D / 2).toFixed(1) + 'px,0)';
