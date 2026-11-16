@@ -32,7 +32,7 @@ ol,ul{list-style:none}
 .pin{position:sticky;top:0;height:calc(100lvh + max(72px,12vh));overflow:hidden;
   background:radial-gradient(120% 90% at var(--gx,68%) 50%,#27449c 0%,var(--cobalt) 55%,var(--cobalt-2) 100%)}
 .stage{position:relative;height:100svh}
-.bloom{position:absolute;left:0;top:0;pointer-events:none}
+.bloom{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
 
 .copy{position:absolute;left:var(--pad);top:0;bottom:0;width:var(--col,42vw);display:flex;flex-direction:column;justify-content:center;
   padding-top:clamp(64px,10vh,96px);padding-bottom:clamp(40px,8vh,80px)}

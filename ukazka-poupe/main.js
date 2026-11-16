@@ -34,17 +34,14 @@
   const dir = Math.min(innerWidth, innerHeight) * Math.min(2, devicePixelRatio || 1) > 900 ? 'l' : 's';
   const frames = new Array(N).fill(null);
   let lastDrawn = '';
+  /* fetched as data and decoded by createImageBitmap off the main thread: an <img> decoded on first draw
+     cost the throttled tablet 16 s of blocked main thread while the frames streamed in (measured 16. 11. 2026) */
+  const PX = dir === 'l' ? 1200 : 760;
   function load(i) {
-    return new Promise(res => {
-      const im = new Image();
-      im.decoding = 'async';
-      im.onload = () => {
-        const done = b => { frames[i] = b; res(); if (Math.abs(i - curF) < 2) { lastDrawn = ''; draw(); } };
-        if (window.createImageBitmap) createImageBitmap(im).then(done, () => done(im)); else done(im);
-      };
-      im.onerror = () => res();
-      im.src = 'img/' + dir + '/' + String(i).padStart(3, '0') + '.webp';
-    });
+    const url = 'img/' + dir + '/' + String(i).padStart(3, '0') + '.webp';
+    const done = b => { frames[i] = b; if (Math.abs(i - curF) < 2) { lastDrawn = ''; draw(); } };
+    if (!window.createImageBitmap || !window.fetch) return new Promise(res => { const im = new Image(); im.onload = () => { done(im); res(); }; im.onerror = res; im.src = url; });
+    return fetch(url).then(r => r.blob()).then(b => createImageBitmap(b)).then(done, () => {});
   }
   /* first every 8th frame (the flower opens coarsely at once), then the gaps, a few at a time */
   (async () => {
@@ -86,15 +83,16 @@
       S = Math.min(vw * 1.02, (vh - text - 40) * 1.06);
       fy = 64 + (vh - text - 64) / 2;
     }
-    cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
-    cv.style.width = vw + 'px'; cv.style.height = vh + 'px';
+    cv.width = cv.height = PX;
+    cv.style.width = cv.style.height = S + 'px';
+    cv.style.left = (fx - S / 2) + 'px'; cv.style.top = (fy - S / 2) + 'px';
     pin.style.setProperty('--gx', (fx / vw * 100).toFixed(1) + '%');
     G = { S, fx, fy, dpr, vw, vh };
-    lastDrawn = '';
+    lastDrawn = ''; lastZ = -1;
   }
 
   /* ---------- draw ---------- */
-  let curF = 0;
+  let curF = 0, lastZ = -1;
   function draw() {
     if (!G) return;
     const f = curF, i0 = Math.floor(f), t = f - i0, i1 = Math.min(N - 1, i0 + 1);
@@ -106,18 +104,17 @@
     const w = b === a ? 0 : smooth(clamp(((f - a) / (b - a) - .5) * 1.8 + .5, 0, 1));
     /* the bud is small in the footage: it starts a little closer and the camera eases back while it opens */
     const z = 1.32 - .32 * smooth(clamp(f / 40, 0, 1));
-    const key = a + ':' + b + ':' + w.toFixed(3) + ':' + z.toFixed(4) + ':' + cv.width;
-    if (key === lastDrawn) return; lastDrawn = key;
-    const { dpr, S, fx, fy } = G, s = S * z;
-    cx.setTransform(1, 0, 0, 1, 0, 0);
-    cx.clearRect(0, 0, cv.width, cv.height);
-    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    cx.imageSmoothingQuality = 'high';
-    /* 'lighter' on an empty canvas adds the two premultiplied frames: an exact blend, no see-through dip in the middle */
-    cx.globalCompositeOperation = 'lighter';
-    cx.globalAlpha = 1 - w; cx.drawImage(frames[a], fx - s / 2, fy - s / 2, s, s);
-    if (w > 0) { cx.globalAlpha = w; cx.drawImage(frames[b], fx - s / 2, fy - s / 2, s, s); }
-    cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+    const key = a + ':' + b + ':' + w.toFixed(3);
+    if (key !== lastDrawn) {
+      lastDrawn = key;
+      cx.clearRect(0, 0, PX, PX);
+      /* 'lighter' on an empty canvas adds the two premultiplied frames: an exact blend, no see-through dip in the middle */
+      cx.globalCompositeOperation = 'lighter';
+      cx.globalAlpha = 1 - w; cx.drawImage(frames[a], 0, 0, PX, PX);
+      if (w > 0) { cx.globalAlpha = w; cx.drawImage(frames[b], 0, 0, PX, PX); }
+      cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+    }
+    if (z !== lastZ) { lastZ = z; cv.style.transform = 'scale(' + z.toFixed(4) + ')'; }
   }
 
   let lastY = -1, lastP = -1;
