@@ -37,7 +37,7 @@
   };
   const pickSet = () => (innerWidth / innerHeight < 0.8 ? 'p' : 'l');
   let setKey = null, S = null;
-  let W = 1, H = 1, heroP = 0, lit = false, litAt = -1e9, ambFrom = 0, amb = 0;
+  let W = 1, H = 1, heroP = 0, lit = false, amb = 0;
   const lamp = { x: .3, y: .5, tx: .3, ty: .5, h: .2, seen: -1e9, down: false };
   const par = { x: 0, y: 0, tx: 0, ty: 0 };
   let dgrid = null;                                     // small copy of the depth map for the lamp height
@@ -61,9 +61,10 @@
   function heroProgress() {
     const range = hero.offsetHeight - innerHeight;
     heroP = clamp((scrollY - hero.offsetTop) / range, 0, 1);
-    const want = heroP > 0.36;
+    /* the headline swaps with a margin, so a finger resting near the switch does not flip it back and forth */
+    const want = lit ? heroP > 0.31 : heroP > 0.37;
     if (want !== lit) {
-      lit = want; ambFrom = amb; litAt = performance.now();
+      lit = want;
       hero.classList.toggle('is-lit', lit);
     }
     const second = lit;
@@ -73,17 +74,11 @@
     nav.classList.toggle('is-solid', past);
     nav.classList.toggle('is-lit', lit && !past);
   }
-  /* hall lights: two short flashes of the tubes, then a steady ramp; off = a quick fade */
-  function ambAt(now) {
-    const t = now - litAt;
-    if (!lit) return clamp(ambFrom * (1 - t / 420), 0, 1);
-    if (reduced) return 1;
-    if (t < 70) return Math.max(ambFrom, .5);
-    if (t < 150) return Math.max(ambFrom, .06);
-    if (t < 215) return Math.max(ambFrom, .72);
-    if (t < 330) return Math.max(ambFrom, .16);
-    const k = clamp((t - 330) / 620, 0, 1);
-    return Math.max(ambFrom, mix(.16, 1, 1 - Math.pow(1 - k, 3)));
+  /* hall lights follow the finger: the further down, the brighter, smoothed over ~0.1 s.
+     (16. 11. 2026: a switch at 36 % with two flashes of the tubes blinked every time a swipe crossed it, 20 jumps in one swipe) */
+  function ambTarget() {
+    const k = clamp((heroP - .2) / .3, 0, 1);
+    return k * k * (3 - 2 * k);
   }
 
   /* ---------- pointer ---------- */
@@ -266,7 +261,7 @@ void main(){
     const dt = Math.min(64, now - last); last = now;
     if (!ready || !visible) return;
     if (dt > 30) { if (++slow > 40 && quality > .55) { quality -= .2; slow = 0; resize(); } } else if (slow > 0) slow--;
-    amb = ambAt(now);
+    amb += (ambTarget() - amb) * (1 - Math.exp(-dt / 110));
     /* lamp: follows the pointer for a few seconds after it moved, otherwise wanders round the car */
     const idle = now - lamp.seen > 3800;
     if (idle && !reduced) {
