@@ -89,6 +89,9 @@ button,input,textarea{font:inherit;color:inherit}
 .svc__more p:first-child{padding-top:2px}
 .svc__meta{color:var(--mute);font-size:15px;padding:8px 0 clamp(20px,2vw,28px)}
 .svc__it.is-open .svc__more{grid-template-rows:1fr}
+/* zavřený řádek je opravdu skrytý (čtečky, Tab, kontrola useknutého textu); po zavření se schová až po animaci */
+.svc__more>div{visibility:hidden;transition:visibility 0s .45s}
+.svc__it.is-open .svc__more>div{visibility:visible;transition-delay:0s}
 @media (max-width:600px){
   .svc__row{grid-template-columns:34px 1fr 20px;row-gap:4px}
   .svc__price{grid-column:2;grid-row:2;color:var(--mute)}
