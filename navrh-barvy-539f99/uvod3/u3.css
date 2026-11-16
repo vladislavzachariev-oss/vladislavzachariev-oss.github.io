@@ -15,6 +15,7 @@ html[data-u="3"] body,html[data-u="3"] .hdr{transition:color .8s}
 .d-sun{position:fixed;left:0;top:0;z-index:1;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;pointer-events:none;background:radial-gradient(circle at 50% 50%,var(--sun,#ff9d6b) 0 58%,transparent 72%);will-change:transform;--d:clamp(160px,34vmin,380px)}
 .d-sun.rise{animation:d-rise 2.2s cubic-bezier(.2,.7,.2,1) both}
 @keyframes d-rise{from{translate:0 40vh;opacity:0}}
-.d-clock{position:fixed;right:var(--pad);bottom:22px;z-index:3;font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.04em;color:var(--ink);opacity:.75;pointer-events:none}
+.d-clock{position:fixed;right:var(--pad);bottom:22px;z-index:3;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.04em;color:var(--ink);opacity:.75;pointer-events:none}
 .d-clock small{display:block;font-weight:500;font-size:12px;letter-spacing:0;opacity:.8}
 @media (max-width:760px){.d-clock{bottom:84px}}
+html[data-u="3"].night .d-clock{background:rgba(10,12,30,.4)}
