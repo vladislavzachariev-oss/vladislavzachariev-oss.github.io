@@ -384,6 +384,7 @@ section{padding:clamp(72px,10vw,140px) 0}
 .browser .dots{display:flex;gap:6px}
 .browser .dots i{width:9px;height:9px;border-radius:50%;background:var(--bar)}
 .browser .url{font-size:12.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.url{font-size:11.5px;letter-spacing:-.01em}}
 .frames{position:relative;aspect-ratio:16/10;overflow:hidden;border-radius:0 0 16px 16px}
 .frames img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
 .frames img:first-child{opacity:1}
