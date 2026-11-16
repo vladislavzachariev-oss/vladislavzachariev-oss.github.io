@@ -127,7 +127,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .also{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,36px);padding:0 var(--pad) clamp(80px,11vw,150px)}
 .also__item{display:grid;grid-template-columns:clamp(84px,8vw,120px) minmax(0,1fr);gap:16px;align-items:start;padding-top:20px;border-top:1px solid var(--line);
   text-decoration:none;color:var(--mute);font-size:15px;line-height:1.45}
-.also__item img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px}
+.also__item img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:4px}
 .also__item b{display:block;font:700 18px/1.2 var(--f);letter-spacing:-.02em;color:var(--ink);margin:2px 0 6px}
 @media (max-width:1000px){.also{grid-template-columns:minmax(0,1fr);gap:0}.also__item{padding:18px 0}}
 
