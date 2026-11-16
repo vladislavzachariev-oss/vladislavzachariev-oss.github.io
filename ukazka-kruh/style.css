@@ -60,6 +60,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   .pill{padding:9px 13px 10px}
   .dot{width:32px;height:32px}
 }
+/* a phone on its side: the hero is the window, not 520 px (16. 11. 2026: wheel cut off, shapes and glazes under the fold) */
+@media (min-aspect-ratio:21/20) and (max-height:520px){
+  .hero{min-height:320px}
+  .hero__sub{font-size:15px;max-width:22ch;bottom:14px}
+  .bench{bottom:12px;gap:6px}
+  .bench__lab{display:none}
+  .read{font-size:13px;margin-bottom:0}
+  .pill{font-size:14px;padding:8px 13px 9px}
+  .dot{width:31px;height:31px}
+}
+@media (min-aspect-ratio:21/20) and (max-height:520px) and (max-width:900px){.read{display:none}}   /* it would lie on the wheel */
 
 /* ---------- lead ---------- */
 .lead{padding:clamp(80px,11vw,170px) var(--pad) clamp(50px,7vw,110px)}
