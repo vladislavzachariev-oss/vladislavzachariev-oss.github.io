@@ -31,9 +31,9 @@
   const lines = $$('.line', hero);
   const SETS = {
     l: { src: 'img/hala.webp', d: 'img/hala-r.png', a: 2752 / 1536, focus: [.47, .44], wander: [.47, .37, .27, .14],
-         td: .31, band: [.02, .305], inset: 0, text: [['POSVÍTÍME SI NA TO.'], ['OTEVÍRÁME V SEDM.']] },
+         td: .31, band: [.02, .305], post: 0, k: 1, text: [['POSVÍTÍME SI NA TO.'], ['OTEVÍRÁME V SEDM.']] },
     p: { src: 'img/hala-p.webp', d: 'img/hala-p-r.png', a: 1536 / 2752, focus: [.49, .47], wander: [.47, .45, .27, .13],
-         td: .165, band: [.215, .408], inset: .075, text: [['POSVÍTÍME', 'SI NA TO.'], ['OTEVÍRÁME', 'V SEDM.']] },
+         td: .165, band: [.215, .408], post: .232, k: 1.65, text: [['POSVÍTÍME', 'SI NA TO.'], ['OTEVÍRÁME', 'V SEDM.']] },
   };
   const pickSet = () => (innerWidth / innerHeight < 0.8 ? 'p' : 'l');
   let setKey = null, S = null;
@@ -104,7 +104,7 @@
 varying vec2 vUv;
 uniform sampler2D uT,uD,uX;
 uniform vec2 uC,uS,uL,uPar,uTw;
-uniform float uA,uLH,uAmb,uTD;
+uniform float uA,uLH,uAmb,uTD,uK;
 const float HS=.36;
 float ign(vec2 p){return fract(52.9829189*fract(dot(p,vec2(.06711056,.00583715))));}
 float hsh(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
@@ -121,9 +121,8 @@ void main(){
   g*=1.-edge;
   vec3 n=normalize(vec3(-g*(1.-m),1.));
   float h=mix(r.r,uTD,m)*HS;
-  vec3 cs=mix(c,vec3(.010,.012,.014),m*.96);
   /* lamp */
-  vec3 L=vec3((uL-u)*vec2(uA,1.),uLH-h);
+  vec3 L=vec3((uL-u)*vec2(uA,1.)*uK,uLH-h);         /* uK: the upright photo is narrow, the pool of light shrinks with it */
   float d2=dot(L,L);vec3 l=L*inversesqrt(d2);
   float dif=clamp(dot(n,l)*.8+.2,0.,1.);
   float att=.05/(d2+.022)*exp(-d2*6.5);
@@ -136,17 +135,20 @@ void main(){
   vec3 hv=normalize(l+vec3(0.,0.,1.));
   float sp=pow(max(dot(n,hv),0.),42.)*(1.-m);
   vec3 lc=vec3(1.,.83,.62);
-  vec3 lampL=(cs*lc*dif*2.4+lc*sp*(.1+c.g*.9)*.5)*att*sh;
+  float I=dif*2.4*att*sh;                           /* how much lamp light lands here */
+  vec3 lampL=(c*lc*dif*2.4+lc*sp*(.1+c.g*.9)*.5)*att*sh;
   lampL*=1.-edge*.86*(1.-m);                        /* the seam between near and far stays dark, never a bright rim */
   lampL=lampL/(1.+lampL*.4);
-  float lum=dot(cs,vec3(.3,.6,.1));
-  vec3 night=cs*vec3(.0095,.0145,.029)*(1.+7.*smoothstep(.5,1.,lum));
+  float lum=dot(c,vec3(.3,.6,.1));
+  vec3 night=c*vec3(.0095,.0145,.029)*(1.+7.*smoothstep(.5,1.,lum));
   float vg=smoothstep(1.15,.25,length((s-.5)*vec2(1.,1.15)));
   night*=mix(.5,1.,vg);
   float gd=length((u-uL)*vec2(uA,1.));
   vec3 bulb=lc*(exp(-gd*gd*14000.)*1.6+exp(-gd*gd*520.)*.11+exp(-gd*gd*40.)*.018);
-  vec3 dark=night+lampL+bulb;
-  vec3 day=cs+lampL*.05*(1.-m);
+  /* the headline reads in the dark (pale paint) and turns to ink where the lamp lands and when the hall is lit */
+  vec3 tx=mix((vec3(.25,.27,.32)+lc*I*.55)*mix(.72,1.,vg),vec3(.006,.007,.008),smoothstep(.42,.52,I));
+  vec3 dark=mix(night+lampL,tx,m*.96)+bulb;
+  vec3 day=mix(c,vec3(.010,.012,.014),m*.96)+lampL*.05*(1.-m);
   vec3 col=mix(dark,day,uAmb);
   col*=1.-smoothstep(.52,.9,s.y)*mix(.25,.62,uAmb);  /* darker foreground under the small text */
   gl_FragColor=vec4(sqrt(max(col,0.))+(hsh(gl_FragCoord.xy)-.5)/255.,1.);
@@ -168,7 +170,7 @@ void main(){
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ['uT', 'uD', 'uX', 'uC', 'uS', 'uL', 'uPar', 'uTw', 'uA', 'uLH', 'uAmb', 'uTD'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
+    ['uT', 'uD', 'uX', 'uC', 'uS', 'uL', 'uPar', 'uTw', 'uA', 'uLH', 'uAmb', 'uTD', 'uK'].forEach(k => U[k] = gl.getUniformLocation(pr, k));
     gl.uniform1i(U.uT, 0); gl.uniform1i(U.uD, 1); gl.uniform1i(U.uX, 2);
     return true;
   }
@@ -224,7 +226,8 @@ void main(){
     const b = coverBox(1.06), yOf = v => (v - (b.cy - b.sy / 2)) / b.sy * H;
     const pad = Math.min(72, Math.max(20, W * .046));
     const top = Math.max(yOf(S.band[0]), W < 700 ? 78 : 92), base = yOf(S.band[1]);
-    const left = pad + S.inset * W;                     // portrait: start right of the lift post
+    /* portrait: start right of the lift post, wherever the crop of the photo puts it (post = its right edge in the photo) */
+    const left = S.post ? Math.max(pad, (S.post - (b.cx - b.sx / 2)) / b.sx * W + W * .014) : pad;
     const fam = '600 100px "Barlow Condensed","Arial Narrow",sans-serif', LH = .9;
     S.text.forEach((rows, ch) => {
       g.font = fam;
@@ -285,7 +288,7 @@ void main(){
     gl.uniform2f(U.uPar, -par.x * .022 * b.sx, -par.y * .016 * b.sy);
     const kt = 1 - Math.exp(-dt / 140);
     tw[0] += ((lit ? 0 : 1) - tw[0]) * kt; tw[1] += ((lit ? 1 : 0) - tw[1]) * kt;
-    gl.uniform2f(U.uTw, tw[0], tw[1]); gl.uniform1f(U.uTD, S.td);
+    gl.uniform2f(U.uTw, tw[0], tw[1]); gl.uniform1f(U.uTD, S.td); gl.uniform1f(U.uK, S.k);
     gl.uniform1f(U.uA, S.a); gl.uniform1f(U.uAmb, amb);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
