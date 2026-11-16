@@ -63,33 +63,77 @@ ol,ul{list-style:none}
   .lead__facts li,.lead__facts li+li{padding:16px 0;border-left:0;border-bottom:1px solid var(--line)}
 }
 
-/* ---------- services ---------- */
+/* ---------- services: prohlídka haly s lampou (J 16. 11. 2026, Q9) ----------
+   Bez JS je to obyčejný seznam; s JS (.tour.is-on) se oddíl připne a kamera jede po fotce haly od místa k místu. */
 h2{font:600 clamp(15px,1.2vw,18px)/1 var(--cond);text-transform:uppercase;letter-spacing:.14em;color:var(--mute)}
-.svc{padding:clamp(40px,5vw,80px) var(--pad) clamp(70px,9vw,140px)}
-.svc__grid{margin-top:clamp(20px,2.6vw,36px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,5vw,90px);align-items:start}
-.svc__list{border-top:1px solid var(--line)}
-.svc__row{border-bottom:1px solid var(--line);padding:clamp(16px,1.7vw,26px) 0;cursor:default}
-.svc__row img{display:none}
-.svc__row h3{font:600 clamp(34px,4.5vw,74px)/1 var(--cond);text-transform:uppercase;letter-spacing:-.005em;color:#a9a8a2;transition:color .35s;padding-top:.06em}
-.svc__row p{max-width:44ch;color:var(--mute);overflow:hidden}
-.svc__row.is-on h3{color:var(--ink)}
-.svc__photo{position:sticky;top:clamp(84px,11vh,120px)}
-.svc__frame{position:relative;aspect-ratio:4/5;max-height:calc(100svh - 150px);width:100%;border-radius:6px;overflow:hidden;background:#0b0d0f}
-.svc__frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.045);transition:opacity .6s,transform 1.4s cubic-bezier(.2,.7,.2,1)}
-.svc__frame img.is-on{opacity:1;transform:none}
-/* description opens only where the list sits beside a pinned photo; height change there moves nothing else */
-@media (min-width:900px){
-  .svc__row p{max-height:0;opacity:0;transition:max-height .5s cubic-bezier(.2,.7,.2,1),opacity .35s,margin-top .5s}
-  .svc__row.is-on p{max-height:5em;opacity:1;margin-top:10px}
+.tour{position:relative;background:var(--night);color:#efede7}
+.tour__pin{position:relative;padding:clamp(56px,8vw,110px) var(--pad)}
+.tour__scene,.tour__ticks,.tour__ring{display:none}
+.tour__head{margin-bottom:clamp(26px,3vw,40px)}
+.tour__kicker{font:600 clamp(15px,1.2vw,18px)/1 var(--cond);text-transform:uppercase;letter-spacing:.14em;color:#9a9d9c}
+.tour__head h2{margin-top:14px;font:600 clamp(40px,6vw,96px)/.95 var(--cond);text-transform:uppercase;letter-spacing:-.005em;color:#f3f1ea;max-width:14ch}
+.tour__cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(22px,3vw,40px)}
+.tour__card img{width:100%;aspect-ratio:3/2;height:auto;object-fit:cover;border-radius:6px;background:#0b0d0f}
+.tour__no{display:block;margin-top:14px;font:600 14px/1 var(--cond);letter-spacing:.14em;color:var(--lamp)}
+.tour__card h3{margin-top:8px;font:600 clamp(30px,3vw,44px)/1 var(--cond);text-transform:uppercase;padding-top:.06em}
+.tour__card p{margin-top:8px;color:#b9bbb8;max-width:44ch}
+
+/* připnutá prohlídka */
+.tour.is-on{height:calc(100lvh + max(72px,12vh) + 7 * 68svh)}
+.tour.is-on .tour__pin{position:sticky;top:0;height:calc(100lvh + max(72px,12vh));padding:0;overflow:hidden}
+.tour.is-on .tour__scene{display:block;position:absolute;inset:0;overflow:hidden;background:#0b0d0f}
+.tour__scene picture{display:contents}
+.tour__img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;will-change:transform;user-select:none}
+/* tma kolem kužele lampy: kruh s měkkým okrajem + obří stín, světlo se nemaluje znovu, jen průhlednost */
+.tour__veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,9,11,.78),rgba(7,9,11,.45) 45%,rgba(7,9,11,0) 75%);opacity:var(--hd,0);pointer-events:none}
+@media (max-width:760px),(max-aspect-ratio:4/5){.tour__veil{background:linear-gradient(180deg,rgba(7,9,11,.1),rgba(7,9,11,.62) 30%,rgba(7,9,11,.62) 55%,rgba(7,9,11,.1))}}
+.tour__dark{position:absolute;left:0;top:0;width:var(--lr);height:var(--lr);border-radius:50%;will-change:transform;
+  background:radial-gradient(closest-side,rgba(255,206,140,.13),rgba(255,206,140,.05) 46%,rgba(7,9,11,0) 58%,rgba(7,9,11,.80) 100%);
+  box-shadow:0 0 0 300vmax rgba(7,9,11,.80);opacity:var(--dk,0);pointer-events:none}
+.tour.is-on .tour__ring{display:block;position:absolute;left:-29px;top:-29px;width:58px;height:58px;border-radius:50%;will-change:transform;
+  box-shadow:inset 0 0 0 1.5px rgba(255,217,163,.9),0 0 22px rgba(255,217,163,.35);opacity:var(--rg,0);pointer-events:none}
+.tour.is-on .tour__ring::after{content:"";position:absolute;inset:-1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,217,163,.7);animation:ring 2.2s cubic-bezier(.2,.7,.2,1) infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
+.tour.is-on .tour__head{position:absolute;left:var(--pad);right:var(--pad);top:calc(var(--vh,100svh) * .5);margin:0;transform:translateY(-50%);opacity:var(--hd,1);pointer-events:none;
+  text-shadow:0 2px 30px rgba(0,0,0,.45)}
+.tour.is-on .tour__head h2{font-size:clamp(46px,8vw,132px)}
+.tour.is-on .tour__cards{display:block}
+.tour.is-on .tour__card{position:absolute;left:var(--pad);top:calc(var(--vh,100svh) * .5);width:min(400px,32vw);padding:14px 14px 22px;border-radius:10px;background:rgba(12,14,16,.88);
+  box-shadow:0 0 0 1px rgba(255,255,255,.07),0 30px 60px -30px rgba(0,0,0,.8);opacity:0;visibility:hidden;transform:translateY(calc(-50% + var(--o,0) * 1px));will-change:opacity,transform}
+.tour.is-on .tour__card img{aspect-ratio:16/9}
+.tour.is-on .tour__card>div{padding:0 8px}
+.tour.is-on .tour__card h3{font-size:clamp(28px,2.6vw,40px)}
+.tour.is-on .tour__card p{font-size:16px}
+.tour.is-on .tour__ticks{display:flex;flex-direction:column;gap:8px;position:absolute;right:var(--pad);top:calc(var(--vh,100svh) * .5);transform:translateY(-50%);opacity:var(--rg,0)}
+.tour__ticks i{display:block;width:3px;height:26px;border-radius:2px;background:rgba(255,255,255,.22);transition:background-color .3s}
+.tour__ticks i.on{background:var(--lamp)}
+@media (max-width:760px),(max-aspect-ratio:4/5){
+  .tour.is-on .tour__card{left:12px;right:12px;top:calc(var(--vh,100svh) - 12px - env(safe-area-inset-bottom));width:auto;transform:translateY(calc(-100% + var(--o,0) * 1px));
+    display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;padding:10px 12px 12px 10px}
+  .tour.is-on .tour__card img{aspect-ratio:1;border-radius:6px}
+  .tour.is-on .tour__card>div{padding:0}
+  .tour.is-on .tour__no{margin-top:0;font-size:12px}
+  .tour.is-on .tour__card h3{font-size:clamp(24px,7vw,30px);margin-top:4px}
+  .tour.is-on .tour__card p{font-size:14px;line-height:1.4;margin-top:4px}
+  .tour.is-on .tour__ticks{flex-direction:row;right:auto;left:50%;top:calc(env(safe-area-inset-top) + 74px);transform:translateX(-50%)}
+  .tour__ticks i{width:22px;height:3px}
+  .tour.is-on .tour__head{top:calc(var(--vh,100svh) * .4)}
 }
-@media (max-width:899px){
-  .svc__grid{grid-template-columns:1fr}
-  .svc__photo{display:none}
-  .svc__list{border-top:0;display:grid;gap:34px}
-  .svc__row{border:0;padding:0}
-  .svc__row img{display:block;width:100%;aspect-ratio:3/2;height:auto;object-fit:cover;border-radius:6px;background:#0b0d0f}
-  .svc__row h3{color:var(--ink);margin-top:14px;font-size:clamp(34px,9.5vw,54px)}
-  .svc__row p{display:block;opacity:1;margin-top:6px}
+/* tablet na výšku: karta úzká vlevo, větší náhled, pruhy postupu pod hlavičkou (J 16. 11.) */
+@media (min-width:600px) and (max-aspect-ratio:4/5){
+  .tour.is-on .tour__card{left:var(--pad);right:auto;width:min(560px,calc(100% - 2 * var(--pad)));grid-template-columns:132px minmax(0,1fr);gap:16px;padding:12px 16px 14px 12px;
+    top:calc(var(--vh,100svh) - var(--pad) - env(safe-area-inset-bottom))}
+  .tour.is-on .tour__card h3{font-size:34px}
+  .tour.is-on .tour__card p{font-size:15px}
+  .tour.is-on .tour__ticks{top:calc(env(safe-area-inset-top) + 90px)}
+}
+@media (max-height:520px) and (min-aspect-ratio:4/5){
+  .tour.is-on .tour__card{top:calc(var(--vh,100svh) - 12px);transform:translateY(calc(-100% + var(--o,0) * 1px));display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:center;width:min(460px,46vw);padding:10px}
+  .tour.is-on .tour__card img{aspect-ratio:4/3}
+  .tour.is-on .tour__card>div{padding:0}
+  .tour.is-on .tour__no{margin-top:0}
+  .tour.is-on .tour__card h3{font-size:24px;margin-top:4px}
+  .tour.is-on .tour__card p{font-size:13px;line-height:1.35;margin-top:4px}
 }
 
 /* ---------- steps ---------- */

@@ -303,25 +303,88 @@ void main(){
   heroProgress();
   window.__hero = { lamp, get amb() { return amb; }, set(x, y) { lamp.tx = x; lamp.ty = y; lamp.seen = performance.now() + 6e5; } };
 
-  /* ---------- services: the row nearest the middle (or under the mouse) is on, its photo shows ---------- */
-  const rows = $$('.svc__row'), frameEl = $('#svcFrame');
-  const shots = rows.map(r => { const im = r.querySelector('img').cloneNode(); im.removeAttribute('loading'); im.alt = ''; frameEl.appendChild(im); return im; });
-  let onRow = -1, hoverAt = -1e9;
-  function setRow(i) {
-    if (i === onRow) return; onRow = i;
-    rows.forEach((r, k) => r.classList.toggle('is-on', k === i));
-    shots.forEach((s, k) => s.classList.toggle('is-on', k === i));
-  }
-  setRow(0);
-  rows.forEach((r, i) => r.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hoverAt = performance.now(); setRow(i); } }));
-  const wide = matchMedia('(min-width:900px)');
-  function rowByScroll() {
-    if (!wide.matches || performance.now() - hoverAt < 900) return;
-    const mid = innerHeight * .46; let best = 0, bd = 1e9;
-    rows.forEach((r, i) => { const b = r.querySelector('h3').getBoundingClientRect(); const d = Math.abs((b.top + b.bottom) / 2 - mid); if (d < bd) { bd = d; best = i; } });
-    setRow(best);
-  }
-  addEventListener('scroll', rowByScroll, { passive: true });
+  /* ---------- services: prohlídka haly s lampou (J 16. 11. 2026, Q9) ----------
+     Posun stránky vede kameru po fotce haly: přehled → brzdy → STK → pneu → motor → klima → diagnostika.
+     Kamera se nikdy nezastaví (lineární složka v ease), lampa kolem místa ztmaví zbytek haly. */
+  (function tour() {
+    const sec = $('#sluzby'); if (!sec) return;
+    const pinEl = $('.tour__pin', sec), img = $('.tour__img', sec), dark = $('.tour__dark', sec), ring = $('.tour__ring', sec), cards = $$('.tour__card', sec), ticks = $$('.tour__ticks i', sec);
+    const portrait = matchMedia('(max-aspect-ratio: 4/5)'), narrow = matchMedia('(max-width:760px)');
+    const N = cards.length;
+    let spots = [], iw = 0, ih = 0, W = 0, VH = 0, PH = 0, ready = false, cur = -9, ticking = false;
+    const parse = s => s.split(',').map(Number);
+    function readSpots() {
+      const k = portrait.matches ? 'p' : 'l';
+      spots = cards.map(c => { const a = parse(c.dataset[k]); return { u: a[0], v: a[1], z: a[2] }; });
+    }
+    function measure() {
+      W = innerWidth; VH = innerHeight; PH = pinEl.offsetHeight;
+      iw = img.naturalWidth; ih = img.naturalHeight;
+      if (!iw) return;
+      img.style.width = iw + 'px'; img.style.height = ih + 'px';
+      sec.style.setProperty('--vh', VH + 'px');
+      const small = narrow.matches || portrait.matches;
+      const tab = small && W >= 600;   // tablet na výšku: menší kužel, místo níž (J 16. 11.)
+      const fx = small ? W * .5 : W * .64, fy = small ? VH * (tab ? .4 : .34) : VH * .5;
+      const lr = Math.min(W, VH) * (tab ? .58 : small ? .78 : .62);
+      sec.style.setProperty('--fx', fx + 'px'); sec.style.setProperty('--fy', fy + 'px'); sec.style.setProperty('--lr', lr + 'px');
+      measure.fx = fx; measure.fy = fy; measure.lr = lr;
+      readSpots(); cur = -9; draw();
+    }
+    const ease = t => t * .45 + (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) * .55;
+    function cam(p) {           /* p: -1 přehled, 0..N-1 místa */
+      const s0 = Math.max(W / iw, PH / ih);
+      const A = i => i < 0 ? { u: .5, v: .5, z: 1, all: true } : spots[i];
+      const i0 = Math.floor(p), t = ease(p - i0), a = A(Math.max(-1, i0)), b = A(Math.min(N - 1, i0 + 1));
+      const z = Math.exp(Math.log(a.z) + (Math.log(b.z) - Math.log(a.z)) * t);
+      const s = s0 * z;
+      // přehled = střed fotky ve středu plochy; místa = bod pod lampou
+      const fxA = a.all ? W / 2 : measure.fx, fyA = a.all ? PH / 2 : measure.fy;
+      const fxB = b.all ? W / 2 : measure.fx, fyB = b.all ? PH / 2 : measure.fy;
+      const fx = fxA + (fxB - fxA) * t, fy = fyA + (fyB - fyA) * t;
+      const u = a.u + (b.u - a.u) * t, v = a.v + (b.v - a.v) * t;
+      let tx = fx - u * iw * s, ty = fy - v * ih * s;
+      tx = Math.min(0, Math.max(W - iw * s, tx)); ty = Math.min(0, Math.max(PH - ih * s, ty));
+      img.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
+      // lampa jde za skutečnou polohou místa (u kraje fotky ho kamera nedostane doprostřed)
+      const lx = u * iw * s + tx, ly = v * ih * s + ty, lr = measure.lr;
+      dark.style.transform = 'translate3d(' + (lx - lr / 2).toFixed(1) + 'px,' + (ly - lr / 2).toFixed(1) + 'px,0)';
+      ring.style.transform = 'translate3d(' + lx.toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
+    }
+    function draw() {
+      if (!ready) return;
+      const r = sec.getBoundingClientRect(), range = sec.offsetHeight - PH;
+      const q = clamp(-r.top / Math.max(1, range), 0, 1);          // 0..1 přes celý oddíl
+      // první 1,4 dílu přehled + nájezd na první místo, pak N-1 přejezdů, na konci chvíli stát u posledního
+      const p = clamp(q * (N + .6) - 1.4, -1, N - 1);
+      cam(p);
+      const dk = clamp((p + .75) / .6, 0, 1);                       // tma kolem lampy
+      sec.style.setProperty('--dk', (dk * .97).toFixed(3));
+      sec.style.setProperty('--hd', clamp(1 - (p + .9) / .45, 0, 1).toFixed(3));
+      sec.style.setProperty('--rg', clamp((p + .3) / .3, 0, 1).toFixed(3));
+      cards.forEach((c, i) => {
+        const d = p - i, o = clamp(1 - Math.abs(d) * 2.4, 0, 1);
+        c.style.opacity = o.toFixed(3);
+        c.style.visibility = o > 0.01 ? 'visible' : 'hidden';
+        c.style.setProperty('--o', (-d * 40).toFixed(1));
+      });
+      const on = Math.round(clamp(p, 0, N - 1));
+      if (on !== cur) { cur = on; ticks.forEach((t, i) => t.classList.toggle('on', i <= on && p > -.5)); }
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; draw(); }); } }
+    function start() {
+      if (ready) return;
+      sec.classList.add('is-on'); ready = true; measure();
+      addEventListener('scroll', onScroll, { passive: true });
+      if (lenis) lenis.on('scroll', onScroll);
+      let lastW = innerWidth;
+      addEventListener('resize', () => { if (innerWidth !== lastW || !narrow.matches) { lastW = innerWidth; measure(); } else { sec.style.setProperty('--vh', innerHeight + 'px'); VH = innerHeight; draw(); } });
+      portrait.addEventListener && portrait.addEventListener('change', () => { img.addEventListener('load', measure, { once: true }); });
+    }
+    // fotku načíst včas (oddíl je pod úvodem), pak teprve připnout
+    img.loading = 'eager';
+    if (img.complete && img.naturalWidth) start(); else img.addEventListener('load', start, { once: true });
+  })();
 
   /* ---------- steps: the line fills as the block passes ---------- */
   const track = $('#stepsTrack'), stepEls = $$('li', track);
