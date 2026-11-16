@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Květinářství Poupě — Liberec (ukázka webu)</title>
+<meta name="description" content="Ukázka stránky květinářství: narcis se posunem stránky rozvine z poupěte do plného květu. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#203a8c">
+<meta property="og:title" content="Květinářství Poupě — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Květina, která se rozvine pod prstem. Smyšlená značka, ukázka práce Whyte Lynx.">
+<meta property="og:image" content="og.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/l/000.webp" media="(min-width:700px)" fetchpriority="high">
+<link rel="preload" as="image" href="img/s/000.webp" media="(max-width:699px)" fetchpriority="high">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Květinářství Poupě, na začátek stránky">
+    <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-8M12 14c-3.200 0-5-2.600-5-6 1.800 0 3.400.800 5 2.600C13.600 8.800 15.200 8 17 8c0 3.400-1.800 6-5 6zM12 10.600C11 8.400 11 5.800 12 3.500c1 2.300 1 4.900 0 7.100M12 19c-1.600-1.600-3.600-2.200-5.500-2 .4 1.800 2.400 3 5.500 3"/></svg>
+    <span>Poupě</span>
+  </a>
+  <nav class="nav__links" aria-label="Hlavní">
+    <a href="#nabidka">Co uvážeme</a>
+    <a href="#kde">Kde jsme</a>
+    <a class="nav__cta" href="#objednat">Objednat kytici</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <div class="pin">
+    <div class="stage" id="stage">
+      <canvas class="bloom" id="bloom" aria-hidden="true"></canvas>
+      <div class="copy">
+        <p class="copy__kicker">Květinářství v&nbsp;Liberci</p>
+        <h1 class="copy__h">Rozkvete <span>až u&nbsp;Vás.</span></h1>
+        <p class="copy__sub">Kytice vážeme z&nbsp;poupat. Rozvinou se až doma, ve Vaší váze.</p>
+        <ol class="steps" id="steps" aria-label="Jak to chodí">
+          <li><b>Ráno</b> vybereme poupata a&nbsp;uvážeme kytici.</li>
+          <li><b>Odpoledne</b> si ji odnesete, ještě zavřenou.</li>
+          <li><b>Doma</b> se rozvine. Přesně takhle.</li>
+        </ol>
+      </div>
+      <p class="hint" id="hint"><span></span>Posuňte stránku a&nbsp;poupě se rozvine</p>
+    </div>
+  </div>
+</section>
+
+<section class="lead">
+  <p class="lead__text reveal">Rozkvetlá kytice je nejkrásnější první den. Ta naše jím teprve začíná, protože nejhezčí chvíli prožije u&nbsp;Vás doma, ne ve výloze.</p>
+</section>
+
+<section class="offer" id="nabidka">
+  <h2 class="offer__h reveal">Co pro Vás uvážeme</h2>
+  <div class="cards">
+    <article class="card reveal">
+      <div class="card__img"><img src="img/kytice.webp" alt="Kytice bílých tulipánů zabalená do hnědého papíru" loading="lazy" width="1067" height="1600"></div>
+      <h3>Kytice</h3>
+      <p>K&nbsp;narozeninám, na rande nebo jen tak. Řekněte, pro koho je, a&nbsp;my vybereme, co ten den kvete nejhezčeji.</p>
+    </article>
+    <article class="card reveal">
+      <div class="card__img"><img src="img/svatby.webp" alt="Nevěsta drží svatební kytici" loading="lazy" width="1600" height="1067"></div>
+      <h3>Svatby</h3>
+      <p>Kytice pro nevěstu, korsáže, výzdoba stolů. Na schůzce projdeme barvy i&nbsp;místo a&nbsp;ukážeme Vám květiny naživo.</p>
+    </article>
+    <article class="card reveal">
+      <div class="card__img"><img src="img/smutecni.webp" alt="Bílé lilie na kamenné desce" loading="lazy" width="1068" height="1600"></div>
+      <h3>Smuteční vazba</h3>
+      <p>Věnce a&nbsp;kytice na rozloučenou. Zavolejte, domluvíme vše po telefonu a&nbsp;květiny dovezeme, kam potřebujete.</p>
+    </article>
+    <article class="card reveal">
+      <div class="card__img"><img src="img/pokojovky.webp" alt="Sukulenty a kaktusy v keramických květináčích" loading="lazy" width="1600" height="1089"></div>
+      <h3>Pokojové rostliny</h3>
+      <p>Do bytu i&nbsp;do kanceláře. Poradíme, co vydrží na severním okně a&nbsp;co snese, když na zalévání zapomenete.</p>
+    </article>
+  </div>
+</section>
+
+<section class="band" id="objednat">
+  <div class="band__img"><img class="drift" src="img/dilna.webp" alt="Květinářky v zástěrách vážou kytici, pohled shora" loading="lazy" width="1600" height="1067"></div>
+  <div class="band__copy">
+    <h2 class="reveal">Jak objednat</h2>
+    <ol class="how">
+      <li class="reveal"><i>1</i><div><h3>Zavolejte nebo napište</h3><p>Pro koho kytice je, kdy ji chcete a&nbsp;jaké barvy má ten člověk rád.</p></div></li>
+      <li class="reveal"><i>2</i><div><h3>Uvážeme ji ráno toho dne</h3><p>Z&nbsp;poupat, aby se rozvinula až u&nbsp;Vás. Fotku Vám pošleme, než vyjde ze dveří.</p></div></li>
+      <li class="reveal"><i>3</i><div><h3>Vyzvednete, nebo dovezeme</h3><p>Po Liberci ji dovezeme až ke dveřím. Ke kytici přidáme kartičku s&nbsp;Vaším vzkazem.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="where" id="kde">
+  <div class="where__img"><img class="drift" data-k="-.05" src="img/tulipany.webp" alt="Žluté tulipány zabalené v hnědém papíru" loading="lazy" width="1067" height="1600"></div>
+  <div class="where__copy">
+    <p class="where__kicker reveal">Objednávky a&nbsp;dotazy</p>
+    <p class="where__tel reveal" data-audit-skip><span>+420 123 456 789</span></p>
+    <div class="where__cols reveal">
+      <div>
+        <h3>Otevřeno</h3>
+        <dl class="hours">
+          <div><dt>Pondělí až pátek</dt><dd>8:00–18:00</dd></div>
+          <div><dt>Sobota</dt><dd>8:00–12:00</dd></div>
+          <div><dt>Neděle</dt><dd>zavřeno</dd></div>
+        </dl>
+        <p class="status" id="status" aria-live="polite"></p>
+      </div>
+      <div>
+        <h3>Kde nás najdete</h3>
+        <p>Květinářství Poupě<br>Květná 9, Liberec<br>naproti zastávce tramvaje</p>
+      </div>
+      <div>
+        <h3>Napište</h3>
+        <p>kytice@poupe.example<br>Svatby domlouváme alespoň měsíc předem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Ukázka · smyšlená značka, telefon i&nbsp;adresa · fotky Pexels · Vladislav Zachariev, <a href="https://whytelynx.cz" target="_blank" rel="noopener">Whyte Lynx</a></p>
+</footer>
+
+<script src="vendor/lenis.min.js"></script>
+<script src="main.js?v=3"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+</body>
+</html>

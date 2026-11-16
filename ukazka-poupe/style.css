@@ -1,0 +1,115 @@
+/* Květinářství Poupě — ukázka (Vladislav Zachariev, Whyte Lynx) */
+:root{
+  --cobalt:#203a8c; --cobalt-2:#1a3078; --paper:#f4f1e9; --ink:#14182b; --mute:#5d6072; --line:#dcd7ca;
+  --yellow:#f6d63c; --on:#f4f1e9;
+  --pad:clamp(20px,4.6vw,72px);
+  --f:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;scroll-behavior:auto}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--f);-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3,p,ol,ul,dl,dd{margin:0;padding:0}
+ol,ul{list-style:none}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(12px,1.7vw,20px) var(--pad);color:var(--on);transition:background-color .4s,color .4s}
+.nav.is-solid{background:rgba(244,241,233,.9);color:var(--ink);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font:800 22px/1 var(--f);letter-spacing:-.02em}
+.brand__mark{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav__links{display:flex;align-items:center;gap:clamp(14px,2.4vw,34px);font:500 15px/1 var(--f)}
+.nav__links a{text-decoration:none;padding:8px 0}
+.nav__cta{background:var(--yellow);color:var(--ink);padding:12px 18px!important;border-radius:999px;font-weight:600}
+@media (max-width:700px){.nav__links a:not(.nav__cta){display:none}}
+
+/* ---------- hero: the bloom ---------- */
+.hero{position:relative;height:330vh;background:var(--cobalt);color:var(--on)}
+.pin{position:sticky;top:0;height:calc(100lvh + max(72px,12vh));overflow:hidden;
+  background:radial-gradient(120% 90% at var(--gx,68%) 50%,#27449c 0%,var(--cobalt) 55%,var(--cobalt-2) 100%)}
+.stage{position:relative;height:100svh}
+.bloom{position:absolute;left:0;top:0;pointer-events:none}
+
+.copy{position:absolute;left:var(--pad);top:0;bottom:0;width:var(--col,42vw);display:flex;flex-direction:column;justify-content:center;
+  padding-top:clamp(64px,10vh,96px);padding-bottom:clamp(40px,8vh,80px)}
+.copy__kicker{font:600 13px/1 var(--f);letter-spacing:.16em;text-transform:uppercase;opacity:.78;margin-bottom:clamp(12px,2.4vh,24px)}
+.copy__h{font:850 var(--hs,clamp(54px,8.4vw,150px))/.88 var(--f);letter-spacing:-.055em;margin-left:-.04em}
+.copy__h span{display:block;color:var(--yellow)}
+.copy__sub{max-width:27ch;margin-top:clamp(14px,3vh,30px);font-size:clamp(17px,1.45vw,21px);line-height:1.42;opacity:.9}
+.steps{position:relative;margin-top:clamp(18px,4vh,44px);height:3.2em;font-size:clamp(16px,1.3vw,19px);line-height:1.4}
+.steps li{position:absolute;left:0;top:0;max-width:30ch;opacity:0;will-change:opacity,transform}
+.steps b{font-weight:700;color:var(--yellow)}
+
+.hint{position:absolute;left:50%;bottom:clamp(18px,4vh,40px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;
+  font:500 14px/1 var(--f);white-space:nowrap;opacity:.8}
+.hint span{width:1px;height:28px;background:linear-gradient(var(--on),transparent);animation:drip 2.2s ease-in-out infinite}
+@keyframes drip{0%,100%{transform:scaleY(.4);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+/* a phone held upright: the flower above, the words below */
+.hero.is-tall .copy{left:var(--pad);right:var(--pad);width:auto;top:auto;bottom:0;justify-content:flex-end;padding-top:0;padding-bottom:clamp(22px,4.5vh,40px)}
+.hero.is-tall .copy__sub{max-width:34ch}
+.hero.is-tall .hint{display:none}
+.hero.is-tall .steps{height:2.9em}
+/* a phone on its side */
+.hero.is-low .copy__sub{display:none}
+.hero.is-low .copy{padding-top:56px;padding-bottom:18px}
+.hero.is-low .steps{margin-top:14px}
+.hero.is-low .hint{display:none}
+
+/* ---------- lead ---------- */
+.lead{padding:clamp(80px,14vw,190px) var(--pad) clamp(60px,10vw,140px);display:flex;justify-content:center}
+.lead__text{max-width:24ch;font:700 clamp(28px,4.2vw,62px)/1.08 var(--f);letter-spacing:-.035em;text-align:center}
+
+/* ---------- offer ---------- */
+.offer{padding:0 var(--pad) clamp(80px,12vw,170px)}
+.offer__h{font:800 clamp(34px,5vw,76px)/1 var(--f);letter-spacing:-.045em;margin-bottom:clamp(28px,4vw,56px)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,28px)}
+.card__img{aspect-ratio:3/4;overflow:hidden;border-radius:4px;background:#e4dfd2;margin-bottom:18px}
+.card__img img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.card:hover .card__img img{transform:scale(1.04)}
+.card h3{font:750 clamp(21px,1.7vw,26px)/1.1 var(--f);letter-spacing:-.025em;margin-bottom:8px}
+.card p{color:var(--mute);max-width:34ch}
+@media (max-width:1000px){.cards{grid-template-columns:repeat(2,1fr);row-gap:44px}}
+@media (max-width:560px){.cards{grid-template-columns:1fr}.card__img{aspect-ratio:4/3.4}}
+
+/* ---------- band: how to order ---------- */
+.band{display:grid;grid-template-columns:1.1fr 1fr;background:var(--cobalt);color:var(--on)}
+.band__img{position:relative;overflow:hidden;min-height:clamp(320px,46vw,720px)}
+.band__img img{position:absolute;left:0;top:-8%;width:100%;height:116%;object-fit:cover;will-change:transform}
+.band__copy{padding:clamp(48px,7vw,110px) var(--pad);display:flex;flex-direction:column;justify-content:center}
+.band__copy h2{font:800 clamp(34px,4.6vw,70px)/1 var(--f);letter-spacing:-.045em;margin-bottom:clamp(26px,3.6vw,48px)}
+.how li{display:flex;gap:18px;padding:20px 0;border-top:1px solid rgba(244,241,233,.22)}
+.how li:last-child{border-bottom:1px solid rgba(244,241,233,.22)}
+.how i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--yellow);color:var(--ink);font:700 16px/34px var(--f);font-style:normal;text-align:center}
+.how h3{font:700 clamp(19px,1.5vw,23px)/1.2 var(--f);letter-spacing:-.02em;margin:4px 0 6px}
+.how p{opacity:.82;max-width:40ch}
+@media (max-width:860px){.band{grid-template-columns:1fr}.band__img{min-height:62vw}}
+
+/* ---------- where ---------- */
+.where{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:clamp(28px,5vw,90px);align-items:center;padding:clamp(80px,12vw,170px) var(--pad)}
+.where__img{position:relative;overflow:hidden;aspect-ratio:3/4;border-radius:4px}
+.where__img img{position:absolute;left:0;top:-6%;width:100%;height:112%;object-fit:cover;will-change:transform}
+.where__kicker{font:600 13px/1 var(--f);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.where__tel{font:850 clamp(36px,6vw,96px)/1 var(--f);letter-spacing:-.05em;margin:14px 0 clamp(30px,4vw,56px);white-space:nowrap}
+.where__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,44px)}
+.where__cols h3{font:700 15px/1.2 var(--f);margin-bottom:10px}
+.where__cols p,.hours{color:var(--mute);font-size:16px}
+.hours div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:5px 0}
+.hours dd{color:var(--ink);font-variant-numeric:tabular-nums}
+.status{margin-top:12px;font-size:15px;color:var(--mute)}
+.status.is-open{color:#1d6b3a}
+.status.is-open::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#2a9d55;margin-right:8px;vertical-align:1px}
+@media (max-width:1000px){.where{grid-template-columns:1fr}.where__img{aspect-ratio:16/10;max-height:60vh}.where__cols{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.where__cols{grid-template-columns:1fr}.where__tel{font-size:clamp(30px,10.5vw,44px)}}
+
+/* ---------- footer ---------- */
+.foot{padding:28px var(--pad) 40px;border-top:1px solid var(--line);font-size:14px;color:var(--mute)}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .9s cubic-bezier(.16,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.hint span{animation:none}}
