@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Na Zvedáku — autodílna v Liberci (ukázka webu)</title>
+<meta name="description" content="Ukázka stránky autodílny: v potemnělé hale si na auto posvítíte montážní lampou a posunem rozsvítíte celou dílnu. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07090b">
+<meta property="og:title" content="Na Zvedáku — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Autodílna, ve které si na auto posvítíte sami. Smyšlená značka, ukázka práce Whyte Lynx.">
+<meta property="og:image" content="og.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/hala-p.webp" media="(max-aspect-ratio: 4/5)">
+<link rel="preload" as="image" href="img/hala.webp" media="(min-aspect-ratio: 4/5)">
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Na Zvedáku, na začátek stránky">
+    <svg class="brand__mark" viewBox="0 0 34 24" aria-hidden="true"><path d="M4 2v20M30 2v20M1.5 22h5M27.500 22h5M4 13h26M9 13V9.500h16V13"/></svg>
+    <span>Na Zvedáku</span>
+  </a>
+  <nav class="nav__links" aria-label="Hlavní">
+    <a href="#sluzby">Co opravujeme</a>
+    <a href="#postup">Jak to chodí</a>
+    <a class="nav__cta" href="#kontakt">Objednat se</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <div class="pin">
+    <picture class="hero__still">
+      <source media="(max-aspect-ratio: 4/5)" srcset="img/hala-p.webp">
+      <img src="img/hala.webp" alt="Zelené kombi na dvousloupovém zvedáku v čisté dílně" decoding="async">
+    </picture>
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="hero__ui">
+      <div class="line is-on">
+        <h1>Posvítíme si na&nbsp;to.</h1>
+        <p>Autodílna Na Zvedáku v&nbsp;Liberci. Servis, pneu a&nbsp;diagnostika pro všechny značky.</p>
+      </div>
+      <div class="line" aria-hidden="true">
+        <p class="line__big">Otevíráme v&nbsp;sedm.</p>
+        <p>Auto přijmeme ráno a&nbsp;odpoledne Vám zavoláme, co mu bylo a&nbsp;kolik to bude stát.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lead" id="uvod">
+  <p class="lead__text reveal">Jsme malá dílna se dvěma zvedáky. Než cokoli vyměníme, ukážeme Vám starý díl a&nbsp;řekneme cenu.</p>
+  <ul class="lead__facts reveal">
+    <li><b>Všechny značky</b><span>osobní auta a&nbsp;dodávky do 3,5&nbsp;t</span></li>
+    <li><b>Cena předem</b><span>bez Vašeho souhlasu nic neměníme</span></li>
+    <li><b>Náhradní auto</b><span>na dobu opravy, když ho potřebujete</span></li>
+  </ul>
+</section>
+
+<section class="svc" id="sluzby">
+  <h2 class="reveal">Co opravujeme</h2>
+  <div class="svc__grid">
+    <ol class="svc__list" id="svcList">
+      <li class="svc__row is-on" data-i="0">
+        <img src="img/brzdy.webp" alt="Nový brzdový kotouč a třmen ve světle montážní lampy" loading="lazy" width="1200" height="800">
+        <div><h3>Brzdy a&nbsp;podvozek</h3><p>Destičky, kotouče, tlumiče, čepy a&nbsp;geometrie. Brzdy zkontrolujeme při každé návštěvě.</p></div>
+      </li>
+      <li class="svc__row" data-i="1">
+        <img src="img/pneu.webp" alt="Regál s uskladněnými pneumatikami" loading="lazy" width="1200" height="800">
+        <div><h3>Pneuservis a&nbsp;uskladnění</h3><p>Přezutí, vyvážení, oprava defektu. Sadu Vám přes sezónu uložíme u&nbsp;nás.</p></div>
+      </li>
+      <li class="svc__row" data-i="2">
+        <img src="img/motor.webp" alt="Otevřená kapota a motor osvětlený lampou" loading="lazy" width="1200" height="800">
+        <div><h3>Motor a&nbsp;rozvody</h3><p>Olej a&nbsp;filtry, rozvody, spojka, turbo. Díly dáváme takové, jaké bychom dali do svého auta.</p></div>
+      </li>
+      <li class="svc__row" data-i="3">
+        <img src="img/diagnostika.webp" alt="Diagnostický přístroj připojený v autě" loading="lazy" width="1200" height="800">
+        <div><h3>Diagnostika</h3><p>Svítí kontrolka? Načteme chyby a&nbsp;změříme, co je opravdu vadné, než začneme měnit díly.</p></div>
+      </li>
+      <li class="svc__row" data-i="4">
+        <img src="img/stk.webp" alt="Podvozek auta na zvedáku při prohlídce" loading="lazy" width="1200" height="800">
+        <div><h3>Příprava na STK</h3><p>Auto projdeme, závady opravíme a&nbsp;na technickou s&nbsp;ním zajedeme za Vás.</p></div>
+      </li>
+      <li class="svc__row" data-i="5">
+        <img src="img/klima.webp" alt="Plnicí stanice klimatizace připojená k autu" loading="lazy" width="1200" height="800">
+        <div><h3>Klimatizace</h3><p>Plnění, dezinfekce a&nbsp;hledání úniků. Nejlépe na jaře, než přijdou vedra.</p></div>
+      </li>
+    </ol>
+    <div class="svc__photo" aria-hidden="true">
+      <div class="svc__frame" id="svcFrame"></div>
+    </div>
+  </div>
+</section>
+
+<section class="steps" id="postup">
+  <h2 class="reveal">Jak to u&nbsp;nás chodí</h2>
+  <div class="steps__track" id="stepsTrack">
+    <span class="steps__line" aria-hidden="true"><i></i></span>
+    <ol>
+      <li><h3>Zavoláte</h3><p>Řeknete, co auto dělá, a&nbsp;domluvíme den. Většinou do týdne.</p></li>
+      <li><h3>Přivezete auto</h3><p>Ráno od sedmi. Když nestíháte, klíče hodíte do schránky u&nbsp;vrat.</p></li>
+      <li><h3>Ozveme se</h3><p>Do odpoledne voláme, co jsme našli a&nbsp;kolik oprava stojí. Rozhodnete Vy.</p></li>
+      <li><h3>Odjedete</h3><p>Ukážeme Vám vyměněné díly, dostanete fakturu a&nbsp;záruku na práci.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="contact" id="kontakt">
+  <p class="contact__kicker reveal">Objednejte se telefonem</p>
+  <p class="contact__tel reveal" data-audit-skip><span>+420 123 456 789</span></p>
+  <div class="contact__cols reveal">
+    <div>
+      <h3>Otevřeno</h3>
+      <dl class="hours">
+        <div><dt>Pondělí až pátek</dt><dd>7:00–17:00</dd></div>
+        <div><dt>Sobota</dt><dd>8:00–12:00</dd></div>
+        <div><dt>Neděle</dt><dd>zavřeno</dd></div>
+      </dl>
+      <p class="status" id="status" aria-live="polite"></p>
+    </div>
+    <div>
+      <h3>Kde nás najdete</h3>
+      <p>Autodílna Na Zvedáku<br>Dílenská 14, Liberec<br>vjezd ze dvora, parkování před vraty</p>
+    </div>
+    <div>
+      <h3>Napište</h3>
+      <p>dilna@nazvedaku.example<br>Odpovídáme do druhého dne.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Ukázka · smyšlená značka, telefon i&nbsp;adresa · Vladislav Zachariev, <a href="https://whytelynx.cz" target="_blank" rel="noopener">Whyte Lynx</a></p>
+</footer>
+
+<script src="vendor/lenis.min.js"></script>
+<script src="main.js?v=4"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+</body>
+</html>

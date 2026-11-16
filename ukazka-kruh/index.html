@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dílna Kruh — keramika točená ručně v Liberci (ukázka webu)</title>
+<meta name="description" content="Ukázka stránky keramické dílny: hlínu na hrnčířském kruhu si návštěvník vytvaruje tahem a polije glazurou. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f4f1ec">
+<meta property="og:title" content="Dílna Kruh — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Hlína, která se dá vytvarovat přímo na stránce. Smyšlená značka, ukázka práce Whyte Lynx.">
+<meta property="og:image" content="og.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="modulepreload" href="vendor/three.module.min.js">
+<link rel="stylesheet" href="style.css?v=3">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Dílna Kruh, na začátek stránky">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.500"/><circle cx="12" cy="12" r="3.200"/></svg>
+    <span>Dílna Kruh</span>
+  </a>
+  <nav class="nav__links" aria-label="Hlavní">
+    <a href="#police">Z police</a>
+    <a href="#kurzy">Kurzy</a>
+    <a href="#kontakt">Kontakt</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <h1 class="hero__word"><span>Dílna</span> <span>Kruh</span></h1>
+  <canvas id="gl" role="img" aria-label="Nádoba z hlíny na točícím se hrnčířském kruhu. Tahem do stran se dá vytvarovat."></canvas>
+  <p class="hero__sub">Užitková keramika z&nbsp;kameniny. Točíme ji ručně v&nbsp;Liberci, kus po kusu.</p>
+  <div class="bench" id="bench">
+    <p class="read" id="read"></p>
+    <div class="bench__row" role="group" aria-label="Tvar">
+      <span class="bench__lab">Tvar</span>
+      <button type="button" class="pill" data-shape="poharek">Pohárek</button>
+      <button type="button" class="pill" data-shape="miska">Miska</button>
+      <button type="button" class="pill" data-shape="vaza">Váza</button>
+    </div>
+    <div class="bench__row" role="group" aria-label="Glazura">
+      <span class="bench__lab">Glazura</span>
+      <button type="button" class="dot is-on" data-glaze="0" style="--c:#a39c92" aria-label="Bez glazury"></button>
+      <button type="button" class="dot" data-glaze="1" style="--c:#ece7dc" aria-label="Křídová"></button>
+      <button type="button" class="dot" data-glaze="2" style="--c:#8fa083" aria-label="Šalvějová"></button>
+      <button type="button" class="dot" data-glaze="3" style="--c:#6f8aa8" aria-label="Holubí modř"></button>
+      <button type="button" class="dot" data-glaze="4" style="--c:#cfb78d" aria-label="Písková"></button>
+      <button type="button" class="dot" data-glaze="5" style="--c:#b0603f" aria-label="Cihlová"></button>
+    </div>
+  </div>
+</section>
+
+<section class="lead">
+  <p class="lead__text reveal">Hrnky, misky a&nbsp;džbány na každý den. Snesou myčku, troubu i&nbsp;to, že Vám občas vyklouznou z&nbsp;ruky na stůl.</p>
+</section>
+
+<section class="shelf" id="police">
+  <div class="shelf__head reveal">
+    <h2>Z police</h2>
+    <p>Žádné dva kusy nejsou stejné. Tak to má být.</p>
+  </div>
+  <figure class="shelf__fig shelf__fig--wide reveal">
+    <img src="img/police.webp" alt="Dřevěná police se šesti kusy keramiky: hrnek, miska, váza, džbán, kalíšek a pohárek" width="2000" height="714" loading="lazy">
+    <ul class="shelf__tags">
+      <li style="--x:23.400%"><b>Hrnek</b><span>390&nbsp;Kč</span></li>
+      <li style="--x:35%"><b>Miska</b><span>320&nbsp;Kč</span></li>
+      <li style="--x:46.500%"><b>Váza</b><span>890&nbsp;Kč</span></li>
+      <li style="--x:58.700%"><b>Džbán</b><span>760&nbsp;Kč</span></li>
+      <li style="--x:69.600%"><b>Kalíšek</b><span>260&nbsp;Kč</span></li>
+      <li style="--x:80.400%"><b>Pohárek</b><span>290&nbsp;Kč</span></li>
+    </ul>
+  </figure>
+  <div class="shelf__duo">
+    <figure class="shelf__fig reveal">
+      <img src="img/police-a.webp" alt="Hrnek, miska a váza na dřevěné polici" width="900" height="670" loading="lazy">
+      <ul class="shelf__tags">
+        <li style="--x:17.800%"><b>Hrnek</b><span>390&nbsp;Kč</span></li>
+        <li style="--x:50%"><b>Miska</b><span>320&nbsp;Kč</span></li>
+        <li style="--x:81.900%"><b>Váza</b><span>890&nbsp;Kč</span></li>
+      </ul>
+    </figure>
+    <figure class="shelf__fig reveal">
+      <img src="img/police-b.webp" alt="Džbán, kalíšek a pohárek na dřevěné polici" width="900" height="670" loading="lazy">
+      <ul class="shelf__tags">
+        <li style="--x:18.600%"><b>Džbán</b><span>760&nbsp;Kč</span></li>
+        <li style="--x:48.900%"><b>Kalíšek</b><span>260&nbsp;Kč</span></li>
+        <li style="--x:78.900%"><b>Pohárek</b><span>290&nbsp;Kč</span></li>
+      </ul>
+    </figure>
+  </div>
+  <p class="shelf__note reveal">Na zakázku uděláme i&nbsp;celou sadu, třeba šest hrnků do nové kuchyně. Počítejte se čtyřmi týdny.</p>
+</section>
+
+<section class="course" id="kurzy">
+  <figure class="course__fig reveal"><img src="img/dilna.webp" alt="Hrnčířský kruh u okna do zahrady, na něm rozpracovaný válec z hlíny" width="1500" height="1006" loading="lazy"></figure>
+  <div class="course__body">
+    <h2 class="reveal">Sobotní kurz točení na kruhu</h2>
+    <p class="reveal">Tři hodiny u&nbsp;kruhu, nejvýš čtyři lidé. Ukážeme Vám, jak hlínu vystředit, vytáhnout stěnu a&nbsp;dát jí tvar. Co vytočíte, to vypálíme a&nbsp;naglazujeme.</p>
+    <dl class="facts reveal">
+      <div><dt>Kdy</dt><dd>v&nbsp;sobotu, 10:00–13:00</dd></div>
+      <div><dt>Cena</dt><dd>1&nbsp;490&nbsp;Kč, hlína i&nbsp;výpal v&nbsp;ceně</dd></div>
+      <div><dt>Hotové kusy</dt><dd>k&nbsp;vyzvednutí za tři týdny</dd></div>
+    </dl>
+    <ul class="dates reveal" id="dates" aria-label="Nejbližší termíny"></ul>
+    <a class="btn reveal" href="#kontakt">Napsat si o&nbsp;místo</a>
+  </div>
+</section>
+
+<section class="contact" id="kontakt">
+  <p class="contact__kicker reveal">Napište nebo se zastavte</p>
+  <p class="contact__mail reveal">ahoj@dilnakruh.example</p>
+  <div class="contact__cols reveal">
+    <div>
+      <h3>Dílna</h3>
+      <p>Hrnčířská 12, Liberec<br>vchod ze dvora, zvonek Kruh</p>
+    </div>
+    <div>
+      <h3>Otevřeno</h3>
+      <p>středa až pátek 13:00–18:00<br>sobota 9:00–13:00</p>
+    </div>
+    <div>
+      <h3>Telefon</h3>
+      <p>+420 123 456 789<br>když točíme, zavoláme zpátky</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Ukázka · smyšlená značka, adresa i&nbsp;telefon · Vladislav Zachariev, <a href="https://whytelynx.cz" target="_blank" rel="noopener">Whyte Lynx</a></p>
+</footer>
+
+<script src="vendor/lenis.min.js"></script>
+<script type="module" src="main.js?v=3"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+</body>
+</html>

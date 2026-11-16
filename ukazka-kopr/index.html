@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bistro Kopr — česká kuchyně v Liberci (ukázka webu)</title>
+<meta name="description" content="Ukázka stránky bistra: talíře se posunem střídají na velké točně a barva stránky se mění podle jídla. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f5be4b">
+<meta property="og:title" content="Bistro Kopr — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Lístek, který se točí. Smyšlená značka, ukázka práce Whyte Lynx.">
+<meta property="og:image" content="og.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/svickova.webp" fetchpriority="high">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Bistro Kopr, na začátek stránky">
+    <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22V9M12 9c0-3 1.500-5 4-6M12 9C12 6 10.500 4 8 3M12 13c2-.500 4-2 5-4.500M12 13c-2-.500-4-2-5-4.500M12 17c2.500-.300 4.500-1.500 6-3.500M12 17c-2.500-.300-4.500-1.500-6-3.500"/></svg>
+    <span>Bistro Kopr</span>
+  </a>
+  <nav class="nav__links" aria-label="Hlavní">
+    <a href="#menu">Polední menu</a>
+    <a href="#kde">Kde nás najdete</a>
+    <a class="nav__cta" href="#kde">Rezervovat stůl</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <div class="pin">
+    <div class="stage" id="stage">
+      <div class="plates" id="plates" aria-hidden="true">
+        <div class="plate"><i></i><img src="img/svickova.webp" alt="" width="900" height="903" decoding="async" fetchpriority="high"></div>
+        <div class="plate"><i></i><img src="img/koprovka.webp" alt="" width="900" height="901" decoding="async"></div>
+        <div class="plate"><i></i><img src="img/kulajda.webp" alt="" width="900" height="902" decoding="async"></div>
+        <div class="plate"><i></i><img src="img/rizek.webp" alt="" width="900" height="900" decoding="async"></div>
+        <div class="plate"><i></i><img src="img/knedliky.webp" alt="" width="900" height="891" decoding="async"></div>
+        <div class="plate"><i></i><img src="img/buchticky.webp" alt="" width="900" height="906" decoding="async"></div>
+      </div>
+
+      <div class="copy">
+        <h1 class="copy__h">Bistro Kopr <span>česká kuchyně v&nbsp;Liberci</span></h1>
+        <div class="dishes" id="dishes">
+          <article class="dish is-on" data-c="#f5be4b">
+            <p class="dish__kind">Hlavní jídlo</p>
+            <h2 class="dish__name">Svíčková</h2>
+            <p class="dish__desc">Hovězí na smetaně, houskový knedlík, brusinky a&nbsp;šlehačka.</p>
+            <p class="dish__price">249&nbsp;Kč</p>
+          </article>
+          <article class="dish" data-c="#b9d79b">
+            <p class="dish__kind">Bez masa</p>
+            <h2 class="dish__name">Koprovka</h2>
+            <p class="dish__desc">Koprová omáčka, vejce naměkko a&nbsp;nové brambory na másle.</p>
+            <p class="dish__price">189&nbsp;Kč</p>
+          </article>
+          <article class="dish" data-c="#e8dcc8">
+            <p class="dish__kind">Polévka</p>
+            <h2 class="dish__name">Kulajda</h2>
+            <p class="dish__desc">Houby, brambory, zastřené vejce a&nbsp;pár kapek koprového oleje.</p>
+            <p class="dish__price">89&nbsp;Kč</p>
+          </article>
+          <article class="dish" data-c="#f4a688">
+            <p class="dish__kind">Hlavní jídlo</p>
+            <h2 class="dish__name">Řízek</h2>
+            <p class="dish__desc">Vepřový, smažený na přepuštěném másle, s&nbsp;bramborovým salátem.</p>
+            <p class="dish__price">229&nbsp;Kč</p>
+          </article>
+          <article class="dish" data-c="#f6b9c7">
+            <p class="dish__kind">Sladké</p>
+            <h2 class="dish__name">Knedlíky</h2>
+            <p class="dish__desc">Jahodové, s&nbsp;tvarohem, rozpuštěným máslem a&nbsp;cukrem.</p>
+            <p class="dish__price">169&nbsp;Kč</p>
+          </article>
+          <article class="dish" data-c="#a9c9ea">
+            <p class="dish__kind">Sladké</p>
+            <h2 class="dish__name">Buchtičky</h2>
+            <p class="dish__desc">Devět buchtiček v&nbsp;teplém vanilkovém krému, říkáme mu šodó.</p>
+            <p class="dish__price">149&nbsp;Kč</p>
+          </article>
+        </div>
+        <nav class="idx" id="idx" aria-label="Jídla na lístku"></nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lead">
+  <p class="lead__text reveal">Vaříme česká jídla tak, jak je znáte z&nbsp;domova. Jen si dáváme záležet, aby na talíři vypadala stejně dobře, jako chutnají.</p>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu__head reveal">
+    <h2>Polední menu</h2>
+    <p class="menu__date" id="menuDate">Každý všední den</p>
+    <p class="menu__time">11:00–14:30</p>
+  </div>
+  <ul class="menu__list">
+    <li class="reveal"><img src="img/kulajda.webp" alt="" loading="lazy" width="900" height="902"><div><h3>Kulajda se zastřeným vejcem</h3><p>polévka</p></div><b>59&nbsp;Kč</b></li>
+    <li class="reveal"><img src="img/koprovka.webp" alt="" loading="lazy" width="900" height="901"><div><h3>Koprová omáčka, vejce, nové brambory</h3><p>bez masa</p></div><b>169&nbsp;Kč</b></li>
+    <li class="reveal"><img src="img/rizek.webp" alt="" loading="lazy" width="900" height="900"><div><h3>Smažený řízek, bramborový salát</h3><p>vepřová kotleta</p></div><b>189&nbsp;Kč</b></li>
+    <li class="reveal"><img src="img/buchticky.webp" alt="" loading="lazy" width="900" height="906"><div><h3>Buchtičky se šodó</h3><p>sladké jídlo</p></div><b>129&nbsp;Kč</b></li>
+  </ul>
+  <p class="menu__note reveal">K&nbsp;menu dostanete džbán vody. Lístek měníme každé pondělí.</p>
+</section>
+
+<section class="yard">
+  <img class="yard__plate spin" data-k="0.16" src="img/koprovka.webp" alt="" loading="lazy" width="900" height="901">
+  <h2 class="reveal">Co je za tím</h2>
+  <ul class="yard__lines">
+    <li class="reveal">Kopr, pažitku a&nbsp;libeček pěstujeme na dvoře za kuchyní.</li>
+    <li class="reveal">Knedlíky vaříme každé ráno, mražené u&nbsp;nás nenajdete.</li>
+    <li class="reveal">Maso vozí řezník z&nbsp;Chrastavy, dvakrát týdně.</li>
+  </ul>
+</section>
+
+<section class="where" id="kde">
+  <img class="where__plate spin" data-k="-0.12" src="img/svickova.webp" alt="" loading="lazy" width="900" height="903">
+  <p class="where__kicker reveal">Stůl Vám podržíme</p>
+  <p class="where__tel reveal" data-audit-skip><span>+420 123 456 789</span></p>
+  <div class="where__cols reveal">
+    <div>
+      <h3>Otevřeno</h3>
+      <dl class="hours">
+        <div><dt>Pondělí až pátek</dt><dd>11:00–22:00</dd></div>
+        <div><dt>Sobota</dt><dd>12:00–22:00</dd></div>
+        <div><dt>Neděle</dt><dd>12:00–16:00</dd></div>
+      </dl>
+      <p class="status" id="status" aria-live="polite"></p>
+    </div>
+    <div>
+      <h3>Kde nás najdete</h3>
+      <p>Bistro Kopr<br>Kuchařská 7, Liberec<br>dvě minuty od radnice, vchod z&nbsp;pasáže</p>
+    </div>
+    <div>
+      <h3>Napište</h3>
+      <p>stul@bistrokopr.example<br>Větší oslavy domluvíme týden předem.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Ukázka · smyšlená značka, telefon i&nbsp;adresa · Vladislav Zachariev, <a href="https://whytelynx.cz" target="_blank" rel="noopener">Whyte Lynx</a></p>
+</footer>
+
+<script src="vendor/lenis.min.js"></script>
+<script src="main.js?v=3"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+</body>
+</html>
