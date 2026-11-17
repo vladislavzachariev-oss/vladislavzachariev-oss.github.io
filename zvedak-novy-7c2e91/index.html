@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Na Zvedáku — autoservis v Liberci (ukázka webu)</title>
+<meta name="description" content="Ukázka stránky autoservisu: klepněte na auto, kde to zlobí, a hned vidíte cenu a čas. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#fff8ec">
+<meta property="og:title" content="Na Zvedáku — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Autoservis v Liberci. Smyšlená značka, ukázka práce Whyte Lynx.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=c2">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top__in">
+    <a class="logo" href="#" aria-label="Na Zvedáku, nahoru">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#121417"/><path d="M8 8v19M26 8v19M5.5 27h5M23.5 27h5M8 18h18M12 18v-3.5h10V18" fill="none" stroke="#ffc400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <b>Na Zvedáku</b>
+    </a>
+    <nav class="top__nav" aria-label="Hlavní">
+      <a href="#auto">Co auto dělá</a>
+      <a href="#cenik">Ceník</a>
+      <a href="#postup">Jak to chodí</a>
+      <a href="#objednat">Kontakt</a>
+    </nav>
+    <span class="live" data-live><i></i><span>Otevřeno</span></span>
+    <a class="btn btn--ink top__cta" href="#objednat">Objednat se</a>
+  </div>
+</header>
+
+<main>
+  <section class="garage" id="auto" data-c="0">
+    <div class="wrap">
+      <div class="garage__head">
+        <div>
+          <p class="eyebrow">Autoservis v Liberci · všechny značky</p>
+          <h1>Řekněte, co auto dělá. <span class="hl">Cenu znáte dřív,</span> než začneme.</h1>
+        </div>
+        <p class="lead">Malá dílna se dvěma zvedáky. Klepněte na auto tam, kde to zlobí, a hned uvidíte, kolik to stojí a jak dlouho to trvá.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Co auto dělá">
+        <span class="chips__q">Co auto dělá?</span>
+        <button type="button" data-s="0">Čas na olej</button>
+        <button type="button" data-s="1">Pískají brzdy</button>
+        <button type="button" data-s="2">Přezout kola</button>
+        <button type="button" data-s="3">Nechladí klima</button>
+        <button type="button" data-s="4">Svítí kontrolka</button>
+        <button type="button" data-s="5">Blíží se STK</button>
+      </div>
+
+      <div class="garage__grid">
+        <div class="car">
+          <svg class="car__svg" viewBox="0 0 800 340" role="img" aria-label="Auto na zvedáku s místy, kde se dá vybrat služba">
+            <defs>
+              <clipPath id="glass"><path d="M100 108 L418 96 Q452 96 476 110 L534 148 L106 156 Q96 156 96 146 Z"/></clipPath>
+              <pattern id="hz" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" fill="#ffc400"/><rect width="8" height="16" fill="#121417"/></pattern>
+            </defs>
+            <rect class="floor" x="0" y="326" width="800" height="14" rx="3"/>
+            <g class="lift">
+              <rect class="post" x="14" y="70" width="24" height="258" rx="5"/>
+              <rect class="post" x="762" y="70" width="24" height="258" rx="5"/>
+              <rect x="10" y="306" width="32" height="20" rx="3" fill="url(#hz)"/>
+              <rect x="758" y="306" width="32" height="20" rx="3" fill="url(#hz)"/>
+              <path class="arm" d="M38 262 H120 M762 262 H690"/>
+              <rect class="pad" x="112" y="254" width="22" height="10" rx="3"/>
+              <rect class="pad" x="668" y="254" width="22" height="10" rx="3"/>
+            </g>
+            <ellipse class="car__shadow" cx="404" cy="326" rx="330" ry="9"/>
+            <path class="car__body" d="M64 236 L66 132 Q68 98 104 94 L430 82 Q470 82 500 100 L568 142 L708 156 Q746 162 748 204 L748 236 Q748 254 730 254 L82 254 Q64 254 64 236 Z"/>
+            <path class="car__stripe" d="M66 196 H747 V210 H66 Z"/>
+            <path class="car__glass" d="M100 108 L418 96 Q452 96 476 110 L534 148 L106 156 Q96 156 96 146 Z"/>
+            <g clip-path="url(#glass)">
+              <rect class="p p--cabin" x="96" y="90" width="440" height="70"/>
+              <g class="p p--dash"><rect x="436" y="128" width="64" height="18" rx="5"/><path class="dash__warn" d="M459 143 l9 -14 l9 14 z"/></g>
+              <g class="snow"><path d="M226 110 v34 M211 118 l30 18 M241 118 l-30 18"/><path d="M176 122 v22 M166 127 l20 12 M186 127 l-20 12"/></g>
+            </g>
+            <rect class="car__body" x="294" y="98" width="12" height="60"/>
+            <path class="car__line" d="M300 160 V246 M522 150 L528 246"/>
+            <rect class="car__handle" x="252" y="172" width="30" height="7" rx="3.5"/>
+            <rect class="car__handle" x="474" y="172" width="30" height="7" rx="3.5"/>
+            <g class="p p--hood"><path d="M568 142 L708 156 Q746 162 748 204 L604 194 Z"/></g>
+            <g class="engine"><rect x="614" y="166" width="78" height="28" rx="6"/><path d="M628 166 v-9 h13 v9 M654 166 v-9 h13 v9"/></g>
+            <ellipse class="car__lamp" cx="732" cy="182" rx="11" ry="8"/>
+            <rect class="car__tail" x="62" y="122" width="12" height="30" rx="4"/>
+            <g class="p p--plate"><rect x="70" y="214" width="54" height="20" rx="4"/><text x="97" y="228.5" text-anchor="middle">STK</text></g>
+            <g class="wheel">
+              <circle class="arch" cx="200" cy="254" r="63"/>
+              <circle class="p p--tyre" cx="200" cy="254" r="54"/>
+              <circle class="rim" cx="200" cy="254" r="30"/>
+              <circle class="hub" cx="200" cy="254" r="8"/>
+            </g>
+            <g class="wheel">
+              <circle class="arch" cx="612" cy="254" r="63"/>
+              <circle class="tyre" cx="612" cy="254" r="54"/>
+              <circle class="p p--disc" cx="612" cy="254" r="30"/>
+              <path class="p p--caliper" d="M585 240 a32 32 0 0 1 22 -15 v14 a18 18 0 0 0 -10 8 z"/>
+              <circle class="hub" cx="612" cy="254" r="8"/>
+            </g>
+          </svg>
+          <button type="button" class="pin" data-s="0" style="--x:81.25%;--y:50%"><span>Servis</span></button>
+          <button type="button" class="pin" data-s="1" style="--x:74.25%;--y:69%"><span>Brzdy</span></button>
+          <button type="button" class="pin" data-s="2" style="--x:20%;--y:80.5%"><span>Pneu</span></button>
+          <button type="button" class="pin" data-s="3" style="--x:27.5%;--y:37.5%"><span>Klima</span></button>
+          <button type="button" class="pin" data-s="4" style="--x:58.5%;--y:40.5%"><span>Diagnostika</span></button>
+          <button type="button" class="pin" data-s="5" style="--x:12.1%;--y:65.5%"><span>STK</span></button>
+        </div>
+
+        <article class="card" aria-live="polite">
+          <p class="card__kind" data-f="kind">Servis</p>
+          <h3 data-f="name">Pravidelný servis</h3>
+          <p class="card__price" data-f="price">od 1 290 Kč</p>
+          <p class="card__time"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-f="time">Trvá asi 1,5 hodiny, mezitím si u nás dáte kávu.</span></p>
+          <p class="card__txt" data-f="txt">Olej a filtry podle výrobce, kontrola brzd, kapalin a podvozku, zápis do servisní knížky.</p>
+          <a class="btn btn--ink card__go" href="#objednat" data-go>Objednat tuhle službu</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="wrap promise__grid">
+      <div class="pr pr--yellow"><b>Cena předem</b><span>Bez vašeho souhlasu nic neměníme.</span></div>
+      <div class="pr pr--teal"><b>Starý díl vám ukážeme</b><span>Vidíte, co a proč jsme vyměnili.</span></div>
+      <div class="pr pr--blue"><b>Všechny značky</b><span>Osobní auta a dodávky do 3,5 t.</span></div>
+      <div class="pr pr--pink"><b>Záruka 24 měsíců</b><span>Na práci i na díly, které dodáme.</span></div>
+    </div>
+  </section>
+
+  <section class="cenik" id="cenik">
+    <div class="wrap">
+      <h2>Ceník na jednom místě</h2>
+      <p class="sub">Orientační ceny včetně práce. Přesnou částku řekneme po prohlídce, ještě než začneme.</p>
+      <ul class="tiles" data-tiles></ul>
+    </div>
+  </section>
+
+  <section class="postup" id="postup">
+    <div class="wrap">
+      <h2>Od telefonu po klíčky obvykle jeden den</h2>
+      <ol class="road">
+        <li><time>Pondělí 9:10</time><b>Zavoláte nebo napíšete</b><span>Řeknete, co auto dělá, a domluvíme den. Většinou do týdne.</span></li>
+        <li><time>Úterý 7:00</time><b>Přivezete auto</b><span>Ráno od sedmi. Když nestíháte, klíče hodíte do schránky u vrat.</span></li>
+        <li><time>Úterý 13:30</time><b>Zavoláme cenu</b><span>Řekneme, co jsme našli a kolik oprava stojí. Rozhodnete vy.</span></li>
+        <li><time>Úterý 16:30</time><b>Odjedete</b><span>Ukážeme vám vyměněné díly, dostanete fakturu a záruku.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="book" id="objednat">
+    <div class="wrap book__grid">
+      <form class="form" data-form novalidate>
+        <h2>Objednat se</h2>
+        <p class="sub">Vyberte den a napište, co auto dělá. Do dvou hodin vám zavoláme a potvrdíme čas.</p>
+        <fieldset>
+          <legend>Služba</legend>
+          <div class="pick" data-pick-s></div>
+        </fieldset>
+        <fieldset>
+          <legend>Den</legend>
+          <div class="pick pick--days" data-days></div>
+        </fieldset>
+        <label>Auto<input name="auto" placeholder="Škoda Octavia, 2017" autocomplete="off"></label>
+        <label>Co auto dělá<textarea name="co" rows="3" placeholder="Při brzdění píská vpředu vpravo."></textarea></label>
+        <label>Telefon<input name="tel" type="tel" placeholder="+420" autocomplete="tel"></label>
+        <button class="btn btn--acc" type="submit">Odeslat poptávku</button>
+        <p class="form__ok" data-ok hidden>Hotovo. Toto je ukázka, nic se neodeslalo; na skutečném webu by vám dílna zavolala.</p>
+      </form>
+
+      <aside class="side">
+        <div class="hours">
+          <h2>Otevřeno</h2>
+          <p class="live live--big" data-live><i></i><span>Otevřeno</span></p>
+          <ul data-hours>
+            <li data-d="1"><span>Pondělí</span><b>7:00–17:00</b></li>
+            <li data-d="2"><span>Úterý</span><b>7:00–17:00</b></li>
+            <li data-d="3"><span>Středa</span><b>7:00–17:00</b></li>
+            <li data-d="4"><span>Čtvrtek</span><b>7:00–17:00</b></li>
+            <li data-d="5"><span>Pátek</span><b>7:00–17:00</b></li>
+            <li data-d="6"><span>Sobota</span><b>8:00–12:00</b></li>
+            <li data-d="0"><span>Neděle</span><b>zavřeno</b></li>
+          </ul>
+        </div>
+        <div class="where">
+          <h2>Kde nás najdete</h2>
+          <p><b>Dílenská 14, Liberec</b><br>vjezd ze dvora, parkování před vraty</p>
+          <p><a href="tel:+420123456789">+420 123 456 789</a><br><a href="mailto:dilna@nazvedaku.example">dilna@nazvedaku.example</a></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <b>Na Zvedáku</b>
+    <span>Ukázka · smyšlená značka, telefon i adresa · <a href="https://whytelynx.cz">Vladislav Zachariev, Whyte Lynx</a></span>
+  </div>
+</footer>
+
+<div class="mbar">
+  <a class="btn btn--line" href="tel:+420123456789">Zavolat</a>
+  <a class="btn btn--acc" href="#objednat">Objednat se</a>
+</div>
+
+<script src="main.js?v=c1"></script>
+</body>
+</html>
