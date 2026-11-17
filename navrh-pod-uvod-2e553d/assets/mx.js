@@ -56,7 +56,7 @@
   var m2 = $('.m2');
   if (m2) (function () {
     var stage = $('.mx-stage', m2), svg = $('.m2-map', m2), g = $('.m2-g', m2), cz = $('.m2-cz', m2);
-    var dots = $$('.m2-t', m2), qs = $$('.m2-q', m2);
+    var dots = $$('.m2-t', m2), qs = $$('.m2-q', m2), ns = $$('.m2-n', m2), txt = $('.m2-txt', m2), qbox = $('.m2-qs', m2);
     var L = cz.getTotalLength(), W, H, mob, s0, s1, a0, a1;
     var M0 = [500, 287.5], M1 = [442, 70];
     cz.style.strokeDasharray = L;
@@ -64,9 +64,19 @@
       W = stage.clientWidth; H = stage.clientHeight; mob = W < 700;
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       s0 = Math.min(W * 0.92 / 1000, (mob ? H * 0.42 : H * 0.62) / 575);
-      s1 = mob ? Math.min(W * 0.8 / 85, H * 0.36 / 90) : Math.min(W * 0.4 / 85, H * 0.52 / 90);
-      a0 = mob ? [W / 2, H * 0.53] : [W * 0.56, H * 0.6];
-      a1 = mob ? [W / 2, H * 0.5] : [W * 0.62, H * 0.6];
+      var sr = stage.getBoundingClientRect(), tr = txt.getBoundingClientRect();
+      var tb = tr.bottom - sr.top, tR = tr.right - sr.left;
+      if (mob) {
+        var qt = qbox.getBoundingClientRect().top - sr.top, top = tb + 16, bot = qt - 14;
+        s1 = Math.min(W * 0.8 / 85, (bot - top) * 0.9 / 105);
+        a1 = [W / 2, (top + bot) / 2 + 8 * s1];
+        a0 = [W / 2, (top + bot) / 2];
+      } else {
+        var rw = W - tR;
+        s1 = Math.min(rw * 0.5 / 85, H * 0.56 / 105);
+        a1 = [tR + rw * 0.52, H * 0.6];
+        a0 = [W * 0.56, H * 0.6];
+      }
     }
     scene(m2, '240svh', function (p) {
       var d = seg(p, 0, 0.33), z = ease(seg(p, 0.34, 0.6));
@@ -82,7 +92,12 @@
         var on = p >= 0.6 + i * 0.055;
         t.classList.toggle('on', on);
         var q = qs[i]; q.classList.toggle('on', on);
-        if (mob) { q.style.transform = ''; return; }
+        if (mob) {
+          q.style.transform = '';
+          ns[i].classList.toggle('on', on);
+          ns[i].style.transform = 'translate(' + (X + 11).toFixed(1) + 'px,' + (Y - 9).toFixed(1) + 'px)';
+          return;
+        }
         var o = 16, dd = q.getAttribute('data-d'), tr;
         if (dd === 'r') tr = 'translate(' + (X + o) + 'px,' + Y + 'px) translate(0,-50%)';
         else if (dd === 'l') tr = 'translate(' + (X - o) + 'px,' + Y + 'px) translate(-100%,-50%)';
@@ -102,7 +117,7 @@
       pr.style.setProperty('--f', '15px');
       var h = pr.offsetHeight, top = pr.getBoundingClientRect().top - stage.getBoundingClientRect().top;
       var mob = innerWidth <= 860;
-      var avail = mob ? stage.clientHeight - (top + 0) - 20 : stage.clientHeight - 96 - 24;
+      var avail = mob ? stage.clientHeight - top - 84 - 12 : stage.clientHeight - 96 - 24;
       var f = clamp(15 * avail / h, 10.5, 15);
       pr.style.setProperty('--f', f.toFixed(2) + 'px');
       pr.style.setProperty('--rh', pr.offsetHeight + 'px');
@@ -148,7 +163,7 @@
   var m5 = $('.m5');
   if (m5) (function () {
     var box = $('.m5-box', m5), svg = $('.m5-svg', m5), line = $('.m5-line', m5), pen = $('.m5-pen', m5);
-    var words = $$('.m5-words text', m5), L = line.getTotalLength(), trig = [], k;
+    var words = $$('.m5-words text', m5), dts = $$('.m5-dt', m5), L = line.getTotalLength(), trig = [], k;
     line.style.strokeDasharray = L;
     // kdy pero poprvé dojde k ikoně (vzorkování dráhy)
     words.forEach(function (w) {
@@ -165,9 +180,9 @@
       pen.setAttribute('cx', pt.x.toFixed(1)); pen.setAttribute('cy', pt.y.toFixed(1));
       pen.style.opacity = d > 0 && d < 1 ? 1 : 0;
       words.forEach(function (w, i) { w.classList.toggle('on', d >= trig[i]); });
-      m5.classList.toggle('done', d >= 0.995);
+      dts.forEach(function (t) { var i = +t.getAttribute('data-w'); t.classList.toggle('on', i < 3 ? d >= trig[i] + 0.1 : d >= 0.995); });
       if (sw > bw + 1) {
-        var px = pt.x * sw / 1200, tx = clamp(bw / 2 - px, bw - sw, 0);
+        var px = pt.x * sw / 1200, tx = clamp(bw * 0.62 - px, bw - sw, 0);
         svg.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,0,0)';
       } else svg.style.transform = '';
     }, resize);
