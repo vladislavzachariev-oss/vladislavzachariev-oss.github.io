@@ -140,7 +140,7 @@
     var time = $('.m4-time', m4), notes = $$('.m4-n', m4), stage = $('.mx-stage', m4), lastT = '';
     var L = $$('.m4-l', m4), sun = $('.m4-sun', m4), sunO = $('.m4-sun b', m4), moon = $('.m4-moon', m4), st = $('.m4-stars', m4);
     var cn = $('.m4-city.n', m4), cw = $('.m4-city.w', m4), cw2 = $('.m4-city.w2', m4);
-    var KEY = [[16, 0], [17.6, 1], [18.7, 2], [19.7, 3], [20.7, 4], [29.4, 4], [30.2, 5], [31, 6]];
+    var KEY = [[16, 0], [17.4, 1], [18.4, 2], [19.7, 3], [20.7, 4], [29.4, 4], [30.2, 5], [31, 6]];
     var W = 1, H = 1, CITY = 150, BAR = 0;
     function size() { W = stage.clientWidth; H = stage.clientHeight; CITY = parseFloat(getComputedStyle(stage).getPropertyValue('--city')) || $('.m4-city', m4).getBoundingClientRect().height || 150; BAR = narrow.matches ? 70 : 0; }
     function o(el, v) { v = Math.round(v * 1000) / 1000; if (el._o !== v) { el._o = v; el.style.opacity = v; } }
@@ -165,9 +165,9 @@
       o(moon, mo);
       o(st, seg(h, 19.6, 20.7) * (1 - seg(h, 29.4, 30.2)));
       /* město: večer ztmavne, okna se rozsvítí, k půlnoci část zhasne, ráno zase den */
-      var night = seg(h, 18.9, 20.4) * (1 - seg(h, 29.8, 30.8));
+      var night = seg(h, 17.9, 19.0) * (1 - seg(h, 29.9, 30.7));
       o(cn, night);
-      o(cw, seg(h, 19.1, 20.1) * (1 - seg(h, 29.6, 30.4)));
+      o(cw, seg(h, 18.6, 19.8) * (1 - seg(h, 29.6, 30.4)));
       o(cw2, seg(h, 19.4, 20.4) * (1 - seg(h, 22.8, 23.8)));
       m4.classList.toggle('nt', h >= 18.15 && h < 30.55);
       var hh = Math.floor(h) % 24, mm = Math.floor((h % 1) * 60);
