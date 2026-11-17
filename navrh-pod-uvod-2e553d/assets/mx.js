@@ -98,13 +98,16 @@
           ns[i].style.transform = 'translate(' + (X + 11).toFixed(1) + 'px,' + (Y - 9).toFixed(1) + 'px)';
           return;
         }
-        var o = 16, dd = q.getAttribute('data-d'), tr;
-        if (dd === 'r') tr = 'translate(' + (X + o) + 'px,' + Y + 'px) translate(0,-50%)';
-        else if (dd === 'l') tr = 'translate(' + (X - o) + 'px,' + Y + 'px) translate(-100%,-50%)';
-        else if (dd === 'u') tr = 'translate(' + X + 'px,' + (Y - o) + 'px) translate(-50%,-100%)';
-        else if (dd === 'd') tr = 'translate(' + X + 'px,' + (Y + o) + 'px) translate(-50%,0)';
-        else tr = 'translate(' + (X - o * .7) + 'px,' + (Y - o * .7) + 'px) translate(-100%,-100%)';
-        q.style.transform = tr;
+        // bublina u města; když by vyjela z okna, otočí se na druhou stranu a drží se uvnitř (17. 11.: Semily za okrajem)
+        var o = 16, dd = q.getAttribute('data-d'), qw = q.offsetWidth, qh = q.offsetHeight, x, y;
+        if (dd === 'r' && X + o + qw > W - 12) dd = 'l';
+        if (dd === 'r') { x = X + o; y = Y - qh / 2; }
+        else if (dd === 'l') { x = X - o - qw; y = Y - qh / 2; }
+        else if (dd === 'u') { x = X - qw / 2; y = Y - o - qh; }
+        else if (dd === 'd') { x = X - qw / 2; y = Y + o; }
+        else { x = X - o * .7 - qw; y = Y - o * .7 - qh; }
+        x = clamp(x, 12, W - qw - 12); y = clamp(y, 70, H - qh - 12);
+        q.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
       });
     }, resize);
   })();
