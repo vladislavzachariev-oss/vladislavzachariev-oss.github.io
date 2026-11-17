@@ -271,7 +271,11 @@
     up: '<svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
     down: '<svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
     x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
-    bin: '<svg viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></svg>'
+    bin: '<svg viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></svg>',
+    lay: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 10h17M10.5 10v9.5"/></svg>',
+    pic: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="M20.5 15.5l-4.5-4.5-8 8"/></svg>',
+    hgt: '<svg viewBox="0 0 24 24"><path d="M12 3.5v17M8 7.5l4-4 4 4M8 16.5l4 4 4-4"/></svg>',
+    sty: '<svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.1 0 1.7-.7 1.7-1.6 0-1-.9-1.4-.9-2.4 0-.9.8-1.6 1.7-1.6h2.3a3.7 3.7 0 0 0 3.7-3.7c0-4.3-3.8-7.7-8.5-7.7z"/><circle cx="8" cy="11" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.5" cy="8" r="1"/></svg>'
   };
   // čárové ikony u služeb a výhod (obecné, ne podle oboru)
   var ICONS = ['<svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg>', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
@@ -287,13 +291,15 @@
   // Z 18. 10.: „ať ty tlačítka jsou v pohodě a nic nepřetéká… ať ty tlačítka jde malým křížkem odebrat“: lišta je v jednom řádku
   // na horní hraně části (nezakrývá nadpis), malý křížek v rohu ji zavře; odebrání celé části je koš
   var tbx = '<button type="button" class="p-tbx" data-pa="close" aria-label="Zavřít lištu" title="Zavřít lištu">' + SVG.x + '</button>';
-  var tl = function (pa, label, title, k) { return '<button type="button" class="p-tl" data-pa="' + pa + '"' + (k ? ' data-k="' + k + '"' : '') + ' title="' + title + '">' + SVG.cyc + '<span>' + label + '</span></button>'; };
+  // Z 17. 11.: „Fotka přes cel… / F… / V… nic mi to neříká“ → každé tlačítko = vlastní ikona nad krátkým slovem, co udělá;
+  // současná volba je v popisku (title), ne na tlačítku
+  var tl = function (pa, label, title, k, ic) { return '<button type="button" class="p-tl" data-pa="' + pa + '"' + (k ? ' data-k="' + k + '"' : '') + ' title="' + esc(title) + '">' + (ic || SVG.cyc) + '<span>' + label + '</span></button>'; };
   function tb(k) {
     var v = VARS[k];
-    return '<span class="p-tb"><b>' + SECS[k] + '</b>' + (v ? tl('var', v[vr(k)], 'Přepnout vzhled části', k) : '') +
-      '<button type="button" class="p-ti" data-pa="up" data-k="' + k + '" aria-label="Posunout výš" title="Posunout výš">' + SVG.up + '</button>' +
-      '<button type="button" class="p-ti" data-pa="down" data-k="' + k + '" aria-label="Posunout níž" title="Posunout níž">' + SVG.down + '</button>' +
-      '<button type="button" class="p-ti" data-pa="off" data-k="' + k + '" aria-label="Odebrat část" title="Odebrat část">' + SVG.bin + '</button>' + tbx + '</span>';
+    return '<span class="p-tb"><b>' + SECS[k] + '</b>' + (v ? tl('var', 'Vzhled', 'Vzhled části: ' + v[vr(k)] + ' (klikněte pro další)', k, SVG.sty) : '') +
+      '<button type="button" class="p-ti" data-pa="up" data-k="' + k + '" title="Posunout část výš">' + SVG.up + '<span>Výš</span></button>' +
+      '<button type="button" class="p-ti" data-pa="down" data-k="' + k + '" title="Posunout část níž">' + SVG.down + '<span>Níž</span></button>' +
+      '<button type="button" class="p-ti" data-pa="off" data-k="' + k + '" title="Odebrat část ze stránky">' + SVG.bin + '<span>Odebrat</span></button>' + tbx + '</span>';
   }
   function nav(mob) {
     var links = mob ? '' : '<span class="p-links">' + S.ord.filter(isOn).slice(0, 4).map(function (k) { return '<span>' + NAVN[k] + '</span>'; }).join('') + '</span>';
@@ -301,15 +307,16 @@
     var call = has('volat') ? '<span class="p-btn sm p-call">' + SVG.tel + (mob ? '' : tv('tel')) + '</span>' : '';
     var top = S.nav === 'lista' ? '<div class="p-top"><span>' + SVG.tel + tv('tel') + '</span>' + (mob ? '' : '<span>' + SVG.pin + tv('adr') + '</span>') + '<span class="p-tr">' + tv('hours') + '</span></div>' : '';
     var ann = has('akce') ? ed('ann', 'p', 'p-ann') : '';
-    return ann + top + '<header class="p-nav" data-s="nav"><span class="p-tb"><b>Hlavička</b>' + tl('nav', O.nav[S.nav], 'Přepnout hlavičku') + tbx + '</span>' +
+    return ann + top + '<header class="p-nav" data-s="nav"><span class="p-tb"><b>Hlavička</b>' + tl('nav', 'Vzhled', 'Hlavička: ' + O.nav[S.nav] + ' (klikněte pro další)', null, SVG.lay) + tbx + '</span>' +
       brand() + ed('name', 'span') + '</span>' + links + '<span class="p-na">' + lang + call + (mob ? '<span class="p-burger"><i></i><i></i><i></i></span>' : '') + '</span></header>';
   }
   function hero() {
     var src = imgSrc();
     var badge = has('hod') ? '<span class="p-badge"><i></i>' + tv('hours') + '</span>' : '';
     var acts = '<div class="p-acts">' + ed('btn', 'span', 'p-btn') + '<span class="p-btn alt">' + (has('rez') ? 'Vybrat termín' : 'Zavolat') + '</span></div>';
-    var t = '<span class="p-tb"><b>Úvod</b>' + tl('hero', HEROS[S.hero], 'Přepnout rozvržení úvodu') +
-      (S.img !== 'vlastni' && S.hero !== 'text' ? tl('img', 'Fotka', 'Další fotka') : '') + tl('hh', 'Výška', 'Přepnout výšku úvodu') + tbx + '</span>';
+    var t = '<span class="p-tb"><b>Úvod</b>' + tl('hero', 'Rozvržení', 'Rozvržení úvodu: ' + HEROS[S.hero] + ' (klikněte pro další)', null, SVG.lay) +
+      (S.img !== 'vlastni' && S.hero !== 'text' ? tl('img', 'Jiná fotka', 'Další fotka do úvodu', null, SVG.pic) : '') +
+      tl('hh', 'Výška', 'Výška úvodu: ' + O.hh[S.hh] + ' (klikněte pro další)', null, SVG.hgt) + tbx + '</span>';
     var ring = S.sk === 'vyloha' && src && (S.hero === 'pod' || S.hero === 'vedle' || S.hero === 'deleny');
     var pic = ring ? '<div class="p-img p-ring" data-scroller><div>' + [src].concat(others(7)).map(function (u, i) {
       return '<span class="p-ph" style="--i:' + i + '"><img src="' + esc(u) + '" alt=""' + (i ? ' loading="lazy"' : '') + '></span>'; }).join('') + '</div></div>'
@@ -739,6 +746,7 @@
     return p.then(function (b) { return JSON.parse(new TextDecoder().decode(b)); });
   }
   function link(o) { return pack(o).then(function (code) { return location.origin + location.pathname + '#navrh=' + code; }); }
+  function noUrl(t) { return String(t).replace(/(?:https?:\/\/|data:|blob:|file:\/\/)\S*/gi, '').replace(/\s{2,}/g, ' '); }
   function load(o) {
     var n = clone(DEF), ok = function (map, v) { return typeof v === 'string' && own(map, v); };
     if (!o || typeof o !== 'object') return n;
@@ -754,7 +762,7 @@
     if (Array.isArray(o.on)) n.on = o.on.filter(function (k, i, a) { return ok(SECS, k) && a.indexOf(k) === i; });
     if (Array.isArray(o.ex)) n.ex = o.ex.filter(function (k) { return ok(EXTRAS, k); });
     if (o.vr && typeof o.vr === 'object') Object.keys(o.vr).forEach(function (k) { if (ok(VARS, k) && ok(VARS[k], o.vr[k])) n.vr[k] = o.vr[k]; });
-    if (o.t && typeof o.t === 'object') Object.keys(o.t).forEach(function (k) { if (ok(TX, k) && typeof o.t[k] === 'string') n.t[k] = o.t[k].slice(0, 300); });
+    if (o.t && typeof o.t === 'object') Object.keys(o.t).forEach(function (k) { if (ok(TX, k) && typeof o.t[k] === 'string') { var v = noUrl(o.t[k]).slice(0, 300); if (v.trim()) n.t[k] = v; } });
     return n;
   }
 
@@ -923,7 +931,8 @@
   /* psaní přímo v náhledu */
   page.addEventListener('input', function (e) {
     var el = e.target.closest('[data-t]'); if (!el) return;
-    var k = el.getAttribute('data-t'), v = el.textContent.replace(/\s+/g, ' ').slice(0, 300);
+    var k = el.getAttribute('data-t'), raw = el.textContent.replace(/\s+/g, ' '), v = noUrl(raw).slice(0, 300);
+    if (v !== raw.slice(0, 300)) el.textContent = v;   /* přetažená fotka vloží do textu svou adresu (Z 17. 11.: „VAŠE MĚSTOHTTPS://…KLID.WEBP“) */
     S.t[k] = v; persist();
     $$('[data-t="' + k + '"],[data-tv="' + k + '"]', page).forEach(function (o) { if (o !== el) o.textContent = v; });
     var inp = $('[data-tin="' + k + '"]', app); if (inp) inp.value = v;
@@ -936,6 +945,10 @@
     syncPanel();
   });
   page.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.closest('[data-t]')) { e.preventDefault(); e.target.blur(); } });
+  /* obrázek ani odkaz se do textu nepustí: přetažení do náhledu nic nevloží (fotku vymění tlačítko Jiná fotka) */
+  page.addEventListener('dragstart', function (e) { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); });
+  page.addEventListener('dragover', function (e) { if (e.target.closest && e.target.closest('[data-t]')) { e.preventDefault(); e.dataTransfer.dropEffect = 'none'; } });
+  page.addEventListener('drop', function (e) { if (e.target.closest && e.target.closest('[data-t]')) e.preventDefault(); });
   page.addEventListener('paste', function (e) {
     if (plain || !e.target.closest('[data-t]')) return;
     e.preventDefault(); var t = (e.clipboardData || window.clipboardData).getData('text'); d.execCommand('insertText', false, t);

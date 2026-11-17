@@ -233,13 +233,13 @@ body.nv-in .hdr{transform:translateY(-101%)}
    (zakrývá okraj, ne nadpis), malý křížek v rohu lištu zavře (Z 18. 10.) */
 .p-tb{position:absolute;top:0;right:16px;z-index:8;display:flex;flex-wrap:nowrap;align-items:center;gap:3px;padding:3px;border-radius:11px;background:#161616;color:#fff;font:600 12.5px/1 'Archivo',system-ui,sans-serif;letter-spacing:0;text-transform:none;font-variation-settings:normal;text-shadow:none;rotate:none;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;pointer-events:none;translate:0 -50%;transform:translateY(-4px);transition:opacity .2s,transform .2s;zoom:var(--iz)}
 .p-tb b{padding:0 6px 0 7px;font-weight:700;white-space:nowrap}
-.p-tb button{display:inline-flex;align-items:center;gap:6px;min-width:0;height:30px;padding:0 9px;border:0;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font:inherit;white-space:nowrap;cursor:pointer;transition:background .15s}
+.p-tb button{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:44px;height:46px;padding:0 9px;border:0;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font:inherit;white-space:nowrap;cursor:pointer;transition:background .15s}
 .p-tb button:hover{background:rgba(255,255,255,.26)}
-.p-tb .p-tl span{min-width:0;overflow:hidden;text-overflow:ellipsis}
-.p-tb .p-ti{flex:none;width:30px;padding:0;justify-content:center}
-.p-tb svg{flex:none;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.p-tb button span{font-size:11.5px;font-weight:600;line-height:1;letter-spacing:0;white-space:nowrap}
+.p-tb .p-ti{flex:none;padding:0 7px}
+.p-tb svg{flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 /* zavírací křížek je poslední tlačítko v liště, ne roh přes okraj: přes okraj přetékal každou část o 7 px (demo_check 22. 10.) */
-.p-tb .p-tbx{order:9;flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border-radius:8px}
+.p-tb .p-tbx{order:9;flex:none;display:grid;place-items:center;width:30px;min-width:0;height:46px;padding:0;border-radius:8px;background:none}
 .p-tb .p-tbx:hover{background:rgba(255,255,255,.26)}
 .p-tb .p-tbx svg{width:11px;height:11px;stroke-width:3}
 .p-nav>.p-tb{top:100%;right:auto;left:16px}
@@ -562,12 +562,10 @@ body.nv-in .hdr{transform:translateY(-101%)}
 /* úzký náhled telefonu: lišta bez popisku a bez ikon u přepínačů, pořád v jednom řádku; delší název se zkrátí třemi tečkami */
 .mob .p-tb{right:12px;max-width:calc(375px * var(--z) - 28px)}
 .mob .p-nav>.p-tb{left:12px;right:auto}
-.mob .p-tb b,.mob .p-tb .p-tl svg{display:none}
-.mob .p-tb .p-tl{padding:0 10px}
+.mob .p-tb b{display:none}
 /* „počítač“ zmenšený na telefonu: lišta nesmí být širší než stránka na displeji */
 .nv-page.pcn .p-tb{max-width:calc(var(--pw,1024px) * var(--z) - 28px)}
-.nv-page.pcn .p-tb b,.nv-page.pcn .p-tb .p-tl svg{display:none}
-.nv-page.pcn .p-tb .p-tl{padding:0 10px}
+.nv-page.pcn .p-tb b{display:none}
 .mob .p-grid3,.mob .p-two,.mob .p-krows{grid-template-columns:1fr;gap:14px}
 .mob .p-two{gap:28px}
 .mob.nv-page .v-vlevo .p-two{grid-template-columns:1fr}

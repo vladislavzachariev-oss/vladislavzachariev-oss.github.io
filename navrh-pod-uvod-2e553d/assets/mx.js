@@ -134,32 +134,49 @@
     }, resize);
   })();
 
-  /* 4  Máte zavřeno, web ne */
+  /* 4  Máte zavřeno, web ne: obloha z 7 přechodů (prolínají se jen sousední), slunce zapadne a ráno vyjde, v noci hvězdy, měsíc a okna */
   var m4 = $('.m4');
   if (m4) (function () {
     var time = $('.m4-time', m4), notes = $$('.m4-n', m4), stage = $('.mx-stage', m4), lastT = '';
-    var SKY = [[16, '#f5f4f1'], [17.4, '#f2e2c9'], [18.6, '#b98c84'], [19.6, '#33324a'], [20.6, '#12141b'], [29.4, '#12141b'], [30.3, '#3e4560'], [31, '#f5f4f1']];
-    function hex(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
-    var K = SKY.map(function (s) { return [s[0], hex(s[1])]; });
-    function sky(h) {
-      for (var i = 1; i < K.length; i++) if (h <= K[i][0]) {
-        var t = (h - K[i - 1][0]) / (K[i][0] - K[i - 1][0]), a = K[i - 1][1], b = K[i][1];
-        return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
-      }
-      return K[K.length - 1][1];
-    }
-    scene(m4, '300svh', function (p) {
-      var h = 16 + seg(p, 0.02, 0.97) * 15;
-      var c = sky(h), lum = (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
-      stage.style.setProperty('--sky', 'rgb(' + c.map(Math.round).join(',') + ')');
-      stage.style.setProperty('--skyink', lum < 0.42 ? '#f5f4f1' : '#161616');
+    var L = $$('.m4-l', m4), sun = $('.m4-sun', m4), sunO = $('.m4-sun b', m4), moon = $('.m4-moon', m4), st = $('.m4-stars', m4);
+    var cn = $('.m4-city.n', m4), cw = $('.m4-city.w', m4), cw2 = $('.m4-city.w2', m4);
+    var KEY = [[16, 0], [17.6, 1], [18.7, 2], [19.7, 3], [20.7, 4], [29.4, 4], [30.2, 5], [31, 6]];
+    var W = 1, H = 1, CITY = 150, BAR = 0;
+    function size() { W = stage.clientWidth; H = stage.clientHeight; CITY = parseFloat(getComputedStyle(stage).getPropertyValue('--city')) || $('.m4-city', m4).getBoundingClientRect().height || 150; BAR = narrow.matches ? 70 : 0; }
+    function o(el, v) { v = Math.round(v * 1000) / 1000; if (el._o !== v) { el._o = v; el.style.opacity = v; } }
+    function tr(el, x, y, s) { el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)' + (s ? ' scale(' + s.toFixed(3) + ')' : ''); }
+    var narrow = matchMedia('(max-width:760px)');
+    scene(m4, '320svh', function (p) {
+      var h = 16 + seg(p, 0.02, 0.97) * 15, i, a, b, t;
+      for (i = 1; i < KEY.length; i++) if (h <= KEY[i][0]) break;
+      i = Math.min(i, KEY.length - 1);
+      a = KEY[i - 1][1]; b = KEY[i][1]; t = seg(h, KEY[i - 1][0], KEY[i][0]);
+      L.forEach(function (l, k) { o(l, k === a ? 1 : k === b && b !== a ? t : 0); });
+      var nar = narrow.matches, hz = H - BAR - CITY * 0.55;
+      /* slunce: odpoledne vpravo nahoře, v 19:25 za domy; ráno vyjde vlevo */
+      var sx, sy, ts = seg(h, 16, 19.4), tr2 = seg(h, 29.9, 31);
+      if (h < 25) { sx = W * lerp(nar ? 0.84 : 0.86, nar ? 0.62 : 0.7, ts); sy = lerp(H * (nar ? 0.06 : 0.17), hz + CITY * 0.7, ts * ts); }
+      else { sx = W * lerp(nar ? 0.7 : 0.36, nar ? 0.84 : 0.44, tr2); sy = lerp(hz + CITY * 0.7, nar ? H * 0.06 : H - CITY - H * 0.13, 1 - Math.pow(1 - tr2, 2)); }
+      tr(sun, sx, sy, lerp(1, 1.18, seg(h, 17.5, 19.2)) * (h < 25 ? 1 : lerp(1.18, 1, tr2)));
+      o(sunO, h < 25 ? seg(h, 17.2, 18.8) : 1 - seg(h, 30.2, 31));
+      /* měsíc a hvězdy */
+      var tm = seg(h, 19.9, 29.6), mo = seg(h, 19.9, 20.8) * (1 - seg(h, 29.3, 30.1));
+      tr(moon, W * lerp(nar ? 0.86 : 0.4, nar ? 0.8 : 0.48, tm), H * lerp(nar ? 0.08 : 0.62, nar ? 0.05 : 0.36, Math.sin(tm * Math.PI / 2)));
+      o(moon, mo);
+      o(st, seg(h, 19.6, 20.7) * (1 - seg(h, 29.4, 30.2)));
+      /* město: večer ztmavne, okna se rozsvítí, k půlnoci část zhasne, ráno zase den */
+      var night = seg(h, 18.9, 20.4) * (1 - seg(h, 29.8, 30.8));
+      o(cn, night);
+      o(cw, seg(h, 19.1, 20.1) * (1 - seg(h, 29.6, 30.4)));
+      o(cw2, seg(h, 19.4, 20.4) * (1 - seg(h, 22.8, 23.8)));
+      m4.classList.toggle('nt', h >= 18.15 && h < 30.55);
       var hh = Math.floor(h) % 24, mm = Math.floor((h % 1) * 60);
       var txt = hh + ':' + (mm < 10 ? '0' : '') + mm;
       if (txt !== lastT) { time.textContent = txt; lastT = txt; }
       m4.classList.toggle('closed', h >= 17 && h < 31);
       m4.classList.toggle('morning', h >= 30.4);
       notes.forEach(function (n) { n.classList.toggle('on', h >= +n.getAttribute('data-t')); });
-    });
+    }, size);
   })();
 
   /* 5  Jedna čára */

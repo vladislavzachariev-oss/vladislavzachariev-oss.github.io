@@ -175,6 +175,66 @@
     var VALS = ['Babičce k osmdesátinám', 'Všechno nejlepší, babi! Máme Tě moc rádi.', '777 123 456'];
     var TW = [[2.6, 3.7], [3.9, 5.6], [5.8, 6.5]];
     var S = 0, t = 0, fired = {}, vis = false, last = 0, running = false;
+    /* počítač místo telefonu na širokém okně (Z 17. 11.); stejné tři kroky a časy, obsah navržený v 1280×800 */
+    var pcw = $('#pcw'), wide = matchMedia('(min-width:1000px)');
+    var pv = pcw && $('.pc-view', pcw), pin = pcw && $('.pc-in', pcw), cur = pcw && $('.pcur', pcw), clk = pcw && $('.pclick', pcw);
+    var pS = pcw && $('.ps-search', pcw), pQ = pcw && $('.pq-t', pcw), pChip = pcw && $('.pchips .web', pcw);
+    var pRoll = pcw && $('.pscroll', pcw), pLista = pcw && $('.plista', pcw), pRoz = pcw && $('.prozvoz', pcw);
+    var pF = pcw ? $$('.pf:not(.send)', pcw) : [], pSend = pcw && $('.pf.send', pcw), pToast = pcw && $('.ptoast', pcw);
+    var K = 0.6, SITE_Y = 4552;   /* 4552 = posun, na kterém je fotka formuláře: web dojede přesně k objednávce */
+    function isPC() { return !!pcw && wide.matches; }
+    function fitPC() { if (pv) { K = pv.clientWidth / 1280 || K; pv.style.setProperty('--k', K.toFixed(4)); } }
+    function at(el, fx, fy) {
+      var r = el.getBoundingClientRect(), o = pin.getBoundingClientRect();
+      return [(r.left - o.left + r.width * (fx == null ? 0.5 : fx)) / K, (r.top - o.top + r.height * (fy == null ? 0.5 : fy)) / K];
+    }
+    function moveTo(xy) { cur.style.transform = 'translate(' + (xy[0] - 6).toFixed(1) + 'px,' + (xy[1] - 4).toFixed(1) + 'px)'; }
+    function click(xy) {
+      clk.style.left = xy[0].toFixed(1) + 'px'; clk.style.top = xy[1].toFixed(1) + 'px';
+      clk.classList.remove('go'); void clk.offsetWidth; clk.classList.add('go');
+    }
+    function renderPC(tt, quiet) {
+      var y;
+      if (S === 0) {
+        pQ.textContent = typed(Q, 0.4, 2.0, tt);
+        pS.classList.toggle('shown', tt >= 2.2);
+        if (!quiet) {
+          once('m0', tt, 3.2, function () { moveTo(at(pChip)); });
+          once('t0', tt, 4.1, function () { click(at(pChip)); });
+        }
+      } else if (S === 1) {
+        y = SITE_Y * ease((tt - 0.6) / 4.6);
+        pRoll.style.transform = 'translateY(' + (-y).toFixed(1) + 'px)';
+        pLista.classList.toggle('on', y > 440);
+        if (!quiet) {
+          once('m1a', tt, 0.3, function () { moveTo([1150, 560]); });
+          once('m1', tt, 4.9, function () { moveTo([1191, 35]); });
+          once('t1', tt, 5.7, function () { click([1191, 35]); });
+        }
+      } else {
+        if (!quiet) {
+          once('m2a', tt, 1.0, function () { moveTo([878, 279]); });
+          once('t2a', tt, 1.95, function () { click([878, 279]); });
+          pF.forEach(function (f, i) {
+            once('m2f' + i, tt, TW[i][0] - 0.75, function () { moveTo(at(f, 0.3, 0.5)); });
+          });
+          once('m2s', tt, 6.3, function () { moveTo(at(pSend)); });
+          once('t2', tt, 6.95, function () { click(at(pSend)); });
+        }
+        pRoz.classList.toggle('on', tt >= 2.05);
+        for (var i = 0; i < VALS.length; i++) {
+          pF[i].textContent = typed(VALS[i], TW[i][0], TW[i][1], tt);
+          pF[i].classList.toggle('act', !quiet && tt >= TW[i][0] - 0.2 && tt < TW[i][1] + 0.25);
+        }
+        pSend.classList.toggle('down', !quiet && tt >= 7.0 && tt < 7.25);
+        pToast.classList.toggle('on', tt >= 7.4);
+      }
+    }
+    if (pcw) {
+      fitPC();
+      if (window.ResizeObserver) new ResizeObserver(fitPC).observe(pv); else addEventListener('resize', fitPC);
+      wide.addEventListener ? wide.addEventListener('change', function () { fitPC(); fillImgs(isPC() ? pcw : phone); show(S, t); }) : 0;
+    }
     function typed(s, a, b, tt) { return s.slice(0, Math.round(s.length * clamp((tt - a) / (b - a), 0, 1))); }
     function tapAt(el, fx, fy) {
       var r = el.getBoundingClientRect(), sr = scr.getBoundingClientRect();
@@ -185,7 +245,8 @@
     function once(key, tt, at, fn) { if (tt >= at && !fired[key]) { fired[key] = 1; fn(); } }
     function render(tt, quiet) {
       var p, y;
-      if (S === 0) {
+      if (isPC()) renderPC(tt, quiet);
+      else if (S === 0) {
         qT.textContent = typed(Q, 0.4, 2.0, tt);
         srch.classList.toggle('shown', tt >= 2.2);
         if (!quiet) once('t0', tt, 4.1, function () { tapAt(chip); });
@@ -214,9 +275,10 @@
       tabs.forEach(function (b, i) { $('.tbar i', b).style.setProperty('--p', i === S ? p.toFixed(3) : i < S ? '1' : '0'); });
     }
     function show(s, tt) {
-      if (s) fillImgs(phone);
+      if (s) fillImgs(isPC() ? pcw : phone);
       S = s; t = tt || 0; fired = {};
       phone.dataset.s = String(s);
+      if (pcw) pcw.dataset.s = String(s);
       if (s !== 1) phone.classList.remove('lt');
       tabs.forEach(function (b, i) { b.setAttribute('aria-pressed', i === s ? 'true' : 'false'); });
       render(t, reduce);
@@ -233,8 +295,8 @@
     });
     if (reduce) show(1, DUR[1] - 0.01);
     else show(0, 0);
-    afterPaint(function () { fillImgs(phone); });
-    seen(phone, function (v) { vis = v; if (v) start(); }, { threshold: 0.3 });
+    afterPaint(function () { fillImgs(isPC() ? pcw : phone); });
+    seen(phone.parentNode, function (v) { vis = v; if (v) start(); }, { threshold: 0.3 });   /* telefon je na PC skrytý, hlídá se celý blok */
     d.addEventListener('visibilitychange', function () { if (!d.hidden && vis) start(); });
   })();
 
