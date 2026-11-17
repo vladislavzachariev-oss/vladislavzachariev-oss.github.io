@@ -74,7 +74,7 @@
       } else {
         var rw = W - tR;
         s1 = Math.min(rw * 0.5 / 85, H * 0.56 / 105);
-        a1 = [tR + rw * 0.52, H * 0.6];
+        a1 = [tR + rw * 0.46, H * 0.6];  /* 0.52: bublina Semil se nevešla vpravo a překryla Turnov */
         a0 = [W * 0.56, H * 0.6];
       }
     }
@@ -85,7 +85,7 @@
       g.setAttribute('transform', 'translate(' + ax.toFixed(2) + ' ' + ay.toFixed(2) + ') scale(' + s.toFixed(5) + ') translate(' + (-mx).toFixed(3) + ' ' + (-my).toFixed(3) + ')');
       cz.style.strokeDashoffset = (L * (1 - d)).toFixed(2);
       cz.style.strokeWidth = ((mob ? 1.6 : 1.4) / s).toFixed(4);
-      cz.style.fillOpacity = seg(p, 0.22, 0.42).toFixed(3);
+      /* bez bílé výplně: plocha země vedle podkladu nadpisu dělala obdélníkový výřez (snímek 17. 11.) */
       dots.forEach(function (t, i) {
         var X = ax + (+t.getAttribute('data-x') - mx) * s, Y = ay + (+t.getAttribute('data-y') - my) * s;
         t.setAttribute('transform', 'translate(' + X.toFixed(1) + ' ' + Y.toFixed(1) + ')');
