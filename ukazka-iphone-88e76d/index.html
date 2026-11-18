@@ -114,9 +114,9 @@ footer p+p{margin-top:8px}
 <i id="prog" aria-hidden="true"></i>
 <nav><b>iPhone 17 Pro</b><div><a href="#scena">Přehled</a><a href="#scena" data-t=".55">Uvnitř</a><a href="#technika">Technika</a><a href="#zblizka">Zblízka</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
 
-<!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas (kde se čte text, jede obraz pomaleji, ale nezastaví).
+<!-- snímky: seq/<složka>/0000.webp …; od 18. 11. 1200 snímků (300 z Blenderu + 3 mezisnímky RIFE v4.6 mezi každými dvěma, ať pomalý posun neseká); data-map = posun → čas (kde se čte text, jede obraz pomaleji, ale nezastaví).
      Časy scény (phone.py T): úvod 0–.07, otočení na záda .30, rozklad .37–.53, oblet .53–.72, složení .76–.90 -->
-<div class="stage" id="scena" data-frames="300" data-dir="seq/l" data-dir-p="seq/p"
+<div class="stage" id="scena" data-frames="1200" data-dir="seq/l4" data-dir-p="seq/p4"
      data-map="0,0 .03,0 .12,.14 .17,.18 .26,.28 .31,.32 .40,.45 .44,.49 .49,.53 .53,.57 .66,.71 .71,.75 .84,.885 .90,.915 .96,.985 1,1">
   <div class="pin">
     <canvas aria-hidden="true"></canvas>
@@ -225,14 +225,15 @@ function load(s) {
   const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
   for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
   push(s.n - 1);
-  // hustě 30 dopředu → hrubý náčrt celé scény (každý 8.) → hustě 120 dopředu → zbytek; na 0,3 MB/s jen hustě = obraz o 109 snímků pozadu
-  const asked = new Set(), sketch = order.slice(0, Math.ceil(s.n / 8) + 1);
-  const near = (c, dn, a, b) => { for (let d = a; d <= b; d++) for (const i of d <= 4 ? [c + d * dn, c - d * dn] : [c + d * dn]) if (i >= 0 && i < s.n && !asked.has(i)) return i; return -1; };
+  // hustě dopředu → hrubý náčrt celé scény → hustě dál dopředu → zbytek; na 0,3 MB/s jen hustě = obraz o 109 snímků pozadu.
+  // Počty laděné na 300 snímků, R je převádí (od 18. 11. 1200 snímků: mezisnímky RIFE, ať pomalý posun neseká).
+  const R = s.n / 300, asked = new Set(), sketch = order.slice(0, Math.ceil(s.n / (8 * R)) + 1);
+  const near = (c, dn, a, b) => { for (let d = a; d <= b; d++) for (const i of d <= 4 * R ? [c + d * dn, c - d * dn] : [c + d * dn]) if (i >= 0 && i < s.n && !asked.has(i)) return i; return -1; };
   const pick = () => {
     const c = Math.round(s.t * (s.n - 1)), dn = s.dirn || 1;
-    let i = near(c, dn, 0, 30); if (i >= 0) return i;
+    let i = near(c, dn, 0, 30 * R); if (i >= 0) return i;
     for (const j of sketch) if (!asked.has(j)) return j;
-    i = near(c, dn, 31, 120); if (i >= 0) return i;
+    i = near(c, dn, 30 * R + 1, 120 * R); if (i >= 0) return i;
     while (k < order.length) { const j = order[k++]; if (!asked.has(j)) return j; }
     return -1;
   };
@@ -250,11 +251,14 @@ function load(s) {
   next();
 }
 function feed(s) {
-  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
-  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
-  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
-  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
-    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
+  // 1200 snímků (18. 11.): pomalu se dekóduje každý, při rychlém posunu jen každý st-tý (telefon nestihne ~190 dekódování/s
+  // a oko to při rychlosti nepozná); dekódovaných obrázků v paměti nejvýš ~40 jako dřív při 300 snímcích
+  const R = s.n / 300, c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const st = Math.round(clamp(Math.abs(s.v || 0) / 100, 1, 8));
+  const ahead = Math.round(Math.min(clamp(12 * R + lag * .6, 12 * R, 30 * R), 30 * st)), keep = Math.ceil(ahead / st) + 10;
+  const lo = s.dirn > 0 ? 4 * st : ahead, hi = s.dirn > 0 ? ahead : 4 * st, base = Math.round(c / st) * st;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d += st) {
+    for (const i of d ? [base + d * s.dirn, base - d * s.dirn] : [c, base]) {
       if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
       s.busy.add(i); s.dec++;
       const gen = s.gen;
@@ -267,6 +271,7 @@ function feed(s) {
   if (s.bms.size > keep) {
     const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
     for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+    for (const i of far) { if (s.bms.size <= keep + 20) break; if (Math.abs(i - c) > 2 && s.bms.has(i)) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }   // tvrdý strop paměti
   }
 }
 function nearest(s, i) {
