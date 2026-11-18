@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iPhone 17 Pro rozložený — ukázka Whyte Lynx</title>
+<meta name="description" content="Telefon, který se při posunu stránky otočí, rozloží na devět vrstev a zase složí. Ukázka práce Whyte Lynx.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* 18. 11. 2026: černobílá jako apple.com (černé jeviště, bílé textové části, šedý doplňkový text #86868b, nadpisy 600).
+   Písmo Applu je licencované, Inter je volná náhrada. Na stránce neběží žádné 3D: otočení, rozklad a složení jsou
+   předem vyrenderované snímky (blender/phone.py) kreslené do plátna podle posunu; jádro jeviště je z ukázky 911 Turbo S. */
+:root{--bg:#000;--tx:#f5f5f7;--tx2:#a1a1a6;--ink:#1d1d1f;--ink2:#6e6e73;--line:rgba(29,29,31,.12);--edge:max(24px,calc(50% - 560px));--side:clamp(24px,4vw,96px)}
+*{box-sizing:border-box;margin:0}
+html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{font:400 17px/1.47 Inter,"Segoe UI",system-ui,sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden;letter-spacing:-.011em}
+a{color:inherit}
+
+nav{position:fixed;inset:0 0 auto 0;height:52px;padding:0 var(--side);display:flex;align-items:center;justify-content:space-between;z-index:6;color:#f5f5f7;pointer-events:none;transition:background-color .25s,color .25s}
+nav.dk{background:rgba(0,0,0,.7);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+nav.lt{background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);color:#1d1d1f}
+nav>*{pointer-events:auto}
+nav b{font-weight:600;font-size:17px;letter-spacing:-.02em}
+nav div{display:flex;gap:28px;font-size:13px}
+nav a{text-decoration:none;opacity:.8;transition:opacity .2s}
+nav a:hover,nav a:focus-visible{opacity:1}
+#prog{position:fixed;left:0;top:0;height:2px;width:100%;background:#86868b;transform-origin:0 50%;transform:scaleX(0);z-index:7}
+
+.eye{font-size:17px;font-weight:600;letter-spacing:-.01em;color:var(--tx2);margin-bottom:10px}
+h1{font-weight:600;font-size:clamp(40px,min(5vw,11vh),80px);line-height:1.05;letter-spacing:-.035em}
+h2{font-weight:600;font-size:clamp(30px,min(3.8vw,7.6vh),56px);line-height:1.08;letter-spacing:-.03em}
+p.sub{margin-top:14px;font-size:clamp(17px,1.45vw,21px);line-height:1.38;color:var(--tx2);max-width:25em;letter-spacing:-.015em}
+
+/* jeviště (jádro z ukázky 911 Turbo S, 14. 11.: plocha vysoká jako největší okno + přesah, dojezd pružinou, prolínání jen v pomalém pohybu) */
+.stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(1000vh + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#000}
+@supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
+.stage+section{z-index:1}
+.pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
+.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cap{position:absolute;opacity:0;visibility:hidden;will-change:opacity,transform;text-shadow:0 1px 24px rgba(0,0,0,.9)}
+.cap.l{left:var(--side);top:calc(var(--sv) / 2);width:min(440px,30vw);margin-top:-110px}
+.cap h1{white-space:nowrap}
+.cap.r{right:var(--side);top:calc(var(--sv) / 2);width:min(420px,30vw);margin-top:-80px}
+.cap.b{left:0;right:0;bottom:0;text-align:center;padding:22vh 24px calc(var(--low) + clamp(28px,6vh,72px));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.82) 62%)}
+.cap.b p.sub{margin-inline:auto;max-width:34em}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:30px;font-size:14px;color:var(--tx2)}
+.hint i{width:1px;height:32px;background:linear-gradient(#fff,rgba(255,255,255,0));animation:hint 2.2s ease-in-out infinite;transform-origin:50% 0}
+@keyframes hint{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.btn{display:inline-block;margin-top:24px;padding:12px 24px;border-radius:980px;background:#f5f5f7;color:#1d1d1f;font-size:17px;font-weight:500;text-decoration:none;text-shadow:none;transition:background .2s}
+.btn:hover{background:#d2d2d7}
+.btn.dark{background:#1d1d1f;color:#f5f5f7}
+.btn.dark:hover{background:#3a3a3c}
+
+section.band{position:relative;background:#fff;color:var(--ink);padding:clamp(88px,13vh,160px) var(--edge)}
+section.band .eye,section.band p.sub{color:var(--ink2)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(48px,8vh,88px)}
+.nums div{font-size:15px;line-height:1.35;color:var(--ink2);border-top:1px solid var(--line);padding-top:22px}
+.nums strong{display:block;font-weight:600;font-size:clamp(48px,5vw,84px);line-height:1;letter-spacing:-.045em;color:var(--ink);margin-bottom:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nums strong small{font-size:.3em;font-weight:600;letter-spacing:-.01em;margin-left:.2em}
+dl{display:grid;grid-template-columns:repeat(2,1fr);column-gap:56px;margin-top:clamp(48px,7vh,80px)}
+dl div{display:flex;justify-content:space-between;gap:24px;padding:16px 0;border-top:1px solid var(--line);font-size:17px}
+dt{color:var(--ink2);flex:none}
+dd{text-align:right;font-weight:500}
+
+/* zblízka: tři výřezy z téhož renderu na černé */
+.near{background:#000;padding:clamp(88px,13vh,160px) var(--edge)}
+.near h2{max-width:14em}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:clamp(40px,7vh,72px)}
+.tiles figure{margin:0;border-radius:22px;overflow:hidden;background:#0b0b0c}
+.tiles img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover}
+.tiles figcaption{padding:20px 24px 26px;font-size:15px;line-height:1.4;color:var(--tx2)}
+.tiles figcaption b{display:block;color:var(--tx);font-weight:600;font-size:19px;margin-bottom:4px;letter-spacing:-.02em}
+
+.about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(32px,6vw,96px);align-items:start}
+.about p{font-size:clamp(17px,1.4vw,19px);line-height:1.5;color:var(--ink2)}
+.about p+p{margin-top:16px}
+.about p b{color:var(--ink);font-weight:500}
+
+footer{background:#f5f5f7;color:var(--ink2);padding:28px var(--edge) 44px;font-size:12px;line-height:1.6}
+footer b{color:var(--ink);font-weight:500}
+footer p+p{margin-top:8px}
+.btn:focus-visible,a:focus-visible{outline:2px solid #0071e3;outline-offset:4px}
+
+@media(max-width:860px){
+  nav div a:not(.keep){display:none}
+  .stage{height:calc(850vh + var(--bleed))}
+  .cap.l,.cap.r{left:24px;right:24px;width:auto;top:auto;bottom:calc(var(--low) + clamp(36px,8vh,80px));margin-top:0}
+  .nums{grid-template-columns:repeat(2,1fr);gap:20px}
+  dl,.about,.tiles{grid-template-columns:1fr}
+  dl div{display:block;padding:14px 0}dt{font-size:14px;margin-bottom:2px}dd{text-align:left}
+}
+@media(min-width:861px) and (max-height:700px){
+  .cap.l{margin-top:-96px}.cap.l h1{font-size:clamp(40px,min(5.2vw,11vh),72px)}
+  .cap .hint{margin-top:18px}
+  p.sub{margin-top:10px;font-size:17px}
+}
+@media(max-height:480px) and (orientation:landscape){
+  nav{height:46px}
+  h1{font-size:34px}h2{font-size:24px}p.sub{margin-top:6px;font-size:15px}
+  .cap.l,.cap.r{left:var(--side);right:auto;width:min(340px,40vw);top:60px;bottom:auto;margin-top:0}
+  .cap.r{left:auto;right:var(--side)}
+  .cap.b{padding:12vh 20px calc(var(--low) + 18px)}
+  .cap .hint{margin-top:12px}
+}
+@media(prefers-reduced-motion:reduce){.hint i{animation:none}}
+</style>
+</head>
+<body>
+<i id="prog" aria-hidden="true"></i>
+<nav><b>iPhone 17 Pro</b><div><a href="#scena">Přehled</a><a href="#scena" data-t=".55">Uvnitř</a><a href="#technika">Technika</a><a href="#zblizka">Zblízka</a><a class="keep" href="https://whytelynx.cz">Ukázka · Whyte Lynx</a></div></nav>
+
+<!-- snímky: seq/<složka>/0000.webp …; data-map = posun → čas (kde se čte text, jede obraz pomaleji, ale nezastaví).
+     Časy scény (phone.py T): úvod 0–.07, otočení na záda .30, rozklad .37–.53, oblet .53–.72, složení .76–.90 -->
+<div class="stage" id="scena" data-frames="300" data-dir="seq/l" data-dir-p="seq/p"
+     data-map="0,0 .03,0 .12,.14 .17,.18 .26,.28 .31,.32 .40,.45 .44,.49 .49,.53 .53,.57 .66,.71 .71,.75 .84,.885 .90,.915 .96,.985 1,1">
+  <div class="pin">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cap l" data-at="0"><p class="eye">Ukázka · Whyte Lynx</p><h1>iPhone 17&nbsp;Pro</h1><p class="sub">Otočte ho, rozložte a&nbsp;složte zpátky. Stačí posouvat stránku.</p><span class="hint"><i></i>Posouvejte dolů</span></div>
+    <div class="cap r" data-at=".16"><h2>Hliník z&nbsp;jednoho kusu.</h2><p class="sub">Tělo je vcelku z&nbsp;leteckého hliníku řady 7000.</p></div>
+    <div class="cap l" data-at=".30"><h2>Sklo i&nbsp;na zádech.</h2><p class="sub">Ceramic Shield poprvé chrání i&nbsp;zadní stranu.</p></div>
+    <div class="cap b" data-at=".55"><h2>Devět vrstev.</h2><p class="sub">Krycí sklo, displej, chlazení, deska s&nbsp;baterií, rám, snímače, MagSafe, záda a&nbsp;čočky.</p></div>
+    <div class="cap b" data-at=".73"><h2>Chladí ho voda.</h2><p class="sub">Odpařovací komora s&nbsp;deionizovanou vodou je přivařená laserem k&nbsp;tělu a&nbsp;odvádí teplo z&nbsp;čipu A19&nbsp;Pro.</p></div>
+    <div class="cap b" data-at=".47"><h2>Tři fotoaparáty po 48&nbsp;Mpx.</h2><p class="sub">Hlavní, širokoúhlý a&nbsp;teleobjektiv, který přiblíží osmkrát v&nbsp;optické kvalitě.</p></div>
+    <div class="cap l" data-at=".90"><h2>A&nbsp;zase v&nbsp;celku.</h2><p class="sub">Všech devět vrstev na svém místě.</p></div>
+    <div class="cap b" data-at="1"><h2>A&nbsp;teď čísla.</h2><a class="btn" href="#technika">Technika</a></div>
+  </div>
+</div>
+
+<section class="band" id="technika">
+  <p class="eye">Technika</p>
+  <h2>Velký výkon v&nbsp;malém těle.</h2>
+  <div class="nums">
+    <div><strong><span data-n="6.3" data-d="1">6,3</span><small>″</small></strong>displej Super Retina XDR</div>
+    <div><strong><span data-n="3000">3 000</span><small>nitů</small></strong>nejvyšší jas venku</div>
+    <div><strong><span data-n="48">48</span><small>Mpx</small></strong>každý ze tří zadních fotoaparátů</div>
+    <div><strong><span data-n="8">8</span><small>×</small></strong>přiblížení v&nbsp;optické kvalitě</div>
+  </div>
+  <dl>
+    <div><dt>Čip</dt><dd>A19 Pro, 6 jader procesoru a&nbsp;6 grafických</dd></div>
+    <div><dt>Tělo</dt><dd>Hliník řady 7000 z&nbsp;jednoho kusu</dd></div>
+    <div><dt>Chlazení</dt><dd>Odpařovací komora s&nbsp;vodou</dd></div>
+    <div><dt>Přední sklo</dt><dd>Ceramic Shield 2</dd></div>
+    <div><dt>Přední kamera</dt><dd>18&nbsp;Mpx, Center Stage</dd></div>
+    <div><dt>Nabíjení</dt><dd>Na 50&nbsp;% zhruba za 20 minut</dd></div>
+  </dl>
+</section>
+
+<section class="near" id="zblizka">
+  <p class="eye">Zblízka</p>
+  <h2>Každý díl má své místo.</h2>
+  <div class="tiles">
+    <figure><img src="det/kamery.webp" alt="Tři čočky zadních fotoaparátů na hliníkové plošině" loading="lazy" decoding="async" width="720" height="720"><figcaption><b>Fotoaparáty</b>Tři čočky po 48&nbsp;Mpx na plošině z&nbsp;téhož kusu hliníku.</figcaption></figure>
+    <figure><img src="det/cip.webp" alt="Deska s čipem A19 Pro pod odpařovací komorou" loading="lazy" decoding="async" width="720" height="720"><figcaption><b>A19 Pro</b>Čip na desce nad baterií, teplo z&nbsp;něj odvádí komora.</figcaption></figure>
+    <figure><img src="det/magsafe.webp" alt="Měděná cívka MagSafe s prstencem magnetů" loading="lazy" decoding="async" width="720" height="720"><figcaption><b>MagSafe</b>Měděná cívka a&nbsp;prstenec magnetů pod zadním sklem.</figcaption></figure>
+  </div>
+</section>
+
+<section class="band" id="ukazka">
+  <div class="about">
+    <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;vaše nabídka.</h2></div>
+    <div>
+      <p><b>Celá scéna je 300 předem připravených obrázků</b>, které se přehrávají podle posunu stránky. Proto běží plynule na počítači i&nbsp;na telefonu.</p>
+      <p>Místo telefonu může být váš výrobek, stroj nebo dům, klidně rozložený na součástky. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co prodáváte.</p>
+      <a class="btn dark" href="https://whytelynx.cz">Chci podobnou stránku</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><b>Ukázka práce — Vladislav Zachariev · Whyte Lynx</b>, <a href="https://whytelynx.cz">whytelynx.cz</a>. Nezávislá studie, není to web společnosti Apple, není s&nbsp;ní spojená a&nbsp;nic neprodává. iPhone, MagSafe a&nbsp;Ceramic Shield jsou ochranné známky společnosti Apple Inc.</p>
+  <p>Parametry: <a href="https://www.apple.com/newsroom/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/" target="_blank" rel="noopener">Apple Newsroom</a>, 9. 9. 2025 (čteno 18. 11. 2026). 3D model vnějšku: „iPhone 17 Pro“, autor <a href="https://sketchfab.com/3d-models/iphone-17-pro-4541aa8a28324b33a2baaf81d263aaec" target="_blank" rel="noopener">Ranguel</a>, licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; zadní sklo bez loga, materiály a&nbsp;studio jsou upravené. Vnitřní díly jsou vlastní zjednodušený model, nejde o&nbsp;přesný rozpis součástek. Záběry jsou předem vyrenderované.</p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const nums = (s, sep) => s.split(sep).map(Number);
+const portrait = () => innerWidth / innerHeight < 0.8;
+
+/* ---------- jeviště: řada obrázků kreslená do plátna, čas určuje posun stránky (jádro z 911 Turbo S, 14. 11. 2026) ---------- */
+let vh = 0;
+const probe = document.createElement('div');
+probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
+document.body.appendChild(probe);
+function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
+const stages = [...document.querySelectorAll('.stage')].map(el => {
+  const n = +el.dataset.frames, canvas = el.querySelector('canvas');
+  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
+    map: el.dataset.map.split(' ').map(p => nums(p, ',')),
+    caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
+    blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
+});
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=1`;   // v = verze snímků; po novém renderu zvednout
+const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
+  const im = new Image(), u = URL.createObjectURL(blob);
+  im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
+  im.onerror = no; im.src = u;
+});
+
+function load(s) {
+  const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
+  if (s.dir === dir) return;
+  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
+  const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
+  const c = Math.round(s.t * (s.n - 1));
+  for (let i = c - 3; i <= c + 12; i++) push(i);
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
+  push(s.n - 1);
+  let k = 0, live = 0;
+  const next = () => {
+    while (live < 6 && k < order.length && gen === s.gen) {
+      const i = order[k++], url = src(s, i); live++;
+      const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
+      get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
+        .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
+        .then(() => { live--; next(); });
+    }
+  };
+  next();
+}
+function feed(s) {
+  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
+  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
+    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
+      if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
+      s.busy.add(i); s.dec++;
+      const gen = s.gen;
+      decode(s.blobs[i]).then(bm => {
+        if (gen !== s.gen) { bm.close && bm.close(); return; }
+        s.bms.set(i, bm); s.dirty = true; tick();
+      }, () => {}).then(() => { s.busy.delete(i); s.dec--; feed(s); });
+    }
+  }
+  if (s.bms.size > keep) {
+    const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
+    for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+  }
+}
+function nearest(s, i) {
+  if (s.bms.has(i)) return i;
+  for (let d = 1; d < s.n; d++) { if (s.bms.has(i - d)) return i - d; if (s.bms.has(i + d)) return i + d; }
+  return -1;
+}
+function size(s) {
+  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(probe.offsetHeight || innerHeight, Hc);
+  const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
+  if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
+    s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
+    s.tops = s.caps.map(k => [k.at, k.c.offsetTop]).sort((a, b) => a[0] - b[0]);   // horní hrana každého popisku (na výšku jsou dole)
+  }
+}
+function capTop(s) {                                 // horní hrana popisku v čase t, mezi popisky plynule
+  const T = s.tops; if (!T || !T.length) return s.H;
+  if (s.t <= T[0][0]) return T[0][1];
+  for (let i = 1; i < T.length; i++) if (s.t <= T[i][0]) { const [a, ya] = T[i - 1], [b, yb] = T[i]; return ya + (yb - ya) * smooth(a, b, s.t); }
+  return T[T.length - 1][1];
+}
+function place(s, iw, ih) {                          // telefon je uprostřed snímku: snímek vždy celý v okně (contain), na střed malého okna
+  const W = s.W, H = s.H;
+  if (iw < ih) {
+    // na výšku jsou popisky dole: telefon a díly (ve snímku svisle 24–80 %, střed 52 %) se vejdou mezi lištu a horní hranu popisku
+    // (18. 11.: na 390×844 nadpis přes spodek telefonu, na 360×640 popisek přes telefon); okraj snímku je čistě černý, zmenšení nevadí
+    // rozložené díly jsou ve snímku nízký široký pás (svisle ~35–68 %) → během rozkladu plná velikost, jinak by visely malé nahoře
+    const top = 56, free = Math.max(H * .42, capTop(s) - top - 14);
+    const e = smooth(.34, .45, s.t) * (1 - smooth(.78, .88, s.t)), ext = .58 - .2 * e;
+    const k = Math.min(Math.max(W / iw, H / ih), free / (ih * ext)), w = iw * k, h = ih * k;
+    return [(W - w) / 2, top + free / 2 - (.52 - .11 * e) * h, w, h];   // střed rozložených dílů je ve snímku na 41 % výšky (změřeno 390×844)
+  }
+  // rozložený telefon sahá skoro přes celou výšku snímku a popisky dole by ho kryly (18. 11., snímek 1440×900):
+  // během rozkladu (čas .37–.90) se obraz plynule zmenší o 12 % a zvedne o 6 % výšky okna, dole zůstane černá na text
+  const e = smooth(.36, .47, s.t) * (1 - smooth(.80, .90, s.t));
+  // nizke siroke okno (1265x585): text zabere vetsi dil vysky -> zmensit az o 26 % a zvednout o 10 %
+  const q = Math.min(1, Math.max(0, (W / H - 1.6) / .6));
+  const k = Math.min(W / iw, H / ih * 1.08) * (1 - (.12 + .14 * q) * e), h = ih * k;
+  return [(W - iw * k) / 2, (H - h) / 2 - e * (.06 + .04 * q) * H, iw * k, h];
+}
+function draw(s) {
+  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;
+  let i, b = -1, shownF;
+  if (s.slow && !window.__noBlend && a > .01 && a < .99 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { i = i0; b = i0 + 1; shownF = f; }
+  else { i = nearest(s, Math.round(f)); shownF = i; }
+  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
+  s.shown = i; s.shownF = shownF; s.dirty = false;
+  const g = s.ctx, im = s.bms.get(i), [x, y, w, h] = place(s, im.width, im.height);
+  g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+  g.fillStyle = '#000'; g.fillRect(0, 0, s.W, s.Hc);
+  g.drawImage(im, x, y, w, h);
+  if (b >= 0) { g.globalAlpha = a; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
+}
+function timeAt(s) {
+  const r = s.el.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, s.el.offsetHeight - s.pin.offsetHeight));
+  const m = s.map; let j = 0; while (j < m.length - 2 && p > m[j + 1][0]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1];
+  return t0 + (t1 - t0) * clamp((p - p0) / Math.max(1e-6, p1 - p0));
+}
+function scrollFor(s, t) {
+  const m = s.map; let j = 0; while (j < m.length - 2 && t > m[j + 1][1]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1], p = p0 + (p1 - p0) * clamp((t - t0) / Math.max(1e-6, t1 - t0));
+  return s.el.offsetTop + p * (s.el.offsetHeight - s.pin.offsetHeight);
+}
+function captions(s) {
+  for (const k of s.caps) {
+    const d = Math.abs(s.t - k.at), o = 1 - smooth(0.022, 0.06, d);
+    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - s.t) * 260).toFixed(0)}px,0)`;
+    if (os !== k.o) k.c.style.opacity = k.o = os;
+    if (vs !== k.v) k.c.style.visibility = k.v = vs;
+    if (o > 0.01 && tr !== k.tr) k.c.style.transform = k.tr = tr;
+  }
+}
+
+const bands = [...document.querySelectorAll('section.band')];
+const counters = [...document.querySelectorAll('[data-n]')].map(el => ({ el, n: +el.dataset.n, d: +(el.dataset.d || 0), band: el.closest('section') }));
+const fmt = (v, d) => v.toFixed(d).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+function reveal() {
+  for (const b of bands) {
+    const r = b.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue;
+    const p = smooth(0, 1, (innerHeight * 0.8 - r.top) / (innerHeight * 0.5));
+    for (const c of counters) if (c.band === b) c.el.textContent = fmt(c.n * p, c.d);
+  }
+}
+const prog = document.getElementById('prog'), navEl = document.querySelector('nav'), zones = [...document.querySelectorAll('.band,footer,.near')];
+
+let raf = 0;
+function tick() { if (!raf) raf = requestAnimationFrame(step); }
+function step(now) {
+  raf = 0; let moving = false;
+  for (const s of stages) {
+    const r = s.el.getBoundingClientRect();
+    if (r.top < innerHeight * 2.5 && r.bottom > -innerHeight) load(s);
+    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
+    const w = timeAt(s);
+    if (s.raw === undefined || Math.abs(w - s.raw) * (s.n - 1) > 1e-3) { s.raw = w; s.moved = now; }
+    const rest = now - s.moved > 250;
+    s.want = rest ? Math.round(w * (s.n - 1)) / (s.n - 1) : w;
+    if (!rest) moving = true;
+    const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
+    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;
+    const OM = window.__om || 10;
+    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
+    if (Math.abs(d) > .25) { F = W; v = 0; }
+    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
+      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+    }
+    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
+    s.v = v; const t1 = F / (s.n - 1);
+    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;
+    if (gap > .3) s.dirn = d > 0 ? 1 : -1;
+    if (s.t !== s.want || v) moving = true;
+    size(s); feed(s); draw(s); captions(s);
+  }
+  reveal();
+  let z = ''; for (const el of zones) { const r = el.getBoundingClientRect(); if (r.top <= 46 && r.bottom > 46) z = el.classList.contains('near') ? 'dk' : 'lt'; }
+  if (navEl.className !== z) navEl.className = z;
+  const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
+  if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
+  if (moving) tick(); else for (const s of stages) s.last = 0;
+}
+addEventListener('scroll', tick, { passive: true });
+addEventListener('resize', () => { setVh(); tick(); });
+if (document.fonts) document.fonts.ready.then(() => { for (const s of stages) { s.W = 0; s.dirty = true; } tick(); });   // písmo změní výšku popisků
+if (window.visualViewport) visualViewport.addEventListener('resize', setVh);
+setVh();
+
+document.querySelectorAll('nav a[data-t]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); scrollTo({ top: scrollFor(stages[0], +a.dataset.t), behavior: 'smooth' });
+}));
+document.querySelectorAll('a[href^="#"]:not([data-t])').forEach(a => a.addEventListener('click', e => {
+  const el = document.querySelector(a.getAttribute('href')); if (!el) return;
+  e.preventDefault(); scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+}));
+
+window.__P = { stages, tick, scrollFor };
+tick();
+})();
+</script>
+</body>
+</html>
