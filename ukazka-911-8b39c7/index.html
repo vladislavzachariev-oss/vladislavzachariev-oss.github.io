@@ -33,17 +33,17 @@ nav a:hover,nav a:focus-visible{opacity:1}
 #prog{position:fixed;left:0;top:0;height:2px;width:100%;background:#9a9da5;transform-origin:0 50%;transform:scaleX(0);z-index:7}   /* šedá je vidět na černé i bílé; mix-blend-mode přepočítával při posunu celou plochu */
 
 .eye{font-size:15px;font-weight:500;letter-spacing:.02em;color:var(--tx2);margin-bottom:12px}
-h1{font-weight:400;font-size:clamp(44px,min(6.4vw,12vh),92px);line-height:1.04;letter-spacing:-.012em}
-h2{font-weight:400;font-size:clamp(30px,min(3.6vw,7.4vh),52px);line-height:1.12;letter-spacing:-.008em}
+h1{font-weight:400;font-size:clamp(44px,min(6.4vw,calc(12*var(--fv,1vh))),92px);line-height:1.04;letter-spacing:-.012em}
+h2{font-weight:400;font-size:clamp(30px,min(3.6vw,calc(7.4*var(--fv,1vh))),52px);line-height:1.12;letter-spacing:-.008em}
 p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:var(--tx2);max-width:26em}
 
 /* jeviště: vysoký blok, obraz drží na místě a jeho snímky se přehrávají podle posunu.
    Výška (oprava 14. 11., Z: „ujede dolejšek“): plocha NESMÍ být 100svh; po schování lišty prohlížeče je okno vyšší a pod plochou
    zůstal pruh. Plocha je vysoká jako největší okno (lvh, nebo výška změřená skriptem ve --vh) a přesahuje o --bleed, přesah
    zakryje další oddíl. --low = kolik spodku plochy může být pod okrajem okna; o tolik výš drží všechno, co musí být vidět. */
-.stage{--lv:100vh;--sv:100vh;--bleed:max(64px,10vh);--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
-  position:relative;height:calc(1100vh + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#000}
-@supports(height:100lvh){.stage{--lv:100lvh;--sv:100svh}}
+.stage{--lv:calc(100*var(--fv,1vh));--sv:calc(100*var(--fv,1vh));--bleed:max(64px,calc(10*var(--fv,1vh)));--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(calc(1100*var(--fv,1vh)) + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:#000}
+@supports(height:100lvh){.stage{--lv:var(--flv,100lvh);--sv:var(--fsv,100svh)}}
 .stage+section{z-index:1}
 .pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
 .pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -52,9 +52,9 @@ p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:va
 .cap.l{left:var(--side);top:calc(var(--sv) / 2);width:min(440px,27vw);margin-top:-130px}
 .cap h1{white-space:nowrap}
 .cap.r{right:var(--side);top:calc(var(--sv) / 2);width:min(400px,28vw);margin-top:-90px}
-.cap.tl{left:var(--side);top:clamp(96px,19vh,190px);width:min(440px,36vw)}
-.cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(76px,13vh,150px) 24px 10vh;background:linear-gradient(rgba(0,0,0,.84) 60%,rgba(0,0,0,0))}
-.cap.b{left:0;right:0;bottom:0;text-align:center;padding:26vh 24px calc(var(--low) + clamp(40px,9vh,96px));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 72%)}
+.cap.tl{left:var(--side);top:clamp(96px,calc(19*var(--fv,1vh)),190px);width:min(440px,36vw)}
+.cap.t{left:0;right:0;top:0;text-align:center;padding:clamp(76px,calc(13*var(--fv,1vh)),150px) 24px calc(10*var(--fv,1vh));background:linear-gradient(rgba(0,0,0,.84) 60%,rgba(0,0,0,0))}
+.cap.b{left:0;right:0;bottom:0;text-align:center;padding:calc(26*var(--fv,1vh)) 24px calc(var(--low) + clamp(40px,calc(9*var(--fv,1vh)),96px));background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 72%)}
 .cap.t p.sub,.cap.b p.sub{margin-inline:auto}
 .hint{display:inline-flex;align-items:center;gap:10px;margin-top:34px;font-size:15px;color:var(--tx2)}
 .hint i{width:1px;height:34px;background:linear-gradient(#fff,rgba(255,255,255,0));animation:hint 2.2s ease-in-out infinite;transform-origin:50% 0}
@@ -65,20 +65,20 @@ p.sub{margin-top:16px;font-size:clamp(17px,1.5vw,20px);line-height:1.43;color:va
 .btn.dark:hover{background:#2b2c33}
 
 /* bílé textové části */
-section.band{position:relative;background:#fff;color:var(--ink);padding:clamp(88px,13vh,160px) var(--edge);--p:0}
+section.band{position:relative;background:#fff;color:var(--ink);padding:clamp(88px,calc(13*var(--fv,1vh)),160px) var(--edge);--p:0}
 section.band .eye,section.band p.sub{color:var(--ink2)}
-.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(48px,8vh,88px)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:clamp(48px,calc(8*var(--fv,1vh)),88px)}
 .nums div{font-size:16px;line-height:1.35;color:var(--ink2);border-top:1px solid var(--line);padding-top:22px}
 .nums strong{display:block;font-weight:300;font-size:clamp(56px,7.2vw,112px);line-height:.95;letter-spacing:-.03em;color:var(--ink);margin-bottom:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .nums strong small{font-size:.24em;font-weight:500;letter-spacing:0;margin-left:.3em}
-dl{display:grid;grid-template-columns:repeat(2,1fr);column-gap:56px;margin-top:clamp(48px,7vh,80px)}
+dl{display:grid;grid-template-columns:repeat(2,1fr);column-gap:56px;margin-top:clamp(48px,calc(7*var(--fv,1vh)),80px)}
 dl div{display:flex;justify-content:space-between;gap:24px;padding:16px 0;border-top:1px solid var(--line);font-size:18px}
 dt{color:var(--ink2)}
 dd{text-align:right;font-weight:500}
 
 /* barvy: tentýž záběr v šesti lacích, prolínají se */
-.paint{position:relative;background:#000;padding:clamp(88px,12vh,140px) 0 clamp(56px,8vh,96px);text-align:center;overflow:hidden}
-.paint .shots{position:relative;width:min(1500px,100%);margin:clamp(8px,2vh,24px) auto 0;aspect-ratio:16/9}
+.paint{position:relative;background:#000;padding:clamp(88px,calc(12*var(--fv,1vh)),140px) 0 clamp(56px,calc(8*var(--fv,1vh)),96px);text-align:center;overflow:hidden}
+.paint .shots{position:relative;width:min(1500px,100%);margin:clamp(8px,calc(2*var(--fv,1vh)),24px) auto 0;aspect-ratio:16/9}
 .paint .shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
 .paint .shots img.on{opacity:1}
 .paint .shots::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#000,transparent 14%,transparent 86%,#000),linear-gradient(90deg,#000,transparent 8%,transparent 92%,#000)}
@@ -100,15 +100,15 @@ footer p+p{margin-top:8px}
 
 @media(max-width:860px){
   nav div a:not(.keep){display:none}
-  .stage{height:calc(900vh + var(--bleed))}
-  .cap.l,.cap.r,.cap.tl{left:24px;right:24px;width:auto;top:auto;bottom:calc(var(--low) + clamp(36px,8vh,80px));margin-top:0}
+  .stage{height:calc(calc(900*var(--fv,1vh)) + var(--bleed))}
+  .cap.l,.cap.r,.cap.tl{left:24px;right:24px;width:auto;top:auto;bottom:calc(var(--low) + clamp(36px,calc(8*var(--fv,1vh)),80px));margin-top:0}
   .nums{grid-template-columns:repeat(2,1fr);gap:20px}
   dl,.about{grid-template-columns:1fr}
   .paint .shots{aspect-ratio:4/3}
 }
 /* nízké široké okno (notebook, tablet na šířku v okně): menší nadpisy a popisky výš, ať leží na černé nad autem */
 @media(min-width:861px) and (max-height:700px){
-  .cap.l{margin-top:-110px}.cap.l h1{font-size:clamp(40px,min(5.2vw,11vh),72px)}
+  .cap.l{margin-top:-110px}.cap.l h1{font-size:clamp(40px,min(5.2vw,calc(11*var(--fv,1vh))),72px)}
   .cap.t{padding-top:72px}.cap .hint{margin-top:20px}
   p.sub{margin-top:10px;font-size:17px}
 }
@@ -118,8 +118,8 @@ footer p+p{margin-top:8px}
   h1{font-size:34px}h2{font-size:24px}p.sub{margin-top:6px;font-size:15px}
   .cap.l,.cap.r,.cap.tl{left:var(--side);right:auto;width:min(360px,44vw);top:64px;bottom:auto;margin-top:0}
   .cap.r{left:auto;right:var(--side)}
-  .cap.t{padding:58px 20px 8vh}
-  .cap.b{padding:14vh 20px calc(var(--low) + 22px)}
+  .cap.t{padding:58px 20px calc(8*var(--fv,1vh))}
+  .cap.b{padding:calc(14*var(--fv,1vh)) 20px calc(var(--low) + 22px)}
   .cap .hint{margin-top:12px}
 }
 @media(prefers-reduced-motion:reduce){.hint i{animation:none}.paint .shots img{transition:none}}
@@ -181,10 +181,10 @@ footer p+p{margin-top:8px}
 
 <section class="band" id="ukazka">
   <div class="about">
-    <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;Vaše nabídka.</h2></div>
+    <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;vaše nabídka.</h2></div>
     <div>
       <p><b>Celou jízdu tvoří 260 předem připravených obrázků</b>, které se přehrávají podle posunu stránky. Díky tomu běží plynule na počítači i&nbsp;na telefonu.</p>
-      <p>Místo auta může být Váš výrobek, provozovna nebo dům. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co prodáváte.</p>
+      <p>Místo auta může být váš výrobek, provozovna nebo dům. <b>Vzhled, barvy i&nbsp;texty jsou jen ukázka</b> a&nbsp;dají se předělat podle toho, co prodáváte.</p>
       <a class="btn dark" href="https://whytelynx.cz">Chci podobnou stránku</a>
     </div>
   </div>
@@ -201,17 +201,29 @@ footer p+p{margin-top:8px}
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 const nums = (s, sep) => s.split(sep).map(Number);
-const portrait = () => innerWidth / innerHeight < 0.8;
+const portrait = () => (FW || innerWidth) / (FS || innerHeight) < 0.8;
 
 /* ---------- jeviště: řada obrázků kreslená do plátna, čas určuje posun stránky ----------
    Přepis 14. 11. 2026 (Z: „hrozně trhané“): snímky se stahují jako data a dekódují předem mimo hlavní vlákno
    (createImageBitmap) jen v okně kolem polohy, ve směru jízdy víc; kreslí se jen hotové. Dřív drawImage(Image) dekódoval
    velký snímek při kreslení a stránka se zasekla na 50–120 ms (změřeno při 4× zpomaleném procesoru: 9,3 s z 24 s). */
-let vh = 0;
-const probe = document.createElement('div');                 // výška malého okna (s vysunutou lištou prohlížeče)
-probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
-document.body.appendChild(probe);
-function setVh() { const h = Math.round(innerHeight); if (h !== vh) { vh = h; for (const s of stages) s.el.style.setProperty('--vh', h + 'px'); } }
+// Výška okna se zmrazí při načtení (18. 11. 2026, Z: „když posouvám, seká se to“): v prohlížeči uvnitř aplikace
+// (Telegram, WebView) se vh mění, když se schová lišta → jeviště 850vh změnilo výšku o 481 px, obraz skočil o 7 snímků
+// a plátno se znovu alokovalo (změřeno 844 → 788 px). Nově: znovu změřit jen při otočení nebo velké změně okna.
+let FW = 0, FL = 0, FS = 0;
+const probe = h => { const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:0;top:0;width:0;visibility:hidden;pointer-events:none;height:100vh;height:' + h;
+  document.body.appendChild(d); return d; };
+const pLv = probe('100lvh'), pSv = probe('100svh');
+function setVh() {
+  const w = innerWidth, ih = innerHeight;
+  if (FW && w === FW && ih <= FL + Math.max(64, FL * .1) * .9 && ih >= FS * .7) return false;   // lišta: pod ní je přesah --bleed
+  FW = w; FL = Math.max(pLv.offsetHeight || ih, ih); FS = Math.min(pSv.offsetHeight || ih, ih);
+  const r = document.documentElement.style;
+  r.setProperty('--fv', FL / 100 + 'px'); r.setProperty('--flv', FL + 'px'); r.setProperty('--fsv', FS + 'px');
+  for (const s of stages) s.el.style.setProperty('--vh', FL + 'px');
+  return true;
+}
 const stages = [...document.querySelectorAll('.stage')].map(el => {
   const n = +el.dataset.frames, canvas = el.querySelector('canvas');
   return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
@@ -226,33 +238,93 @@ const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new 
   im.onerror = no; im.src = u;
 });
 
-function load(s) {                                   // nejdřív okolí polohy, pak každý 16., 8., 4., 2. a zbytek: i brzký posun ukáže pohyb
+function load(s) {
   const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
   if (s.dir === dir) return;
   s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
+  // pořadí stahování (18. 11. 2026): nejdřív hustě od místa, kde čtenář je, dopředu ve směru posunu; na slabém signálu
+  // (0,3 MB/s) dřívější „každý 16.“ dával při posunu 41 skoků až o 8 snímků. Zbytek po hrubém kroku, ať je celá scéna brzy načrtnutá.
   const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
-  const c = Math.round(s.t * (s.n - 1));
-  for (let i = c - 3; i <= c + 12; i++) push(i);
   for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
   push(s.n - 1);
+  // hustě dopředu → hrubý náčrt celé scény → hustě dál dopředu → zbytek; na 0,3 MB/s jen hustě = obraz o 109 snímků pozadu.
+  // Počty laděné na 300 snímků, R je převádí (od 18. 11. 1200 snímků: mezisnímky RIFE, ať pomalý posun neseká).
+  const R = s.n / 300, asked = new Set(), sketch = order.slice(0, Math.ceil(s.n / (8 * R)) + 1);
+  const near = (c, dn, a, b) => { for (let d = a; d <= b; d++) for (const i of d <= 4 * R ? [c + d * dn, c - d * dn] : [c + d * dn]) if (i >= 0 && i < s.n && !asked.has(i)) return i; return -1; };
+  const pick = () => {
+    const c = Math.round(s.t * (s.n - 1)), dn = s.dirn || 1;
+    let i = near(c, dn, 0, 30 * R); if (i >= 0) return i;
+    for (const j of sketch) if (!asked.has(j)) return j;
+    i = near(c, dn, 30 * R + 1, 120 * R); if (i >= 0) return i;
+    while (k < order.length) { const j = order[k++]; if (!asked.has(j)) return j; }
+    return -1;
+  };
   let k = 0, live = 0;
+  // balíky (18. 11. 2026, Z: „hrozně se mi to seká, nenačítá se to dost rychle“): GitHub Pages vyřídí jeden malý soubor
+  // za ~0,3–0,5 s, 1200 souborů po šesti = desítky sekund. 60 balíků (pk/N.bin + pk.json, _nastroje/packs.py), snímky
+  // se vybalují už během stahování. Úroveň 0 = stejných 300 snímků jako dřív, 1 a 2 = mezisnímky; nejdřív úroveň 0 kolem
+  // čtenáře a dopředu, mezisnímky u čtenáře mají přednost až před vzdálenými. Bez pk.json staré stahování po souborech.
+  fetch(s.dir + '/pk/pk.json?v=1').then(r => { if (!r.ok) throw 0; return r.json(); }).then(ix => {
+    if (gen !== s.gen) return;
+    if (ix.n !== s.n) throw 0;
+    const LV = [0, 8, 16, 45, 90];   // úroveň 0 = každý 16. (náčrt), 1–2 doplní stejných 300 jako dřív, 3–4 = mezisnímky RIFE
+    const P = ix.packs.map((p, j) => ({ ...p, j, lo: p.f[0], hi: p.f[p.f.length - 1], asked: false }));
+    const pickP = () => {
+      const c = s.t * (s.n - 1), dn = s.dirn || 1; let best = null, bc = 1e9;
+      for (const p of P) if (!p.asked) {
+        let d = c < p.lo ? p.lo - c : c > p.hi ? c - p.hi : 0;
+        if (d && Math.sign((p.lo + p.hi) / 2 - c) !== dn) d *= 2;     // za čtenářem poloviční přednost
+        const cost = d / R + LV[p.lv];                                  // v jednotkách 300 snímků
+        if (cost < bc) { bc = cost; best = p; }
+      }
+      return best;
+    };
+    const grab = async p => {
+      const r = await fetch(`${s.dir}/pk/${p.j}.bin?v=1`); if (!r.ok) throw 0;
+      const ends = []; let e = 0; for (const l of p.len) ends.push(e += l);
+      let q = 0;
+      const emit = (buf, have) => {
+        while (q < p.f.length && have >= ends[q]) {
+          if (gen !== s.gen) return;
+          s.blobs[p.f[q]] = new Blob([buf.subarray(q ? ends[q - 1] : 0, ends[q])], { type: 'image/webp' }); q++;
+        }
+        feed(s);
+      };
+      if (r.body && r.body.getReader) {
+        const all = new Uint8Array(e), rd = r.body.getReader(); let at = 0;
+        for (;;) { const { done, value } = await rd.read(); if (done) break; all.set(value, at); at += value.length; emit(all, at); if (gen !== s.gen) { rd.cancel(); return; } }
+        if (at < e) throw 0;
+      } else { const all = new Uint8Array(await r.arrayBuffer()); emit(all, all.length); }
+    };
+    const nextP = () => {
+      while (live < 2 && gen === s.gen) {
+        const p = pickP(); if (!p) break;
+        p.asked = true; live++;
+        grab(p).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => grab(p))).catch(() => {}).then(() => { live--; nextP(); });
+      }
+    };
+    nextP();
+  }).catch(() => { if (gen === s.gen) next(); });
   const next = () => {
-    while (live < 6 && k < order.length && gen === s.gen) {
-      const i = order[k++], url = src(s, i); live++;
+    while (live < 6 && gen === s.gen) {
+      const i = pick(); if (i < 0) break;
+      asked.add(i); const url = src(s, i); live++;
       const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
       get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
         .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
         .then(() => { live--; next(); });
     }
   };
-  next();
 }
-function feed(s) {                                   // dekódovat kolem polohy, ve směru jízdy víc; vzdálené zavřít (paměť tabletu)
-  const c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
-  const ahead = Math.round(clamp(12 + lag * .6, 12, 30)), keep = ahead + 10;
-  const lo = s.dirn > 0 ? 4 : ahead, hi = s.dirn > 0 ? ahead : 4;
-  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d++) {
-    for (const i of d ? [c + d * s.dirn, c - d * s.dirn] : [c]) {
+function feed(s) {
+  // 1200 snímků (18. 11.): pomalu se dekóduje každý, při rychlém posunu jen každý st-tý (telefon nestihne ~190 dekódování/s
+  // a oko to při rychlosti nepozná); dekódovaných obrázků v paměti nejvýš ~40 jako dřív při 300 snímcích
+  const R = s.n / 300, c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const st = Math.round(clamp(Math.abs(s.v || 0) / 100, 1, 8));
+  const ahead = Math.round(Math.min(clamp(12 * R + lag * .6, 12 * R, 30 * R), 30 * st)), keep = Math.ceil(ahead / st) + 10;
+  const lo = s.dirn > 0 ? 4 * st : ahead, hi = s.dirn > 0 ? ahead : 4 * st, base = Math.round(c / st) * st;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d += st) {
+    for (const i of d ? [base + d * s.dirn, base - d * s.dirn] : [c, base]) {
       if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
       s.busy.add(i); s.dec++;
       const gen = s.gen;
@@ -265,6 +337,7 @@ function feed(s) {                                   // dekódovat kolem polohy,
   if (s.bms.size > keep) {
     const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
     for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+    for (const i of far) { if (s.bms.size <= keep + 20) break; if (Math.abs(i - c) > 2 && s.bms.has(i)) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }   // tvrdý strop paměti
   }
 }
 function nearest(s, i) {                             // nejbližší snímek, který je už dekódovaný
@@ -273,7 +346,7 @@ function nearest(s, i) {                             // nejbližší snímek, kt
   return -1;
 }
 function size(s) {                                   // plátno = celá plocha i s přesahem; obraz se rozvrhuje do malého okna (H)
-  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(probe.offsetHeight || innerHeight, Hc);
+  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(FS || innerHeight, Hc);
   const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
   if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
     s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
