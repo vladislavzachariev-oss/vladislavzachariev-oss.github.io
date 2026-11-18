@@ -238,6 +238,51 @@ function load(s) {
     return -1;
   };
   let k = 0, live = 0;
+  // balíky (18. 11. 2026, Z: „hrozně se mi to seká, nenačítá se to dost rychle“): GitHub Pages vyřídí jeden malý soubor
+  // za ~0,3–0,5 s, 1200 souborů po šesti = desítky sekund. 60 balíků (pk/N.bin + pk.json, _nastroje/packs.py), snímky
+  // se vybalují už během stahování. Úroveň 0 = stejných 300 snímků jako dřív, 1 a 2 = mezisnímky; nejdřív úroveň 0 kolem
+  // čtenáře a dopředu, mezisnímky u čtenáře mají přednost až před vzdálenými. Bez pk.json staré stahování po souborech.
+  fetch(s.dir + '/pk/pk.json?v=1').then(r => { if (!r.ok) throw 0; return r.json(); }).then(ix => {
+    if (gen !== s.gen) return;
+    if (ix.n !== s.n) throw 0;
+    const LV = [0, 8, 16, 45, 90];   // úroveň 0 = každý 16. (náčrt), 1–2 doplní stejných 300 jako dřív, 3–4 = mezisnímky RIFE
+    const P = ix.packs.map((p, j) => ({ ...p, j, lo: p.f[0], hi: p.f[p.f.length - 1], asked: false }));
+    const pickP = () => {
+      const c = s.t * (s.n - 1), dn = s.dirn || 1; let best = null, bc = 1e9;
+      for (const p of P) if (!p.asked) {
+        let d = c < p.lo ? p.lo - c : c > p.hi ? c - p.hi : 0;
+        if (d && Math.sign((p.lo + p.hi) / 2 - c) !== dn) d *= 2;     // za čtenářem poloviční přednost
+        const cost = d / R + LV[p.lv];                                  // v jednotkách 300 snímků
+        if (cost < bc) { bc = cost; best = p; }
+      }
+      return best;
+    };
+    const grab = async p => {
+      const r = await fetch(`${s.dir}/pk/${p.j}.bin?v=1`); if (!r.ok) throw 0;
+      const ends = []; let e = 0; for (const l of p.len) ends.push(e += l);
+      let q = 0;
+      const emit = (buf, have) => {
+        while (q < p.f.length && have >= ends[q]) {
+          if (gen !== s.gen) return;
+          s.blobs[p.f[q]] = new Blob([buf.subarray(q ? ends[q - 1] : 0, ends[q])], { type: 'image/webp' }); q++;
+        }
+        feed(s);
+      };
+      if (r.body && r.body.getReader) {
+        const all = new Uint8Array(e), rd = r.body.getReader(); let at = 0;
+        for (;;) { const { done, value } = await rd.read(); if (done) break; all.set(value, at); at += value.length; emit(all, at); if (gen !== s.gen) { rd.cancel(); return; } }
+        if (at < e) throw 0;
+      } else { const all = new Uint8Array(await r.arrayBuffer()); emit(all, all.length); }
+    };
+    const nextP = () => {
+      while (live < 2 && gen === s.gen) {
+        const p = pickP(); if (!p) break;
+        p.asked = true; live++;
+        grab(p).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => grab(p))).catch(() => {}).then(() => { live--; nextP(); });
+      }
+    };
+    nextP();
+  }).catch(() => { if (gen === s.gen) next(); });
   const next = () => {
     while (live < 6 && gen === s.gen) {
       const i = pick(); if (i < 0) break;
@@ -248,7 +293,6 @@ function load(s) {
         .then(() => { live--; next(); });
     }
   };
-  next();
 }
 function feed(s) {
   // 1200 snímků (18. 11.): pomalu se dekóduje každý, při rychlém posunu jen každý st-tý (telefon nestihne ~190 dekódování/s
