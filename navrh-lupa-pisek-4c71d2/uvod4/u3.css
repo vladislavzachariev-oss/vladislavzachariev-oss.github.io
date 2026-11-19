@@ -13,4 +13,4 @@ html[data-u="3"] .hero-copy>:not(h1){transition:none}
 html[data-u="3"] main>section:not(.hero){position:relative;background:var(--sc,var(--bg))}
 html[data-u="3"] main>section.s-dune::before{content:"";position:absolute;left:0;right:0;top:calc(var(--dh) * -1 + 1px);height:var(--dh);background:var(--sc);
   -webkit-mask:var(--dm) center bottom/100% 100% no-repeat;mask:var(--dm) center bottom/100% 100% no-repeat;pointer-events:none}
-@media (prefers-reduced-motion:reduce){.s-stage{height:auto}.s-gl,.s-bands{display:none}}
+@media (min-width:100000px){.s-stage{height:auto}.s-gl,.s-bands{display:none}}

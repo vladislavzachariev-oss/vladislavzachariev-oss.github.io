@@ -419,7 +419,7 @@ section{padding:clamp(72px,10vw,140px) 0}
   .pw-phone{right:-22px;bottom:-22px;width:92px;border-width:4px;border-radius:15px}
 }
 
-@media (prefers-reduced-motion:reduce){
+@media (min-width:100000px){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 

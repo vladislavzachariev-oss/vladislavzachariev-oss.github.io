@@ -203,7 +203,7 @@ h1{line-height:.88}
 @media (max-width:22rem){.volat{padding-inline:1.1rem}.volat-cislo{font-size:1.4rem}}
 
 /* pohyb jen na úvod a jen tomu, kdo ho nevypnul */
-@media (prefers-reduced-motion:no-preference){
+@media (min-width:0px){
   .uvod-foto img{animation:priblizit 18s cubic-bezier(.2,.6,.3,1) both}
   .uvod-text>*{animation:nahoru .9s var(--ease) both}
   .uvod-text>:nth-child(2){animation-delay:.12s}
@@ -507,7 +507,7 @@ h1{line-height:.88}
 })();
 (function(){
   var o=document.getElementById('obj');if(!o)return;
-  var H={"1": [[540, 690], [840, 1080]], "2": [[540, 900]], "3": [[540, 690], [840, 1080]], "4": [[540, 990]], "5": [[540, 690]]},klid=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var H={"1": [[540, 690], [840, 1080]], "2": [[540, 900]], "3": [[540, 690], [840, 1080]], "4": [[540, 990]], "5": [[540, 690]]},klid=matchMedia('(min-width:100000px)').matches;
   var t=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Prague'})),h=t.getHours()*60+t.getMinutes();
   var KR=['ne','po','út','st','čt','pá','so'],dny=o.querySelector('.dny');
   if(dny){

@@ -1,7 +1,7 @@
 /* Pět nápadů místo karuselu prací (J 2026-11-16). Bez závislostí; pohyb jen transform/opacity. */
 (function () {
   'use strict';
-  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var RM = matchMedia('(min-width:100000px)').matches;
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }

@@ -258,7 +258,7 @@ window.__P = { stages: [{ n: 1000, el: st, get shownF() { return drawn * 999; },
 
 build().then(() => {
   ready = true; st.classList.add('ready');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) intro = 1;
+  if (matchMedia('(min-width:100000px)').matches) intro = 1;
   dirty = true; tick();
 }).catch(e => { console.error(e); st.classList.add('nogl'); });
 tick();

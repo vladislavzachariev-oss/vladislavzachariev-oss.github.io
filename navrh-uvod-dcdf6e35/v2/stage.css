@@ -77,7 +77,7 @@
   .stage-cap.b span{margin-top:6px;font-size:14px}
   .stage-tag,.stage-hint{font-size:12px}
 }
-@media(prefers-reduced-motion:reduce){
+@media(min-width:100000px){
   .stage{height:auto;margin-bottom:0}
   .stage-pin{position:static;height:auto;overflow:visible;padding-bottom:24px}
   .stage-view{position:relative;inset:auto;margin:24px var(--pad) 0;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#000}

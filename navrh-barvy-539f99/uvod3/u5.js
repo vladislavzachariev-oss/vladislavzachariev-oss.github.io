@@ -14,7 +14,7 @@
     a.appendChild(sp); peek.appendChild(a);
   });
   hero.style.position = 'sticky'; hero.appendChild(peek);
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   function layout() { var vh = innerHeight; S.forEach(function (s) { s.style.setProperty('--st', Math.min(0, vh - s.offsetHeight) + 'px'); }); }
   layout(); addEventListener('resize', layout); setTimeout(layout, 800); addEventListener('load', layout);
   if (reduce) return;

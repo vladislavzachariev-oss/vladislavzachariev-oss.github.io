@@ -2,7 +2,7 @@
    Každá scéna: dráha .mx-track, připnuté jeviště .mx-stage, průběh p 0–1 z polohy dráhy. */
 (function () {
   'use strict';
-  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var RM = matchMedia('(min-width:100000px)').matches;
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }

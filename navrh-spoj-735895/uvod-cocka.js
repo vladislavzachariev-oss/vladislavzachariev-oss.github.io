@@ -12,7 +12,7 @@ const canvas = document.getElementById('gl');
 const hero = document.getElementById('hero');
 const h1 = hero.querySelector('h1');
 const veil = document.getElementById('veil');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = matchMedia('(min-width:100000px)').matches;
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
 const BG = '#f1f0ec', INK = '#141414';
 

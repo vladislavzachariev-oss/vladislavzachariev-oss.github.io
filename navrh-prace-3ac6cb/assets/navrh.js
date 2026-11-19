@@ -21,7 +21,7 @@
   var $$ = function (s, c) { return Array.prototype.slice.call((c || d).querySelectorAll(s)); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
   var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   var fine = matchMedia('(hover: hover) and (pointer: fine)');
   var narrow = function () { return innerWidth <= 980; };
   var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };

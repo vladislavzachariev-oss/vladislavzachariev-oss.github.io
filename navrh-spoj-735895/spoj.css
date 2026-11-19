@@ -91,4 +91,4 @@ body.lt .logo{color:#141414}body.lt .cta{background:#141414;color:#fff}
 .after h2{margin:0 0 14px;font-size:clamp(28px,3.6vw,56px);font-weight:800;font-stretch:80%;line-height:1}
 .after p{max-width:40em;font-size:18px;line-height:1.5;color:#55524c}
 .foot{padding:40px 5vw;font-size:13px;color:var(--mute);background:var(--bg);border-top:1px solid var(--line)}
-@media (prefers-reduced-motion:reduce){.s3d{height:auto}.s3d-pin{position:relative}.st .nw{animation:none}}
+@media (min-width:100000px){.s3d{height:auto}.s3d-pin{position:relative}.st .nw{animation:none}}

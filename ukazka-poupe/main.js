@@ -10,7 +10,7 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const smooth = t => t * t * (3 - 2 * t);
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = matchMedia('(min-width:100000px)').matches;
 
   /* ---------- smooth wheel ---------- */
   let lenis = null;

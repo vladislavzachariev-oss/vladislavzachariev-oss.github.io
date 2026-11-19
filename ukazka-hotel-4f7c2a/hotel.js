@@ -291,7 +291,7 @@
       if (p < 1) requestAnimationFrame(step); else finishIntro();
     })(t0);
   }
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = matchMedia('(min-width:100000px)').matches;
   if (vid && !reduce) {
     app.classList.add('intro');
     vid.src = V[vk].src;

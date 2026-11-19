@@ -9,4 +9,4 @@ html[data-u="4"] .btn:not(.ghost){background:var(--amber);border-color:var(--amb
 html[data-u="4"] .label{color:var(--amber)}
 html[data-u="4"].sd-on .sd-h{color:var(--hc);opacity:var(--ho,1)}
 .sd-gl{position:fixed;inset:0;z-index:45;width:100%;height:100%;pointer-events:none;display:block}
-@media (prefers-reduced-motion:reduce){.sd-gl{display:none}}
+@media (min-width:100000px){.sd-gl{display:none}}

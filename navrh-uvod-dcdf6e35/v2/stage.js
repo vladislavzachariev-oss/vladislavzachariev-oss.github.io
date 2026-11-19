@@ -15,7 +15,7 @@
   const cv = view.querySelector('canvas'), ctx = cv.getContext('2d');
   const caps = [...view.querySelectorAll('.stage-cap')], tag = view.querySelector('.stage-tag'), hint = view.querySelector('.stage-hint');
   const hdr = document.querySelector('.hdr');
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = matchMedia('(min-width:100000px)').matches;
   const N = +st.dataset.frames, VER = st.dataset.v ? '?v=' + st.dataset.v : '';
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v, c01 = v => clamp(v, 0, 1);
   const ease = t => t * t * (3 - 2 * t), lerp = (a, b, t) => a + (b - a) * t;

@@ -21,7 +21,7 @@
 })();
   var $ = function (s, c) { return (c || d).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || d).querySelectorAll(s)); };
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
   var ease = function (p) { p = clamp(p, 0, 1); return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };

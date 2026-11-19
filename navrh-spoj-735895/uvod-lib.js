@@ -8,7 +8,7 @@ export const canvas = document.getElementById('gl');
 export const hero = document.getElementById('hero');
 export const h1 = hero.querySelector('h1');
 export const veil = document.getElementById('veil');
-export const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const reduce = matchMedia('(min-width:100000px)').matches;
 export const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 export const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;

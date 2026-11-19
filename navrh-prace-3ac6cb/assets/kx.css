@@ -58,7 +58,7 @@ html:not(.js) .k1-card,.k1.static .k1-card{position:relative;transform:none!impo
 .k2-it .nm span{color:var(--mute);text-align:right}
 @media (max-width:860px){.k2-col:nth-child(4){display:none}.k2-wall{--cw:clamp(130px,28vw,220px)}}
 @media (max-width:560px){.k2-col:nth-child(3){display:none}.k2-wall{--cw:calc((100vw - 2 * var(--pad) - 12px) / 2);height:min(820px,max(520px,96svh))}.k2-it .nm{flex-direction:column;gap:0}.k2-it .nm span{text-align:left}}
-@media (prefers-reduced-motion:reduce){.k2-run{animation:none}}
+@media (min-width:100000px){.k2-run{animation:none}}
 
 /* ---------- 3  Barva podle webu: sekce se při posunu přebarví do barev každého webu ---------- */
 .k3{--k3bg:var(--bg);--k3ink:var(--ink);--k3mute:var(--mute);background:var(--k3bg);color:var(--k3ink);transition:background-color .8s cubic-bezier(.3,.7,.2,1),color .8s}
@@ -80,7 +80,7 @@ html:not(.js) .k1-card,.k1.static .k1-card{position:relative;transform:none!impo
 .js .k3-it.in .k3-sh{transform:none;opacity:1}
 .k3 .label,.k3-no,.k3-ob{transition:color .8s}
 @media (max-width:760px){.k3-in{grid-template-columns:minmax(0,1fr)}.k3-sh .m{width:27%;border-width:4px;border-radius:14px}.k3-sh .m img{border-radius:10px}.k3-it{padding:44px 0}}
-@media (prefers-reduced-motion:reduce){.js .k3-sh{transform:none;opacity:1;transition:none}}
+@media (min-width:100000px){.js .k3-sh{transform:none;opacity:1;transition:none}}
 
 /* ---------- 4  Notebook, který weby sám projíždí ---------- */
 .k4{padding:clamp(56px,8vw,96px) 0;background:var(--bg2)}
@@ -127,7 +127,7 @@ html:not(.js) .k1-card,.k1.static .k1-card{position:relative;transform:none!impo
 .k5 .kx-cap{margin-top:14px}
 @media (max-width:900px){.k5-g{grid-template-columns:minmax(0,1fr)}.k5-s{font-size:clamp(30px,6vw,56px)}}
 @media (max-width:700px){.k5-st{aspect-ratio:390/600}.k5-st img{object-position:50% 0}}
-@media (prefers-reduced-motion:reduce){.k5-w.on.run{animation:none;background-size:100% .07em}}
+@media (min-width:100000px){.k5-w.on.run{animation:none;background-size:100% .07em}}
 
 /* rozcestník */
 .kx-index{padding:110px 0 80px}

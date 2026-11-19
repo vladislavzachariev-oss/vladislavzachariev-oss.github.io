@@ -3,7 +3,7 @@
   'use strict';
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
-  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const RM = matchMedia('(min-width:100000px)').matches;
 
   /* plynulý posun */
   let lenis = null;

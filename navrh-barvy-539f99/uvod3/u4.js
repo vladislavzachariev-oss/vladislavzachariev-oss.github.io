@@ -8,7 +8,7 @@
     { w: 'Vaši truhlárnu', img: 'letokruh', c: ['#f6f0e4', '#e9dcc3', '#221a0c', '#8a5a14'] },
     { w: 'Vaše bistro', img: 'burger-empire', c: ['#fff3df', '#fbe1b8', '#2a1606', '#c4410c'] }
   ];
-  var root = document.documentElement, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement, reduce = matchMedia('(min-width:100000px)').matches;
   var copy = document.querySelector('.hero-copy'), h1 = copy.querySelector('h1');
   var line = document.createElement('p'); line.className = 'o-line'; line.setAttribute('aria-hidden', 'true');
   line.innerHTML = 'Web pro<br><span class="o-chip"><img alt="" src="img/prace/' + O[0].img + '-0.webp"></span><span class="o-w"><b>' + O[0].w + '</b></span>';

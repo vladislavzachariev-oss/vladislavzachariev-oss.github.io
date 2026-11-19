@@ -5,7 +5,7 @@
 (function () {
   var C = ['#efd9bf', '#f3c3a0', '#eaa58c', '#e9b8c4', '#c9c0e6', '#b9d3ee'];
   var INK = '#16130f', BG = '#faf7f2';
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   var hero = document.querySelector('.hero'), h1 = hero.querySelector('h1');
   var others = [].slice.call(hero.querySelectorAll('.hero-copy>:not(h1)'));
 

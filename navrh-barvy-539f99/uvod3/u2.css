@@ -15,4 +15,4 @@ h1 .k-dot{width:.19em;height:.19em}
 .k-say span{display:block;opacity:0;transform:translateY(.25em);transition:opacity .5s,transform .7s cubic-bezier(.2,.7,.2,1)}
 .k-say span.in{opacity:1;transform:none}
 .k-say i{display:inline-block;width:.19em;height:.19em;border-radius:50%;background:#fff;margin-left:.05em}
-@media (prefers-reduced-motion:reduce){.k-gap,.k-fill{display:none}}
+@media (min-width:100000px){.k-gap,.k-fill{display:none}}

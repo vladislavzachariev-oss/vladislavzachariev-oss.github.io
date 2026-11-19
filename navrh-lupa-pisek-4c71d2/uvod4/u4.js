@@ -3,7 +3,7 @@
    rozsype ten současný zleva a zrnka přeletí do dalšího, kde se usadí v jeho barvě. Stav je čistá funkce posunu. */
 (function () {
   var PAL = ['#ff6a1a', '#2f6fde', '#e8238f', '#2f9d5b', '#7a4fd6', '#e0452b', '#0fa3a3', '#c99312', '#ff6a1a', '#2f6fde'];
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   var root = document.documentElement;
   var hs = [].slice.call(document.querySelectorAll('main .hero h1, main>section h2')).filter(function (h) { return h.offsetParent !== null; });
   var H = hs.map(function (el, j) {

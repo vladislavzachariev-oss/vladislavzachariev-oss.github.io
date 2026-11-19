@@ -227,7 +227,7 @@ h2{font-size:clamp(30px,4vw,48px)}
   .mbar{display:flex;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#f4f3eff2;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line)}
   .mbar .btn{flex:1;min-height:48px;padding:0 12px}
 }
-@media (prefers-reduced-motion:reduce){
+@media (min-width:100000px){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }

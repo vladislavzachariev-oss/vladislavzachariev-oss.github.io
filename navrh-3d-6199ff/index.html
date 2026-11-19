@@ -39,7 +39,7 @@ a{color:inherit}
 .after h2{margin:0 0 14px;font-size:clamp(28px,3.6vw,56px);font-weight:800;font-stretch:80%}
 .after p{max-width:40em;font-size:18px;line-height:1.5;color:#55524c}
 @media (max-aspect-ratio:4/5){.hero h1{max-width:13.5em}.hero{padding-bottom:7vh}.hero p{margin:16px 0 20px}}
-@media (prefers-reduced-motion:reduce){.stage{height:auto}.pin{position:relative}}
+@media (min-width:100000px){.stage{height:auto}.pin{position:relative}}
 </style>
 </head>
 <body>
@@ -89,7 +89,7 @@ const pin = stage.querySelector('.pin');
 const hero = document.getElementById('hero');
 const caps = [...document.querySelectorAll('.cap')];
 const capshade = document.getElementById('capshade');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = matchMedia('(min-width:100000px)').matches;
 
 const setVh = () => document.documentElement.style.setProperty('--vh', innerHeight + 'px');
 setVh();

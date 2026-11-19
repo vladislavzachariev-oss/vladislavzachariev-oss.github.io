@@ -1,6 +1,6 @@
 /* U2 Kapka. Fáze posunu (v násobcích výšky okna): 0–GROW tečka roste, HOLD jantarová plocha s větou, SHRINK zmenšení do tečky dalšího nadpisu. */
 (function () {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (matchMedia('(min-width:100000px)').matches) return;
   var GROW = .8, HOLD = 1.3, SHRINK = .9;
   var h1 = document.querySelector('.hero h1');
   function addDot(el) {

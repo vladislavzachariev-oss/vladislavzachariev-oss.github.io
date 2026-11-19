@@ -6,7 +6,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 
 const box = document.getElementById('stuha');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = matchMedia('(min-width:100000px)').matches;
 const probe = document.createElement('canvas');
 const gl = probe.getContext('webgl2') || probe.getContext('webgl');
 if (!box || reduce || !gl) { if (box) box.remove(); }

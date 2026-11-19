@@ -6,7 +6,7 @@
   var MODE = window.__U === '2' ? 'color' : 'find';
   var main = document.querySelector('main'), root = document.documentElement;
   var fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduce = matchMedia('(min-width:100000px)').matches;
   var PAL = ['#ff7a1a', '#e8238f', '#2f6fde', '#2f9d5b', '#7a4fd6', '#e0452b', '#0fa3a3', '#c99312', '#ff7a1a'];
   var KW = [['.hero h1', 'Vás'], ['#sluzby h2', 'Žahourek'], ['#ukazka h2', 'svůj web'], ['#prace h2', 'postavili'], ['#postup h2', 'uvidíte'],
             ['#cena h2', 'Jedna cena'], ['#my h2', 'Liberce'], ['#otazky h2', 'ptají'], ['#kontakt h2', 'Váš web']];
@@ -28,7 +28,7 @@
     '.kw{background:linear-gradient(var(--hc),var(--hc)) 0 86%/0% 34% no-repeat;transition:background-size .9s cubic-bezier(.2,.8,.2,1);border-radius:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}' +
     '.kw.found{background-size:100% 34%}' +
     'html[data-u="2"] .kw{background:none}' +
-    '@media (prefers-reduced-motion:reduce){.lp,.lp-shadow{display:none}}';
+    '@media (min-width:100000px){.lp,.lp-shadow{display:none}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   // klíčová slova obalit do <span class="kw">
