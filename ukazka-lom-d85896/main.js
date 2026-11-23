@@ -11,6 +11,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const hero = document.querySelector('.hero');
 const canvas = document.getElementById('gl');
 const cap = document.querySelector('.hero-cap');
+const TI = new URLSearchParams(location.search).has('ti') ? +new URLSearchParams(location.search).get('ti') : -1;
 const INK = '#141414';
 
 /* ---------- váza: profil otočený kolem osy (vnější stěna nahoru, okraj, vnitřní dolů) ---------- */
@@ -146,7 +147,8 @@ async function init() {
   let W = 1, H = 1, mobile = false, visH = 1, visW = 1, wordH = 1;
   function layout() {
     W = innerWidth; H = innerHeight; mobile = W < 760;
-    renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.75) * quality);
+    // strop ~1,6 Mpx (ale ne pod 1×): sklo se kreslí dvakrát (průchod světla), velké tablety by jinak cukaly
+    renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.75, Math.max(1, Math.sqrt(1.6e6 / (W * H)))) * quality);
     renderer.setSize(W, H, false);
     cam.aspect = W / H; cam.updateProjectionMatrix();
     const dW = cam.position.z - words.position.z;
@@ -170,6 +172,7 @@ async function init() {
   let visible = true, dead = false;
   new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(hero);
 
+  let shown = false;
   const t0 = performance.now(); let frames = 0, slow = 0, last = t0;
   function tick(now) {
     requestAnimationFrame(tick);
@@ -190,15 +193,17 @@ async function init() {
     const f = smooth(0, .86, p) * n, i = Math.min(n - 1, Math.floor(f)), fr = f - i;
     const ease = fr < .5 ? 4 * fr * fr * fr : 1 - Math.pow(-2 * fr + 2, 3) / 2;   // u slova se zpomalí
     const c = lerp(cs[i], cs[i + 1], ease);
-    words.position.x = (.5 - c) * wordH * stripA;
+    // příchod po načtení: váza vystoupá a dotočí se, slova dojedou
+    const inn = 1 - Math.pow(1 - clamp((TI >= 0 ? TI : t) / 1.9, 0, 1), 3);   // ?ti=0.5 zastaví příchod (kontrola snímkem)
+    words.position.x = (.5 - c) * wordH * stripA - (1 - inn) * wordH * .5;
     words.position.y = mobile ? visH * .06 : 0;
 
     // váza: pomalu se točí, při jízdě slov se nakloní, na konci odjede doprava a uvolní místo nadpisu
     const end = smooth(.84, 1, p);
     const lean = Math.sin(f * Math.PI) * .12;
-    pivot.rotation.set(Math.sin(t * .4) * .04 + (ptr.y - .5) * .06, t * .22 + p * Math.PI * 2.2, -lean + (ptr.x - .5) * -.06);
+    pivot.rotation.set(Math.sin(t * .4) * .04 + (ptr.y - .5) * .06, t * .22 + p * Math.PI * 2.2 - (1 - inn) * 1.4, -lean + (ptr.x - .5) * -.06);
     pivot.position.x = mobile ? 0 : lerp(0, visW * .2, end);
-    pivot.position.y = Math.sin(t * .8) * .04 + (mobile ? lerp(visH * .04, visH * .17, end) : 0);
+    pivot.position.y = Math.sin(t * .8) * .04 + (mobile ? lerp(visH * .04, visH * .17, end) : 0) - (1 - inn) * .9;
     // kaustika pod vázou, posunutá od světla
     const vx = .5 + pivot.position.x / (visW * 1.08 * (cam.position.z - bg.position.z) / (cam.position.z - words.position.z));
     bgU.uC.value.set(vx + (.5 - ptr.x) * .12, .2 + (mobile ? .06 : 0));
@@ -208,6 +213,7 @@ async function init() {
     cap.style.opacity = smooth(.3, 1, end); cap.style.transform = mobile ? `translateY(${(1 - end) * 20}px)` : `translateY(calc(-50% + ${(1 - end) * 20}px))`;
 
     renderer.render(scene, cam);
+    if (!shown) { shown = true; canvas.classList.add('in'); document.documentElement.classList.add('hero-in'); }
   }
   requestAnimationFrame(tick);
 }
@@ -217,6 +223,7 @@ function fallback(r) {
   canvas.hidden = true;
   const im = document.querySelector('.hero-fallback'); im.hidden = false;
   cap.style.opacity = 1;
+  document.documentElement.classList.add('hero-in');
 }
 
 init();

@@ -9,6 +9,32 @@
     rv.forEach(function (el) { ro.observe(el); });
   } else rv.forEach(function (el) { el.classList.add('in'); });
 
+  /* úvodní věta: slova se barví, jak věta projíždí obrazovkou */
+  var big = document.querySelector('.intro-big'), ws = [];
+  (function split(n) {
+    [].slice.call(n.childNodes).forEach(function (c) {
+      if (c.nodeType === 3) {
+        var f = document.createDocumentFragment();
+        c.nodeValue.split(/( +)/).forEach(function (t) {
+          if (!t) return;
+          if (/^ +$/.test(t)) { f.appendChild(document.createTextNode(t)); return; }
+          var sp = document.createElement('span'); sp.className = 'w'; sp.textContent = t; f.appendChild(sp); ws.push(sp);
+        });
+        n.replaceChild(f, c);
+      } else if (c.nodeType === 1) split(c);
+    });
+  })(big);
+  var wr = 0;
+  function fill() {
+    wr = 0; var r = big.getBoundingClientRect(), vh = innerHeight;
+    if (r.top > vh || r.bottom < 0) return;
+    var p = (vh * .86 - r.top) / (r.height + vh * .3);          /* 0 = věta vjíždí, 1 = sedí v horní třetině */
+    var k = Math.round(Math.max(0, Math.min(1, p)) * ws.length);
+    for (var i = 0; i < ws.length; i++) ws[i].classList.toggle('on', i < k);
+  }
+  addEventListener('scroll', function () { if (!wr) wr = requestAnimationFrame(fill); }, { passive: true });
+  fill();
+
   /* postup: krok uprostřed obrazovky vybere fotku a teplotu */
   var steps = document.querySelectorAll('.step'), imgs = document.querySelectorAll('.proc-media img');
   var temp = document.querySelector('.temp'), tn = document.querySelector('.temp-n');
@@ -79,7 +105,7 @@
     for (var i = 0; i < darks.length; i++) { var r = darks[i].getBoundingClientRect(); if (r.top <= y && r.bottom > y) { dk = true; break; } }
     nav.classList.toggle('dark', dk);
     /* za úvodem dostane podklad; při posunu dolů se schová, nahoru se vrátí */
-    var sy = scrollY, past = sy > heroH - 60;
+    var sy = scrollY, past = sy > heroH - innerHeight + 30;   /* jakmile úvod začne odjíždět */
     nav.classList.toggle('solid', past);
     if (past && sy > lastY + 4) nav.classList.add('away');
     else if (sy < lastY - 4 || !past) nav.classList.remove('away');
