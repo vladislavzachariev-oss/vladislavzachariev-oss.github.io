@@ -54,7 +54,7 @@ img{display:block;max-width:100%}
 .kicker{font-size:14px;font-weight:500;letter-spacing:.02em;opacity:.85;margin-bottom:16px}
 .kicker.gold{color:var(--gold);opacity:1;font-weight:600}
 .num{font-size:13.5px;font-weight:600;letter-spacing:.05em;color:var(--gold);margin-bottom:12px}
-h1,.card h2{font-weight:700;letter-spacing:-.035em;line-height:.98;font-variation-settings:"opsz" 96;text-wrap:balance}
+h1,.card h2{font-weight:650;letter-spacing:-.018em;line-height:1.06;font-variation-settings:"opsz" 24;text-wrap:balance}
 h1{font-size:clamp(42px,5.6vw,84px)}
 .c5 h2{font-size:clamp(40px,4.6vw,70px)}
 .card.at-bot h2{font-size:clamp(28px,2.9vw,44px);line-height:1.04}
@@ -113,7 +113,7 @@ h1{font-size:clamp(42px,5.6vw,84px)}
 
 /* ---------- sekce pod ulicí ---------- */
 .in{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
-section h2{font-weight:700;letter-spacing:-.03em;line-height:1.02;text-wrap:balance}
+section h2{font-weight:650;letter-spacing:-.018em;line-height:1.06;text-wrap:balance}
 .cta{padding:clamp(90px,12vw,170px) 0 clamp(70px,9vw,120px);background:var(--night);color:#fff}
 .cta h2{font-size:clamp(34px,4.8vw,70px);max-width:15em}
 .cta .lead{margin-top:24px}
