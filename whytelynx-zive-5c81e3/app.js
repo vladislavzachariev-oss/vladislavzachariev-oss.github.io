@@ -158,8 +158,8 @@
       var s0 = rectOf(steps[0]), sMax = Math.max(rectOf(steps[1]).bottom, rectOf(steps[2]).bottom, rectOf(steps[3]).bottom);
       var bot = H - 18;
       var t0 = s0.bottom + 20, aw0 = W - 32, ah0 = bot - t0;
-      var bw0 = Math.min(aw0, (ah0 - bH) / .625), bh0 = bw0 * .625 + bH;
-      B = { x: (W - bw0) / 2, y: t0 + Math.max(0, (ah0 - bh0) / 2), w: bw0, h: bh0 };
+      var bw0 = Math.min(aw0 * (W < 600 ? 1.12 : 1), (ah0 - bH) / .625), bh0 = bw0 * .625 + bH;
+      B = { x: W < 600 ? 16 : (W - bw0) / 2, y: t0 + Math.max(0, (ah0 - bh0) * .38), w: bw0, h: bh0 };
       var t1 = sMax + 22, ah1 = bot - t1, ph1 = ah1, pw1 = ph1 * .49;
       if (pw1 > W - 80) { pw1 = W - 80; ph1 = pw1 / .49; }
       P = { x: (W - pw1) / 2, y: t1 + (ah1 - ph1) / 2, w: pw1, h: ph1 };

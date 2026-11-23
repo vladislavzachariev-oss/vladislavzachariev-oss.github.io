@@ -72,8 +72,8 @@ h1,.step h2{font-weight:700;font-size:clamp(40px,5.4vw,80px);line-height:.98;let
   box-shadow:0 40px 80px -20px rgba(5,8,80,.55),0 18px 36px -18px rgba(0,0,0,.35);will-change:transform}
 .device .bar{position:absolute;left:0;right:0;top:0;height:var(--bh,36px);display:flex;align-items:center;gap:6px;padding:0 12px;background:#eceef2;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0;overflow:hidden}
 .bar i{width:10px;height:10px;border-radius:50%;background:#cfd2da;flex:none}
-.url{margin:0 auto;display:flex;align-items:center;gap:6px;font-size:13px;color:#3b3f4d;background:#fff;border-radius:8px;padding:5px 14px;min-width:42%;justify-content:center;white-space:nowrap;overflow:hidden}
-.lock{width:9px;height:8px;border:1.6px solid #6b7080;border-radius:2px;position:relative;top:1px}
+.url{margin:0 auto;display:flex;align-items:center;gap:0;font-size:13px;color:#3b3f4d;background:#fff;border-radius:8px;padding:5px 14px;min-width:42%;justify-content:center;white-space:nowrap;overflow:hidden}
+.lock{margin-right:7px;width:9px;height:8px;border:1.6px solid #6b7080;border-radius:2px;position:relative;top:1px}
 .lock::before{content:"";position:absolute;left:0;top:-6px;width:5px;height:5px;border:1.6px solid #6b7080;border-bottom:0;border-radius:4px 4px 0 0}
 .screen{position:absolute;overflow:hidden;background:#fff;left:var(--bz,0px);right:var(--bz,0px);bottom:var(--bz,0px);top:calc(var(--bh,36px) + var(--bt,0px));border-radius:0 0 var(--sr,14px) var(--sr,14px)}
 .layer{position:absolute;left:0;top:0;transform-origin:0 0;contain:strict}
