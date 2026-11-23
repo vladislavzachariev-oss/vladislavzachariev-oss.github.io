@@ -97,6 +97,8 @@
   }
   addEventListener('scroll', function () { if (!vr) vr = requestAnimationFrame(par); }, { passive: true });
   par();
+  // tlačítko „Přijďte se podívat“ skočí rovnou sem: fotku dotáhnout po načtení stránky, ne až při skoku
+  addEventListener('load', function () { setTimeout(function () { (new Image()).src = vb.getAttribute('src'); }, 1000); });
 
   /* navigace nad tmavým oddílem zesvětlí */
   var nav = document.querySelector('.nav'), darks = document.querySelectorAll('.proc,.visit,.foot'), nr = 0;
