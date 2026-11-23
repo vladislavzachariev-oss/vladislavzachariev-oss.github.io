@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lom · foukané sklo z Jizerských hor</title>
+<meta name="description" content="Malá sklářská dílna v Jizerských horách. Vázy, karafy, sklenice a světla foukané ručně, každý kus jen jednou.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ecebe7">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Lom, na začátek">LOM<span>sklárna</span></a>
+  <nav class="links" aria-label="Hlavní">
+    <a href="#kolekce">Kolekce</a><a href="#dilna">Dílna</a><a href="#zakazky">Na zakázku</a><a href="#kontakt">Kontakt</a>
+  </nav>
+  <a class="btn btn-s" href="#dilna">Přijďte se podívat</a>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Úvod">
+    <div class="stage">
+      <canvas id="gl" aria-hidden="true"></canvas>
+      <img class="hero-fallback" src="img/hero-fallback.webp" alt="" hidden>
+      <div class="hero-ui">
+        <p class="mono h-l">01 · Foukané sklo z&nbsp;Jizerských hor</p>
+        <p class="mono h-r">Jizerka · Kořenov</p>
+        <h1 class="hero-cap"><span>Sklo, které</span> <em>drží světlo.</em></h1>
+        <p class="mono h-scroll" aria-hidden="true">Posuňte dolů</p>
+      </div>
+    </div>
+  </section>
+  <section class="intro" id="dilna-o" aria-label="O dílně">
+    <p class="mono lbl">02 · Malá huť na&nbsp;Jizerce</p>
+    <p class="intro-big rv">Každý kus foukáme z&nbsp;jedné kapky žhavého skla a&nbsp;jednoho nádechu. <em>Proto žádné dva nejsou stejné.</em></p>
+    <ul class="facts">
+      <li class="rv"><span class="mono">Pec</span><p>Hoří od září do května, v&nbsp;létě dílna odpočívá.</p></li>
+      <li class="rv"><span class="mono">Skláři</span><p>Foukáme ve dvou, Klára a&nbsp;Tomáš, na&nbsp;Jizerce od roku 2011.</p></li>
+      <li class="rv"><span class="mono">Kusy</span><p>Každý tvar vznikne v&nbsp;malé sérii a&nbsp;znovu už ho neuděláme.</p></li>
+    </ul>
+  </section>
+
+  <section class="proc" id="postup" aria-label="Jak sklo vzniká">
+    <div class="proc-sticky">
+      <div class="proc-media">
+        <img src="img/p1.webp" alt="Sklář u&nbsp;pece nabírá na&nbsp;píšťalu žhavé sklo" class="on" width="1600" height="893">
+        <img data-src="img/p2.webp" alt="Ruce v&nbsp;rukavicích tvarují žhavou bublinu mokrým dřevem" width="1600" height="893">
+        <img data-src="img/p3.webp" alt="Kapka roztaveného skla visí z&nbsp;píšťaly" width="1600" height="893">
+        <img data-src="img/p4.webp" alt="Hotové vázy chladnou na&nbsp;regálu v&nbsp;ranním světle" width="1600" height="893">
+        <p class="temp" aria-live="off"><span class="temp-n">1&nbsp;150</span><span class="temp-u">°C</span></p>
+      </div>
+    </div>
+    <div class="proc-steps">
+      <p class="mono lbl">03 · Z&nbsp;písku a&nbsp;ohně</p>
+      <h2 class="h2">Jak vzniká <em>jedna váza</em></h2>
+      <article class="step" data-t="1150"><span class="mono">01 · Tavení</span><h3>Celou noc v&nbsp;peci</h3><p>Písek, sodu a&nbsp;vápno tavíme přes noc. Ráno je sklovina hustá a&nbsp;lesklá jako med.</p></article>
+      <article class="step" data-t="1050"><span class="mono">02 · Foukání</span><h3>Jeden nádech</h3><p>Na&nbsp;konec píšťaly nabereme kapku skla a&nbsp;jedním dlouhým nádechem z&nbsp;ní vznikne bublina.</p></article>
+      <article class="step" data-t="900"><span class="mono">03 · Tvarování</span><h3>Mokré dřevo z&nbsp;třešně</h3><p>Bublině dáváme tvar dřevem, kleštěmi a&nbsp;vlastní rukou. Na&nbsp;to je asi minuta, pak sklo musí zpátky do&nbsp;pece.</p></article>
+      <article class="step" data-t="20"><span class="mono">04 · Chlazení</span><h3>Dvanáct hodin klidu</h3><p>Hotový kus chladne v&nbsp;peci celou noc. Kdyby vychladl rychle, praskl by.</p></article>
+    </div>
+  </section>
+
+  <section class="col" id="kolekce" aria-label="Kolekce">
+    <div class="col-head">
+      <p class="mono lbl">04 · Kolekce</p>
+      <h2 class="h2">Sklo do&nbsp;vašeho <em>každého dne</em></h2>
+      <p class="col-note">Každý kus je originál, ten váš se od&nbsp;fotky bude trochu lišit. Posíláme po&nbsp;celé republice, pečlivě zabalené.</p>
+    </div>
+    <ul class="grid">
+      <li class="card rv"><figure><img loading="lazy" src="img/k1.webp" alt="Vysoká čirá váza s&nbsp;jantarovým dnem" width="900" height="900"></figure><div class="card-t"><h3>Váza Mlha</h3><p class="mono">2&nbsp;490&nbsp;Kč</p></div><p>Vysoká a&nbsp;štíhlá, pro&nbsp;jednu větev nebo tři tulipány.</p></li>
+      <li class="card rv"><figure><img loading="lazy" src="img/k2.webp" alt="Čirá karafa se zátkou" width="900" height="900"></figure><div class="card-t"><h3>Karafa Pramen</h3><p class="mono">1&nbsp;890&nbsp;Kč</p></div><p>Litr vody nebo vína, zátka je foukaná zvlášť.</p></li>
+      <li class="card rv"><figure><img loading="lazy" src="img/k3.webp" alt="Dvě nízké sklenice s&nbsp;jantarovým dnem" width="900" height="900"></figure><div class="card-t"><h3>Sklenice Kořen, pár</h3><p class="mono">1&nbsp;290&nbsp;Kč</p></div><p>Těžké dno, dobře padnou do&nbsp;ruky.</p></li>
+      <li class="card rv"><figure><img loading="lazy" src="img/k4.webp" alt="Široká mělká mísa z&nbsp;čirého skla" width="900" height="900"></figure><div class="card-t"><h3>Mísa Jizera</h3><p class="mono">2&nbsp;190&nbsp;Kč</p></div><p>Na&nbsp;ovoce, na&nbsp;stůl, nebo jen tak na&nbsp;světlo.</p></li>
+      <li class="card rv"><figure><img loading="lazy" src="img/k5.webp" alt="Závěsné světlo z&nbsp;foukaného skla" width="900" height="900"></figure><div class="card-t"><h3>Světlo Lucerna</h3><p class="mono">4&nbsp;900&nbsp;Kč</p></div><p>Závěsné světlo nad&nbsp;stůl, kabel v&nbsp;délce podle vás.</p></li>
+      <li class="card rv"><figure><img loading="lazy" src="img/k6.webp" alt="Malý svícen se svíčkou" width="900" height="900"></figure><div class="card-t"><h3>Svícen Uhlík</h3><p class="mono">690&nbsp;Kč</p></div><p>Malý a&nbsp;těžký, svíčka v&nbsp;něm nikdy nespadne.</p></li>
+    </ul>
+  </section>
+
+  <section class="visit" id="dilna" aria-label="Návštěva dílny">
+    <img class="visit-bg" loading="lazy" src="img/d.webp" alt="Kamenná dílna s&nbsp;komínem v&nbsp;mlze na&nbsp;Jizerce" width="1920" height="1072">
+    <div class="visit-in">
+      <p class="mono lbl">05 · Návštěva dílny</p>
+      <h2 class="h2">Přijďte se podívat, <em>jak sklo vzniká</em></h2>
+      <p class="visit-p">Prohlídka je každou sobotu v&nbsp;10:00 a&nbsp;ve&nbsp;14:00. Trvá hodinu, stojí 150&nbsp;Kč a&nbsp;na&nbsp;konci si můžete sami zkusit foukat.</p>
+      <div class="slots" role="group" aria-label="Vyberte termín"></div>
+      <a class="btn btn-ember visit-go" href="mailto:dilna@lom-sklo.cz?subject=Prohl%C3%ADdka%20d%C3%ADlny" aria-disabled="true">Vyberte termín</a>
+    </div>
+  </section>
+
+  <section class="made" id="zakazky" aria-label="Na zakázku">
+    <p class="mono lbl">06 · Na&nbsp;zakázku</p>
+    <h2 class="h2">Sklo pro restaurace, hotely <em>a&nbsp;váš domov</em></h2>
+    <ul class="rows">
+      <li class="rv"><span class="mono">01</span><h3>Sklenice a&nbsp;karafy s&nbsp;vaším tvarem</h3><p>Navrhneme je s&nbsp;vámi a&nbsp;vyfoukáme tolik kusů, kolik potřebujete.</p></li>
+      <li class="rv"><span class="mono">02</span><h3>Světla do&nbsp;restaurací a&nbsp;kaváren</h3><p>Barvu skla i&nbsp;délku kabelu přizpůsobíme vašemu prostoru.</p></li>
+      <li class="rv"><span class="mono">03</span><h3>Dárky pro&nbsp;firmy</h3><p>Malá série s&nbsp;vaším logem vybroušeným do&nbsp;dna.</p></li>
+    </ul>
+    <a class="btn" href="mailto:dilna@lom-sklo.cz?subject=Zak%C3%A1zka">Napište nám, co si představujete</a>
+  </section>
+</main>
+
+<footer class="foot" id="kontakt">
+  <div class="foot-row">
+    <div><p class="mono lbl">Kontakt</p><p>Sklárna Lom<br>Jizerka, 468&nbsp;49 Kořenov</p></div>
+    <div><p class="mono lbl">Napište nám</p><p><a href="mailto:dilna@lom-sklo.cz">dilna@lom-sklo.cz</a></p></div>
+    <div><p class="mono lbl">Otevřeno</p><p>Út–So 10:00–17:00<br>od září do května</p></div>
+  </div>
+  <p class="foot-word" aria-hidden="true">LOM</p>
+  <p class="credit mono">Ukázka webu — Vladislav Zachariev, <a href="https://whytelynx.cz">Whyte Lynx</a></p>
+</footer>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+<script src="vendor/lenis.min.js"></script>
+<script type="module" src="main.js?v=1"></script>
+<script src="page.js?v=1" defer></script>
+</body>
+</html>
