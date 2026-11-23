@@ -39,7 +39,7 @@
     // věta
     var r = big.getBoundingClientRect();
     if (r.top < vh && r.bottom > 0) {
-      var p = (vh * .86 - r.top) / (r.height + vh * .3), k = Math.round(Math.max(0, Math.min(1, p)) * ws.length);
+      var p = (vh * .88 - r.top) / (r.height + vh * .12), k = Math.round(Math.max(0, Math.min(1, p)) * ws.length);
       for (var i = 0; i < ws.length; i++) ws[i].classList.toggle('on', i < k);
     }
     // karty

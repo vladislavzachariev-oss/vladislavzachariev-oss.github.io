@@ -144,14 +144,14 @@ h3{font:500 clamp(19px,1.5vw,22px)/1.25 var(--wide);letter-spacing:-.005em}
 .real .lbl{color:var(--mute-d);grid-column:1/-1}
 .real .h2{grid-column:1}
 .real .h2 em{color:var(--amber)}
-.real-p{grid-column:1;margin-top:24px;color:#c9c4bb;font-size:17px;max-width:40ch}
+.real-p{grid-column:1;margin-top:24px;color:#c9c4bb;font-size:17px;max-width:46ch}
 .real-shot{grid-column:2;grid-row:2/6;position:relative;display:block;padding:0 9% 8% 0}
+.real-shot .mob{bottom:-9%}
 .real-shot .browser .dots{background:#222120;border-color:rgba(255,255,255,.06)}
 .real-shot .browser .dots::before{background:#4a4845;box-shadow:13px 0 0 #4a4845,26px 0 0 #4a4845}
 .stats{grid-column:1;list-style:none;padding:0;margin-top:clamp(40px,5vw,70px);display:grid;gap:0}
 .stats li{display:grid;grid-template-columns:minmax(0,1fr);padding:18px 0;border-top:1px solid rgba(239,236,230,.14)}
 .stats b{font:200 clamp(40px,4vw,64px)/1 var(--wide);font-stretch:125%;letter-spacing:-.02em;color:var(--on-dark)}
-.stats li:first-child b{color:var(--amber)}
 .stats span{color:var(--mute-d);margin-top:8px}
 .stats li:nth-child(2){transition-delay:.1s}.stats li:nth-child(3){transition-delay:.2s}
 .go-light{grid-column:1;margin-top:26px;color:var(--on-dark)}
@@ -170,7 +170,7 @@ h3{font:500 clamp(19px,1.5vw,22px)/1.25 var(--wide);letter-spacing:-.005em}
 /* cena */
 .price-s{padding:clamp(60px,8vw,120px) var(--gut) clamp(96px,12vw,180px)}
 .price-body{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,90px);align-items:start}
-.receipt{justify-self:center;width:min(calc(100% - 16px),440px);padding:34px 30px 46px;background:#fff;font:400 13px/1.5 var(--mono);color:#2a2a2a;box-shadow:0 30px 70px -40px rgba(22,22,22,.45);rotate:-1.6deg;
+.receipt{justify-self:start;width:min(calc(100% - 16px),440px);padding:34px 30px 46px;background:#fff;font:400 13px/1.5 var(--mono);color:#2a2a2a;box-shadow:0 30px 70px -40px rgba(22,22,22,.45);rotate:-1.6deg;
   -webkit-mask:radial-gradient(7px at 50% 100%,#0000 98%,#000) 50% 100%/14px 100% repeat-x;mask:radial-gradient(7px at 50% 100%,#0000 98%,#000) 50% 100%/14px 100% repeat-x}
 .receipt.rv{transform:translate3d(0,40px,0)}
 .receipt.rv.in{transform:none}
@@ -210,7 +210,9 @@ h3{font:500 clamp(19px,1.5vw,22px)/1.25 var(--wide);letter-spacing:-.005em}
 
 /* otázky */
 .faq{padding:clamp(96px,12vw,180px) var(--gut)}
-.faq-list{max-width:980px;margin:0 auto;border-top:1px solid var(--line)}
+.faq-in{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,90px);align-items:start}
+.faq-in .faq-head{position:sticky;top:110px;margin:0}
+.faq-list{border-top:1px solid var(--line)}
 .faq details{border-bottom:1px solid var(--line)}
 .faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;cursor:pointer;font:400 clamp(21px,2vw,30px)/1.2 var(--serif)}
 .faq summary::-webkit-details-marker{display:none}
@@ -254,9 +256,11 @@ h3{font:500 clamp(19px,1.5vw,22px)/1.25 var(--wide);letter-spacing:-.005em}
   .wk{position:relative;top:auto;grid-template-columns:1fr;min-height:0;margin-bottom:20px;transform:none}
   .wk-n{padding-bottom:18px}
   .real-in{grid-template-columns:1fr}
-  .real-shot{grid-column:1;grid-row:auto;margin-top:40px}
+  .real-shot{grid-column:1;grid-row:auto;margin-top:40px;padding:0 6% 24% 0}
+  .real-shot .mob{bottom:0}
   .st-list{grid-template-columns:1fr;gap:44px}
-  .price-body,.team-body,.contact-in{grid-template-columns:minmax(0,1fr)}
+  .price-body,.team-body,.contact-in,.faq-in{grid-template-columns:minmax(0,1fr)}
+  .faq-in .faq-head{position:static;margin-bottom:28px}
   .foot-row{grid-template-columns:1fr 1fr}
 }
 @media (max-width:560px){
@@ -271,7 +275,7 @@ h3{font:500 clamp(19px,1.5vw,22px)/1.25 var(--wide);letter-spacing:-.005em}
   .r-total b{font-size:26px}
   .r-rows li{gap:10px}
   .person{flex-direction:column;align-items:flex-start}
-  .foot-row{grid-template-columns:1fr}
+  .foot-row{grid-template-columns:1fr 1fr;gap:28px 20px}
 }
 
 /* telefon na šířku a nízká okna: krátký úvod, ať jsou tlačítka vidět (demo_check --devices, 23. 11.) */

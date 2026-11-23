@@ -84,7 +84,7 @@ function lockScreen(n) {
   x.font = '500 30px Archivo'; x.fillText('Pátek 20. listopadu', 390, 250);
   x.font = '200 196px Archivo'; x.fontStretch = 'expanded'; x.fillText('21:57', 390, 438); x.fontStretch = 'normal';
   const notes = [
-    ['REZERVACE', 'Bistro Kopr', 'teď', 'Stůl pro 4 v pátek v 19:00', 'Přijde Jana s rodinou, chtějí místo u okna.'],
+    ['REZERVACE', 'Bistro Kopr', 'teď', 'Stůl pro 4 zítra v 19:00', 'Přijde Jana s rodinou, chtějí místo u okna.'],
     ['OBJEDNÁVKA', 'Květinářství Poupě', 'před 12 min', 'Kytice z poupat, 690 Kč', 'Vyzvednutí v sobotu v 9:00.'],
     ['POPTÁVKA', 'Sedm smrků', 'před 40 min', 'Chata na 3 noci od 27. 12.', 'Čtyři dospělí a pes.']
   ];
