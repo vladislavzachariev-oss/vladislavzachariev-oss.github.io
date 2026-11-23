@@ -51,7 +51,7 @@
   var decoded = {};
   function predecode(t) {
     if (decoded[t]) return decoded[t];
-    decoded[t] = Promise.all([t, t + '2'].map(function (f) { var i = new Image(); i.src = 'img/t/' + f + '.webp'; return i.decode ? i.decode().catch(function () {}) : Promise.resolve(); }));
+    decoded[t] = Promise.all([t, t + '2'].map(function (f) { var i = new Image(); i.src = 'img/t/' + f + '.webp?i=2'; return i.decode ? i.decode().catch(function () {}) : Promise.resolve(); }));
     return decoded[t];
   }
   var want = 'bistro';
@@ -70,8 +70,8 @@
     $$('.q').forEach(function (e) { e.textContent = d.q; });
     var ph = $$('.p1, .p2', dev), sw = anim ? $$('.sw', dev) : [];
     if (anim) { ph.forEach(function (e) { e.classList.remove('ph-swap'); }); sw.forEach(function (e) { e.classList.remove('swap'); }); }
-    $$('.p1', dev).forEach(function (e) { e.src = 'img/t/' + t + '.webp'; });
-    $$('.p2', dev).forEach(function (e) { e.src = 'img/t/' + t + '2.webp'; });
+    $$('.p1', dev).forEach(function (e) { e.src = 'img/t/' + t + '.webp?i=2'; });
+    $$('.p2', dev).forEach(function (e) { e.src = 'img/t/' + t + '2.webp?i=2'; });
     if (anim) { void dev.offsetWidth; ph.forEach(function (e) { e.classList.add('ph-swap'); }); sw.forEach(function (e) { e.classList.add('swap'); }); }
     $$('.chips button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-t') === t ? 'true' : 'false'); });
     setName();
