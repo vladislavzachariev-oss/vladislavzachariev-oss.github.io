@@ -12,6 +12,7 @@ const hero = document.querySelector('.hero');
 const canvas = document.getElementById('gl');
 const cap = document.querySelector('.hero-cap');
 const TI = new URLSearchParams(location.search).has('ti') ? +new URLSearchParams(location.search).get('ti') : -1;
+const NW = new URLSearchParams(location.search).has('nw');   // ?nw = bez slov a bez přepnutí na fotku (výroba záložní fotky)
 const INK = '#141414';
 
 /* ---------- váza: profil otočený kolem osy (vnější stěna nahoru, okraj, vnitřní dolů) ---------- */
@@ -158,7 +159,7 @@ async function init() {
     words.scale.set(wordH * stripA, wordH, 1);
     const dB = cam.position.z - bg.position.z, bh = 2 * dB * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 1.08;
     bg.scale.set(bh * cam.aspect, bh, 1); bgU.uA.value = cam.aspect;
-    const s = mobile ? Math.min(.78, visW / 5.2) : clamp(visH / 7.4, .7, 1.05);
+    const s = mobile ? Math.min(.64, visW / 6.2) : clamp(visH / 7.4, .7, 1.05);
     pivot.scale.setScalar(s);
   }
   let quality = 1;
@@ -180,7 +181,7 @@ async function init() {
     if (!visible || dead) return;
     const dt = now - last; last = now;
     // měření: pomalé zařízení → nižší rozlišení, pak záložní fotka
-    if (frames < 120) { frames++; if (frames > 20 && dt > 34) slow++; if (frames === 120 && slow > 50) { if (quality > .7) { quality = .66; layout(); frames = 0; slow = 0; } else { dead = true; return fallback(renderer); } } }
+    if (frames < 120 && !NW) { frames++; if (frames > 20 && dt > 34) slow++; if (frames === 120 && slow > 50) { if (quality > .7) { quality = .66; layout(); frames = 0; slow = 0; } else { dead = true; return fallback(renderer); } } }
     const t = (now - t0) / 1000;
     const p = clamp(sy() / (hero.offsetHeight - H), 0, 1);
 
@@ -209,7 +210,7 @@ async function init() {
     bgU.uC.value.set(vx + (.5 - ptr.x) * .12, .2 + (mobile ? .06 : 0));
     // na konci slova zmizí (neprůhledná hned, vyhlazená kopie plynule), až pak přijde nadpis
     wordMat.visible = end < .02; wordsAA.material.opacity = 1 - smooth(0, .55, end);
-    words.visible = end < .98; words.position.z = -3 - end * 2.5;
+    words.visible = !NW && end < .98; words.position.z = -3 - end * 2.5;
     cap.style.opacity = smooth(.3, 1, end); cap.style.transform = mobile ? `translateY(${(1 - end) * 20}px)` : `translateY(calc(-50% + ${(1 - end) * 20}px))`;
 
     renderer.render(scene, cam);
@@ -226,4 +227,4 @@ function fallback(r) {
   document.documentElement.classList.add('hero-in');
 }
 
-init();
+if (new URLSearchParams(location.search).has('fb')) fallback(); else init();   // ?fb = vyzkoušet záložní fotku
