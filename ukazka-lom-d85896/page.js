@@ -74,12 +74,12 @@
     ['10:00', '14:00'].forEach(function (h) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'slot';
       var lab = 'So ' + d.getDate() + '. ' + (d.getMonth() + 1) + '. · ' + h;
-      b.textContent = lab; b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = '<span class="slot-d">So </span>' + lab.slice(3); b.setAttribute('aria-label', lab.replace('So ', 'sobota ')); b.setAttribute('aria-pressed', 'false');
       b.addEventListener('click', function () {
         box.querySelectorAll('.slot').forEach(function (x) { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
         b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
         go.removeAttribute('aria-disabled');
-        go.textContent = 'Rezervovat ' + lab.replace('So ', 'sobotu ');
+        go.textContent = 'Rezervovat sobotu ' + lab.slice(3).replace(/ /g, ' ');   // datum s časem se nezlomí
         go.href = 'mailto:dilna@lom-sklo.cz?subject=' + encodeURIComponent('Prohlídka dílny ' + lab);
       });
       box.appendChild(b);
