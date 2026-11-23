@@ -47,7 +47,6 @@
 
   /* ---------- obsah podle oboru a jména ---------- */
   function txt(sel, v) { $$(sel, dev).forEach(function (e) { e.textContent = v; }); }
-  function restart(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 
   var decoded = {};
   function predecode(t) {
@@ -69,9 +68,11 @@
     txt('.l1', d.links[0]); txt('.l2', d.links[1]); txt('.l3', d.links[2]); txt('.notif', d.notif);
     d.items.forEach(function (it, i) { txt('.i' + i + 'n', it[0]); txt('.i' + i + 'p', it[1]); });
     $$('.q').forEach(function (e) { e.textContent = d.q; });
-    $$('.p1', dev).forEach(function (e) { e.src = 'img/t/' + t + '.webp'; if (anim) restart(e, 'ph-swap'); });
-    $$('.p2', dev).forEach(function (e) { e.src = 'img/t/' + t + '2.webp'; if (anim) restart(e, 'ph-swap'); });
-    if (anim) $$('.sw', dev).forEach(function (e) { restart(e, 'swap'); });
+    var ph = $$('.p1, .p2', dev), sw = anim ? $$('.sw', dev) : [];
+    if (anim) { ph.forEach(function (e) { e.classList.remove('ph-swap'); }); sw.forEach(function (e) { e.classList.remove('swap'); }); }
+    $$('.p1', dev).forEach(function (e) { e.src = 'img/t/' + t + '.webp'; });
+    $$('.p2', dev).forEach(function (e) { e.src = 'img/t/' + t + '2.webp'; });
+    if (anim) { void dev.offsetWidth; ph.forEach(function (e) { e.classList.add('ph-swap'); }); sw.forEach(function (e) { e.classList.add('swap'); }); }
     $$('.chips button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-t') === t ? 'true' : 'false'); });
     setName();
   }
@@ -105,16 +106,19 @@
   /* ---------- samo psaní, dokud návštěvník nezačne ---------- */
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   var prog = 0, progT = 0;
-  function idle() { return new Promise(function (r) { (function chk() { if (!auto) return; if (progT < .35 && !document.hidden) r(); else setTimeout(chk, 400); })(); }); }
+  /* píše jen, když stránka stojí: při posunu nesmí nic přerušit plynulost */
+  var lastMove = 0;
+  function still() { return !raf && performance.now() - lastMove > 450; }
+  function idle() { return new Promise(function (r) { (function chk() { if (!auto) return; if (progT < .35 && !document.hidden && still()) r(); else setTimeout(chk, 150); })(); }); }
   async function autoLoop() {
     await wait(650);
     var i = 0;
     while (auto) {
       var d = T[ORDER[i]];
-      if (ORDER[i] !== trade) setTrade(ORDER[i], true);
+      if (ORDER[i] !== trade) { await idle(); setTrade(ORDER[i], true); }
       for (var k = 1; k <= d.def.length && auto; k++) { await idle(); typed = d.def.slice(0, k); input.value = typed; setName(); await wait(55 + Math.random() * 60); }
       await wait(2600); if (!auto) return; await idle();
-      for (k = d.def.length - 1; k >= 0 && auto; k--) { typed = d.def.slice(0, k); input.value = typed; setName(); await wait(22); }
+      for (k = d.def.length - 1; k >= 0 && auto; k--) { await idle(); typed = d.def.slice(0, k); input.value = typed; setName(); await wait(22); }
       if (!auto) return;
       i = (i + 1) % ORDER.length;
       await wait(250);
@@ -234,7 +238,7 @@
     if (prog !== progT) raf = requestAnimationFrame(tick); else { raf = 0; last = 0; }
   }
   function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }
-  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('scroll', function () { lastMove = performance.now(); kick(); }, { passive: true });
   var lw = 0;
   window.addEventListener('resize', function () {
     if (document.activeElement === input && root.clientWidth === lw) return;
