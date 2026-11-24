@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Servis Pístek — autoservis v Liberci (ukázka webu)</title>
+<meta name="description" content="Ukázka webu autoservisu: auto se při posunu stránky zvedne na zvedáku, u každé zastávky je cena. Kalkulačka spočítá cenu a nejbližší volný termín. Smyšlená značka.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F4F4F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 24. 11. 2026: ukázka autoservisu A+C (Z 23. 11.: „profesionálně s barvama ať to nekřičí ale říká jo tohle je autoservis“).
+   Grafit #16191D, papír #F4F4F2, jedna tlumená barva (rezavě oranžová #B4582A jen na ceny a tlačítka).
+   Jeviště = 1200 předem vyrenderovaných snímků (Blender 300 + RIFE 4×) kreslených do plátna podle posunu; jádro
+   z ukázky iPhone (showpiece-18-pro-max/rozklad), zmrazená výška okna --fv, balíky pk/. */
+:root{--paper:#F4F4F2;--ink:#16191D;--ink2:#5B6168;--line:rgba(22,25,29,.12);--acc:#B4582A;--acc2:#93451F;--edge:max(24px,calc(50% - 560px));--side:clamp(24px,4vw,80px)}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{font:400 17px/1.5 Inter,"Segoe UI",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;letter-spacing:-.011em}
+a{color:inherit}
+.skok{position:absolute;left:1rem;top:0;transform:translateY(-120%);z-index:9;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px}
+.skok:focus{transform:none;top:1rem}
+
+nav{position:fixed;inset:0 0 auto 0;height:60px;padding:0 var(--side);display:flex;align-items:center;justify-content:space-between;z-index:6;
+  background:rgba(244,244,242,.86);-webkit-backdrop-filter:saturate(160%) blur(16px);backdrop-filter:saturate(160%) blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em;text-decoration:none}
+.brand svg{width:26px;height:26px}
+nav div{display:flex;align-items:center;gap:26px;font-size:14px;font-weight:500}
+nav div a{text-decoration:none;color:var(--ink2);transition:color .2s}
+nav div a:hover{color:var(--ink)}
+nav .cta{background:var(--ink);color:var(--paper)!important;padding:10px 16px;border-radius:999px}
+#prog{position:fixed;left:0;top:59px;height:2px;width:100%;background:var(--acc);transform-origin:0 50%;transform:scaleX(0);z-index:7}
+
+.eye{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:12px}
+h1{font-weight:700;font-size:clamp(40px,min(5vw,calc(10*var(--fv,1vh))),76px);line-height:1.02;letter-spacing:-.04em}
+h2{font-weight:700;font-size:clamp(28px,min(3.4vw,calc(7*var(--fv,1vh))),50px);line-height:1.08;letter-spacing:-.035em}
+p.sub{margin-top:14px;font-size:clamp(17px,1.35vw,20px);line-height:1.42;color:var(--ink2);max-width:26em}
+
+/* jeviště */
+.stage{--lv:calc(100*var(--fv,1vh));--sv:calc(100*var(--fv,1vh));--bleed:max(64px,calc(10*var(--fv,1vh)));--ch:max(var(--lv),var(--vh,0px));--low:calc(var(--ch) - var(--sv) + var(--bleed));
+  position:relative;height:calc(calc(900*var(--fv,1vh)) + var(--bleed));margin-bottom:calc(-1 * var(--bleed));background:var(--paper)}
+@supports(height:100lvh){.stage{--lv:var(--flv,100lvh);--sv:var(--fsv,100svh)}}
+.stage+section{z-index:1}
+.pin{position:sticky;top:0;height:calc(var(--ch) + var(--bleed));overflow:hidden}
+.pin canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cap{position:absolute;opacity:0;visibility:hidden;will-change:opacity,transform}
+.cap.hero{left:var(--side);top:calc(var(--sv) / 2);width:min(520px,38vw);margin-top:-150px}
+.cap.hero p.sub{color:#3E444B}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:28px;font-size:14px;font-weight:500;color:var(--ink2)}
+.hint i{width:1px;height:30px;background:linear-gradient(var(--ink),rgba(22,25,29,0));animation:hint 2.2s ease-in-out infinite;transform-origin:50% 0}
+@keyframes hint{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.card{top:calc(var(--sv) / 2);width:min(380px,32vw);background:rgba(244,244,242,.95);border:1px solid var(--line);border-radius:18px;padding:24px 26px 22px;box-shadow:0 18px 50px -18px rgba(22,25,29,.35)}
+.card.l{left:var(--side);margin-top:-60px}
+.card.r{right:var(--side);margin-top:-60px}
+.card .eye{margin-bottom:8px}
+.card h2{font-size:clamp(24px,2.2vw,32px)}
+.card p{margin-top:8px;font-size:15px;line-height:1.45;color:var(--ink2)}
+.card ul{list-style:none;padding:0;margin-top:14px}
+.card li{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}
+.card li b{color:var(--acc2);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{display:inline-block;margin-top:18px;padding:13px 22px;border-radius:999px;background:var(--acc);color:#fff;font-size:16px;font-weight:600;text-decoration:none;transition:background .2s;border:0;font-family:inherit;cursor:pointer}
+.btn:hover{background:var(--acc2)}
+.btn.dark{background:var(--ink)}
+.btn.dark:hover{background:#2c3138}
+
+section.band{position:relative;background:var(--paper);padding:clamp(80px,calc(12*var(--fv,1vh)),150px) var(--edge)}
+.cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
+dl{display:grid;grid-template-columns:1fr;margin-top:6px}
+dl div{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:16px 0;border-top:1px solid var(--line)}
+dl div:last-child{border-bottom:1px solid var(--line)}
+dt{font-weight:500}
+dt small{display:block;font-weight:400;font-size:14px;color:var(--ink2);margin-top:2px}
+dd{font-weight:600;color:var(--acc2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.note{margin-top:18px;font-size:14px;color:var(--ink2)}
+
+/* kalkulačka */
+.calc{background:var(--ink);color:var(--paper);padding:clamp(80px,calc(12*var(--fv,1vh)),150px) var(--edge)}
+.calc .eye{color:#9aa1a8}
+.calc p.sub{color:#b9bec4}
+.calc form{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,56px);margin-top:clamp(36px,calc(6*var(--fv,1vh)),64px);align-items:start}
+fieldset{border:0;padding:0;min-width:0}
+legend{font-size:14px;font-weight:600;color:#9aa1a8;margin-bottom:12px;padding:0}
+fieldset+fieldset{margin-top:30px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{position:relative;display:block;cursor:pointer}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt span{display:block;height:100%;border:1px solid rgba(244,244,242,.18);border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.3;transition:border-color .2s,background .2s}
+.opt span small{display:block;color:#9aa1a8;font-size:13px;margin-top:3px}
+.opt input:checked+span{border-color:var(--acc);background:rgba(180,88,42,.14)}
+.opt input:focus-visible+span{outline:2px solid #fff;outline-offset:2px}
+.svc{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.svc .opt span{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.svc .opt span em{font-style:normal;color:#9aa1a8;font-size:14px;white-space:nowrap}
+.out{position:sticky;top:90px;background:var(--paper);color:var(--ink);border-radius:20px;padding:28px}
+.out .eye{color:var(--ink2);margin-bottom:6px}
+.sum{font-size:clamp(40px,4.2vw,60px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.sum small{font-size:.38em;font-weight:600;letter-spacing:-.01em;margin-left:.15em}
+.out dl{margin-top:20px}
+.out dl div{padding:12px 0}
+.out dd{color:var(--ink)}
+.out .btn{width:100%;text-align:center}
+.out .note{margin-top:12px;font-size:13px}
+
+.contact{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:clamp(36px,calc(6*var(--fv,1vh)),64px)}
+.contact div{border-top:2px solid var(--ink);padding-top:16px;font-size:16px;line-height:1.55}
+.contact b{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.about{background:#E9E9E6}
+.about .cols p{font-size:clamp(17px,1.35vw,19px);color:var(--ink2)}
+.about .cols p+p{margin-top:14px}
+.about .cols p b{color:var(--ink);font-weight:600}
+
+footer{background:var(--paper);color:var(--ink2);padding:28px var(--edge) 44px;font-size:12px;line-height:1.6;border-top:1px solid var(--line)}
+footer b{color:var(--ink);font-weight:600}
+footer p+p{margin-top:8px}
+.btn:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset:4px}
+
+@media(max-width:860px){
+  nav div a:not(.cta){display:none}
+  .stage{height:calc(calc(820*var(--fv,1vh)) + var(--bleed))}
+  .cap.hero,.card.l,.card.r{left:20px;right:20px;width:auto;top:auto;bottom:calc(var(--low) + clamp(24px,calc(5*var(--fv,1vh)),56px));margin-top:0}
+  .card{padding:20px 22px 18px;box-shadow:0 10px 30px -14px rgba(22,25,29,.3)}
+  .cols,.calc form{grid-template-columns:1fr}
+  .seg{grid-template-columns:1fr}
+  .svc{grid-template-columns:1fr}
+  .out{position:static}
+  .contact{grid-template-columns:1fr}
+}
+@media(min-width:861px) and (max-height:700px){
+  .cap.hero{margin-top:-120px}
+  .card{padding:18px 22px 16px}.card li{padding:7px 0}
+}
+@media(max-height:480px) and (orientation:landscape){
+  nav{height:50px}#prog{top:49px}
+  h1{font-size:34px}p.sub{margin-top:6px;font-size:15px}
+  .cap.hero,.card.l,.card.r{width:min(340px,42vw);top:64px;bottom:auto;margin-top:0}
+  .card.r{left:auto;right:var(--side)}
+  .card li{padding:5px 0;font-size:14px}.card p{display:none}
+  .cap .hint{display:none}
+}
+</style>
+</head>
+<body>
+<a class="skok" href="#cenik">Přeskočit na ceník</a>
+<i id="prog" aria-hidden="true"></i>
+<nav>
+  <a class="brand" href="#scena" aria-label="Servis Pístek, nahoru"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="13" cy="13" r="10.5"/><circle cx="13" cy="13" r="3.2"/><path d="M13 2.5v7.3M13 16.2v7.3M2.5 13h7.3M16.2 13h7.3"/></svg>Servis Pístek</a>
+  <div><a href="#cenik">Ceník</a><a href="#kalkulacka">Kalkulačka</a><a href="#kontakt">Kontakt</a><a class="cta" href="#kalkulacka">Spočítat cenu</a></div>
+</nav>
+
+<!-- snímky: seq/l4/0000.webp … 1199 (Blender 300 snímků 1280×720 + 3 mezisnímky RIFE v4.6 mezi každými dvěma); balíky seq/l4/pk/.
+     Zastávky kamery (blender/servis.py KEYS, snímek/300 = čas): úvod 0, zvedání .12–.37, kolo a brzdy .50–.58, předek .72–.77, bok .88, zezadu výfuk .95–1 -->
+<div class="stage" id="scena" data-frames="1200" data-dir="seq/l4"
+     data-map="0,0 .04,0 .30,.30 .46,.52 .54,.57 .66,.72 .73,.77 .82,.87 .87,.895 .96,1 1,1">
+  <div class="pin">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cap hero" data-at="0"><p class="eye">Autoservis · Liberec</p><h1>Auto na zvedáku, cena předem.</h1><p class="sub">Pneu, brzdy, olej, výfuk i&nbsp;diagnostika. Co uvidíme pod autem, vám ukážeme dřív, než cokoli vyměníme.</p><span class="hint"><i></i>Posouvejte dolů</span></div>
+    <div class="cap card l" data-at=".25"><p class="eye">Příjem auta</p><h2>Zvedneme ho a&nbsp;ukážeme vám, co vidíme.</h2><p>Fotky z&nbsp;dílny pošleme do telefonu. Bez vašeho souhlasu nic neměníme.</p></div>
+    <div class="cap card l" data-at=".54"><p class="eye">Kola a brzdy</p><h2>Přezutí do hodiny.</h2><ul><li>Přezutí 4 kol s&nbsp;vyvážením<b>690 Kč</b></li><li>Brzdové destičky vpředu<b>od 1&nbsp;290 Kč</b></li><li>Kotouče a&nbsp;destičky vpředu<b>od 2&nbsp;990 Kč</b></li></ul></div>
+    <div class="cap card r" data-at=".745"><p class="eye">Diagnostika</p><h2>Svítí kontrolka? Za půl hodiny víte proč.</h2><ul><li>Počítačová diagnostika<b>690 Kč</b></li><li>Příprava na STK<b>990 Kč</b></li></ul></div>
+    <div class="cap card r" data-at=".883"><p class="eye">Servisní prohlídka</p><h2>Olej, filtry a&nbsp;razítko do knížky.</h2><ul><li>Výměna oleje a&nbsp;filtru<b>od 1&nbsp;490 Kč</b></li><li>Servisní prohlídka<b>od 2&nbsp;490 Kč</b></li></ul></div>
+    <div class="cap card l" data-at="1"><p class="eye">Výfuk</p><h2>Hlučný výfuk spravíme na počkání.</h2><ul><li>Kontrola a&nbsp;oprava výfuku<b>od 890 Kč</b></li></ul><a class="btn" href="#kalkulacka">Spočítat cenu a&nbsp;termín</a></div>
+  </div>
+</div>
+
+<section class="band" id="cenik">
+  <div class="cols">
+    <div><p class="eye">Ceník</p><h2>Cenu víte dřív, než přijedete.</h2><p class="sub">Ceny jsou včetně práce a&nbsp;DPH. Díly účtujeme podle vašeho auta a&nbsp;vždy je s&nbsp;vámi předem probereme.</p></div>
+    <div>
+      <dl>
+        <div><dt>Přezutí 4 kol<small>včetně vyvážení, uskladnění pneu 490 Kč za sezónu</small></dt><dd>690 Kč</dd></div>
+        <div><dt>Výměna oleje a filtru<small>olej podle předpisu výrobce</small></dt><dd>od 1&nbsp;490 Kč</dd></div>
+        <div><dt>Brzdové destičky vpředu<small>práce, kontrola kotoučů</small></dt><dd>od 1&nbsp;290 Kč</dd></div>
+        <div><dt>Počítačová diagnostika<small>přečtení chyb a vysvětlení, co znamenají</small></dt><dd>690 Kč</dd></div>
+        <div><dt>Příprava na STK<small>kontrola a seřízení světel, brzd, emisí</small></dt><dd>990 Kč</dd></div>
+        <div><dt>Servisní prohlídka<small>podle servisní knížky, s razítkem</small></dt><dd>od 2&nbsp;490 Kč</dd></div>
+        <div><dt>Výfuk<small>kontrola, svár nebo výměna dílu</small></dt><dd>od 890 Kč</dd></div>
+      </dl>
+      <p class="note">U SUV a dodávek je práce o&nbsp;něco delší, kalkulačka níže to započítá.</p>
+    </div>
+  </div>
+</section>
+
+<section class="calc" id="kalkulacka">
+  <p class="eye">Kalkulačka</p>
+  <h2>Spočítejte si cenu i&nbsp;termín.</h2>
+  <p class="sub">Vyberte auto a&nbsp;co potřebujete. Cena se počítá hned.</p>
+  <form id="kalk" onsubmit="return false">
+    <div>
+      <fieldset><legend>Jaké máte auto?</legend>
+        <div class="seg">
+          <label class="opt"><input type="radio" name="auto" value="1" checked><span>Malé nebo střední<small>Fabia, Octavia, Golf</small></span></label>
+          <label class="opt"><input type="radio" name="auto" value="1.15"><span>Velké nebo kombi<small>Superb, Passat</small></span></label>
+          <label class="opt"><input type="radio" name="auto" value="1.35"><span>SUV nebo dodávka<small>Kodiaq, Transit</small></span></label>
+        </div>
+      </fieldset>
+      <fieldset><legend>Co potřebujete?</legend>
+        <div class="svc">
+          <label class="opt"><input type="checkbox" name="s" value="690" data-min="60" data-n="Přezutí kol" checked><span>Přezutí kol<em>690 Kč</em></span></label>
+          <label class="opt"><input type="checkbox" name="s" value="1490" data-min="45" data-n="Olej a filtr"><span>Olej a filtr<em>od 1&nbsp;490 Kč</em></span></label>
+          <label class="opt"><input type="checkbox" name="s" value="1290" data-min="75" data-n="Destičky vpředu"><span>Destičky vpředu<em>od 1&nbsp;290 Kč</em></span></label>
+          <label class="opt"><input type="checkbox" name="s" value="690" data-min="30" data-n="Diagnostika"><span>Diagnostika<em>690 Kč</em></span></label>
+          <label class="opt"><input type="checkbox" name="s" value="990" data-min="60" data-n="Příprava na STK"><span>Příprava na STK<em>990 Kč</em></span></label>
+          <label class="opt"><input type="checkbox" name="s" value="890" data-min="60" data-n="Výfuk"><span>Výfuk<em>od 890 Kč</em></span></label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="out" aria-live="polite">
+      <p class="eye">Orientační cena</p>
+      <p class="sum"><span id="sum">690</span><small>Kč</small></p>
+      <dl>
+        <div><dt>Práce zabere</dt><dd id="cas">asi 1 hodinu</dd></div>
+        <div><dt>Volný termín</dt><dd id="term">—</dd></div>
+      </dl>
+      <a class="btn" href="#kontakt">Objednat na tento termín</a>
+      <p class="note">V hotovém webu se termín potvrdí rovnou tady. V ukázce termíny nejsou skutečné.</p>
+    </div>
+  </form>
+</section>
+
+<section class="band" id="kontakt">
+  <p class="eye">Kontakt</p>
+  <h2>Přijeďte, nebo zavolejte.</h2>
+  <div class="contact">
+    <div><b>Adresa</b>Ukázková 12<br>460 01 Liberec</div>
+    <div><b>Otevřeno</b>Po–Pá 7:00–17:00<br>So 8:00–12:00 po domluvě</div>
+    <div><b>Telefon</b>420 123 456<br>servis@example.cz</div>
+  </div>
+</section>
+
+<section class="band about" id="ukazka">
+  <div class="cols">
+    <div><p class="eye">O ukázce</p><h2>Takhle může vypadat i&nbsp;váš servis.</h2></div>
+    <div>
+      <p><b>Celá scéna je 1200 předem připravených obrázků</b>, které se přehrávají podle posunu stránky. Proto běží plynule na počítači i&nbsp;na telefonu.</p>
+      <p>Místo tohohle auta může být vaše dílna, vaše zvedáky a&nbsp;vaše ceny. <b>Jméno, ceny i&nbsp;texty jsou jen ukázka</b> a&nbsp;předělají se podle toho, co děláte.</p>
+      <a class="btn dark" href="https://whytelynx.cz">Chci podobnou stránku</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><b>Ukázka webu — <a href="https://whytelynx.cz">Whyte Lynx</a></b>. Servis Pístek je smyšlená značka, adresa, telefon, ceny i&nbsp;termíny jsou vymyšlené.</p>
+  <p>3D model zvedáku: „Car lift“, autor eaglefromfuture (Sketchfab), licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Model auta z&nbsp;knihovny Blendkit (autor Adam Wiese). Dílna, světla a&nbsp;záběry jsou vlastní, předem vyrenderované.</p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const nums = (s, sep) => s.split(sep).map(Number);
+const PAPER = '#F4F4F2';
+
+/* ---------- jeviště (jádro z ukázky iPhone 18. 11. 2026: zmrazená výška, balíky, pružina, prolínání v pomalém pohybu) ---------- */
+let FW = 0, FL = 0, FS = 0;
+const portrait = () => (FW || innerWidth) / (FS || innerHeight) < 0.8;
+const probe = h => { const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:0;top:0;width:0;visibility:hidden;pointer-events:none;height:100vh;height:' + h;
+  document.body.appendChild(d); return d; };
+const pLv = probe('100lvh'), pSv = probe('100svh');
+function setVh() {
+  const w = innerWidth, ih = innerHeight;
+  if (FW && w === FW && ih <= FL + Math.max(64, FL * .1) * .9 && ih >= FS * .7) return false;
+  FW = w; FL = Math.max(pLv.offsetHeight || ih, ih); FS = Math.min(pSv.offsetHeight || ih, ih);
+  const r = document.documentElement.style;
+  r.setProperty('--fv', FL / 100 + 'px'); r.setProperty('--flv', FL + 'px'); r.setProperty('--fsv', FS + 'px');
+  for (const s of stages) s.el.style.setProperty('--vh', FL + 'px');
+  return true;
+}
+const stages = [...document.querySelectorAll('.stage')].map(el => {
+  const n = +el.dataset.frames, canvas = el.querySelector('canvas');
+  return { el, n, canvas, pin: el.querySelector('.pin'), ctx: canvas.getContext('2d', { alpha: false }), dir: null, shownF: -1, last: 0, slow: true,
+    map: el.dataset.map.split(' ').map(p => nums(p, ',')),
+    caps: [...el.querySelectorAll('.cap')].map(c => ({ c, at: +c.dataset.at, o: '', v: '', tr: '' })),
+    blobs: [], bms: new Map(), busy: new Set(), dec: 0, dirn: 1, gen: 0, t: 0, want: 0, shown: -1, dirty: true, W: 0, H: 0, Hc: 0, dpr: 1 };
+});
+const src = (s, i) => `${s.dir}/${String(i).padStart(4, '0')}.webp?v=1`;
+const decode = blob => window.createImageBitmap ? createImageBitmap(blob) : new Promise((ok, no) => {
+  const im = new Image(), u = URL.createObjectURL(blob);
+  im.onload = () => (im.decode ? im.decode() : Promise.resolve()).then(() => { im.close = () => URL.revokeObjectURL(u); ok(im); }, no);
+  im.onerror = no; im.src = u;
+});
+
+function load(s) {
+  const dir = portrait() && s.el.dataset.dirP ? s.el.dataset.dirP : s.el.dataset.dir;
+  if (s.dir === dir) return;
+  s.dir = dir; s.blobs = new Array(s.n); s.bms.forEach(b => b.close && b.close()); s.bms = new Map(); s.busy = new Set(); s.shown = -1; s.shownF = -1; s.dirty = true;
+  const gen = ++s.gen, order = [], seen = new Set(), push = i => { if (i >= 0 && i < s.n && !seen.has(i)) { seen.add(i); order.push(i); } };
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < s.n; i += step) push(i);
+  push(s.n - 1);
+  const R = s.n / 300, asked = new Set(), sketch = order.slice(0, Math.ceil(s.n / (8 * R)) + 1);
+  const near = (c, dn, a, b) => { for (let d = a; d <= b; d++) for (const i of d <= 4 * R ? [c + d * dn, c - d * dn] : [c + d * dn]) if (i >= 0 && i < s.n && !asked.has(i)) return i; return -1; };
+  const pick = () => {
+    const c = Math.round(s.t * (s.n - 1)), dn = s.dirn || 1;
+    let i = near(c, dn, 0, 30 * R); if (i >= 0) return i;
+    for (const j of sketch) if (!asked.has(j)) return j;
+    i = near(c, dn, 30 * R + 1, 120 * R); if (i >= 0) return i;
+    while (k < order.length) { const j = order[k++]; if (!asked.has(j)) return j; }
+    return -1;
+  };
+  let k = 0, live = 0;
+  fetch(s.dir + '/pk/pk.json?v=1').then(r => { if (!r.ok) throw 0; return r.json(); }).then(ix => {
+    if (gen !== s.gen) return;
+    if (ix.n !== s.n) throw 0;
+    const LV = [0, 8, 16, 45, 90];
+    const P = ix.packs.map((p, j) => ({ ...p, j, lo: p.f[0], hi: p.f[p.f.length - 1], asked: false }));
+    const pickP = () => {
+      const c = s.t * (s.n - 1), dn = s.dirn || 1; let best = null, bc = 1e9;
+      for (const p of P) if (!p.asked) {
+        let d = c < p.lo ? p.lo - c : c > p.hi ? c - p.hi : 0;
+        if (d && Math.sign((p.lo + p.hi) / 2 - c) !== dn) d *= 2;
+        const cost = d / R + LV[p.lv];
+        if (cost < bc) { bc = cost; best = p; }
+      }
+      return best;
+    };
+    const grab = async p => {
+      const r = await fetch(`${s.dir}/pk/${p.j}.bin?v=1`); if (!r.ok) throw 0;
+      const ends = []; let e = 0; for (const l of p.len) ends.push(e += l);
+      let q = 0;
+      const emit = (buf, have) => {
+        while (q < p.f.length && have >= ends[q]) {
+          if (gen !== s.gen) return;
+          s.blobs[p.f[q]] = new Blob([buf.subarray(q ? ends[q - 1] : 0, ends[q])], { type: 'image/webp' }); q++;
+        }
+        feed(s);
+      };
+      if (r.body && r.body.getReader) {
+        const all = new Uint8Array(e), rd = r.body.getReader(); let at = 0;
+        for (;;) { const { done, value } = await rd.read(); if (done) break; all.set(value, at); at += value.length; emit(all, at); if (gen !== s.gen) { rd.cancel(); return; } }
+        if (at < e) throw 0;
+      } else { const all = new Uint8Array(await r.arrayBuffer()); emit(all, all.length); }
+    };
+    const nextP = () => {
+      while (live < 2 && gen === s.gen) {
+        const p = pickP(); if (!p) break;
+        p.asked = true; live++;
+        grab(p).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => grab(p))).catch(() => {}).then(() => { live--; nextP(); });
+      }
+    };
+    nextP();
+  }).catch(() => { if (gen === s.gen) next(); });
+  const next = () => {
+    while (live < 6 && gen === s.gen) {
+      const i = pick(); if (i < 0) break;
+      asked.add(i); const url = src(s, i); live++;
+      const get = again => fetch(url, again ? { cache: 'reload' } : undefined).then(r => { if (!r.ok) throw 0; return r.blob(); });
+      get(0).catch(() => new Promise(r => setTimeout(r, 1500)).then(() => get(1)))
+        .then(b => { if (gen === s.gen) { s.blobs[i] = b; feed(s); } }, () => {})
+        .then(() => { live--; next(); });
+    }
+  };
+}
+function feed(s) {
+  const R = s.n / 300, c = Math.round(s.t * (s.n - 1)), lag = Math.abs(s.want - s.t) * (s.n - 1);
+  const st = Math.round(clamp(Math.abs(s.v || 0) / 100, 1, 8));
+  const ahead = Math.round(Math.min(clamp(12 * R + lag * .6, 12 * R, 30 * R), 30 * st)), keep = Math.ceil(ahead / st) + 10;
+  const lo = s.dirn > 0 ? 4 * st : ahead, hi = s.dirn > 0 ? ahead : 4 * st, base = Math.round(c / st) * st;
+  for (let d = 0; d <= Math.max(lo, hi) && s.dec < 3; d += st) {
+    for (const i of d ? [base + d * s.dirn, base - d * s.dirn] : [c, base]) {
+      if (i < 0 || i >= s.n || i < c - lo || i > c + hi || s.bms.has(i) || s.busy.has(i) || !s.blobs[i] || s.dec >= 3) continue;
+      s.busy.add(i); s.dec++;
+      const gen = s.gen;
+      decode(s.blobs[i]).then(bm => {
+        if (gen !== s.gen) { bm.close && bm.close(); return; }
+        s.bms.set(i, bm); s.dirty = true; tick();
+      }, () => {}).then(() => { s.busy.delete(i); s.dec--; feed(s); });
+    }
+  }
+  if (s.bms.size > keep) {
+    const far = [...s.bms.keys()].sort((a, b) => Math.abs(b - c) - Math.abs(a - c));
+    for (const i of far) { if (s.bms.size <= keep) break; if (i < c - lo - 2 || i > c + hi + 2) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+    for (const i of far) { if (s.bms.size <= keep + 20) break; if (Math.abs(i - c) > 2 && s.bms.has(i)) { const b = s.bms.get(i); b.close && b.close(); s.bms.delete(i); } }
+  }
+}
+function nearest(s, i) {
+  if (s.bms.has(i)) return i;
+  for (let d = 1; d < s.n; d++) { if (s.bms.has(i - d)) return i - d; if (s.bms.has(i + d)) return i + d; }
+  return -1;
+}
+function size(s) {
+  const W = s.pin.clientWidth, Hc = s.pin.clientHeight, H = Math.min(FS || innerHeight, Hc);
+  const dpr = Math.min(window.devicePixelRatio || 1, W < 700 ? 2 : 1.5);
+  if (W !== s.W || Hc !== s.Hc || H !== s.H || dpr !== s.dpr) {
+    s.W = W; s.Hc = Hc; s.H = H; s.dpr = dpr; s.canvas.width = Math.round(W * dpr); s.canvas.height = Math.round(Hc * dpr); s.dirty = true;
+    s.tops = s.caps.map(k => [k.at, k.c.offsetTop]).sort((a, b) => a[0] - b[0]);
+    const hc0 = s.caps[0].c; s.heroR = hc0.offsetLeft + hc0.offsetWidth;
+  }
+}
+function capTop(s) {
+  const T = s.tops; if (!T || !T.length) return s.H;
+  if (s.t <= T[0][0]) return T[0][1];
+  for (let i = 1; i < T.length; i++) if (s.t <= T[i][0]) { const [a, ya] = T[i - 1], [b, yb] = T[i]; return ya + (yb - ya) * smooth(a, b, s.t); }
+  return T[T.length - 1][1];
+}
+// snímek je na šířku (16:9). Široké okno: přes celé okno (cover). Úzké okno: obraz nahoře pod lištou přes celou výšku
+// volného místa nad popiskem, střed na autě (ve snímku vodorovně ~47 %), spodek obrazu se rozpustí do papíru.
+function place(s, iw, ih) {
+  const W = s.W, H = s.H;
+  if (W / H < 1.05) {
+    const top = 60, free = Math.max(H * .4, capTop(s) - top + 30);
+    const k = Math.max(W / iw, free / ih), w = iw * k, h = ih * k;
+    const x = clamp(W / 2 - .47 * w, W - w, 0);
+    return [x, top, w, h, true];
+  }
+  // úvod: auto (ve snímku 1 vodorovně od 40 %) posunout za pravý okraj nadpisu, případně trochu přiblížit; s nadpisem se vrací na střed
+  let k = Math.max(W / iw, H / ih), hc = 1 - smooth(0.022, 0.06, s.t), R = (s.heroR || 0) + 24;
+  if (hc > 0.01 && R > 24) k *= 1 + (Math.min(1.25, Math.max(1, R / (.40 * iw * k))) - 1) * hc;
+  const w = iw * k, h = ih * k;
+  let x = (W - w) / 2;
+  if (hc > 0.01 && R > 24) x += (clamp(R - .40 * w, W - w, 0) - x) * hc;
+  return [x, (H - h) / 2, w, h, false];
+}
+function draw(s) {
+  const f = s.t * (s.n - 1), i0 = Math.floor(f), a = f - i0;
+  let i, b = -1, shownF;
+  if (s.slow && !window.__noBlend && a > .01 && a < .99 && i0 + 1 < s.n && s.bms.has(i0) && s.bms.has(i0 + 1)) { i = i0; b = i0 + 1; shownF = f; }
+  else { i = nearest(s, Math.round(f)); shownF = i; }
+  if (i < 0 || (!s.dirty && Math.abs(shownF - s.shownF) < .004)) return;
+  s.shown = i; s.shownF = shownF; s.dirty = false;
+  const g = s.ctx, im = s.bms.get(i), [x, y, w, h, tall] = place(s, im.width, im.height);
+  g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+  g.fillStyle = tall ? PAPER : '#B4B5B4'; g.fillRect(0, 0, s.W, s.Hc);
+  g.drawImage(im, x, y, w, h);
+  if (b >= 0) { g.globalAlpha = a; g.drawImage(s.bms.get(b), x, y, w, h); g.globalAlpha = 1; }
+  const ha = 1 - smooth(0.022, 0.06, s.t);       // úvod na šířku: papír zleva pod nadpisem, mizí s ním
+  if (!tall && ha > 0.01) {
+    const gr = g.createLinearGradient(0, 0, Math.max(560, s.W * .52), 0);
+    gr.addColorStop(0, `rgba(244,244,242,${(.94 * ha).toFixed(3)})`); gr.addColorStop(.55, `rgba(244,244,242,${(.72 * ha).toFixed(3)})`); gr.addColorStop(1, 'rgba(244,244,242,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, s.W, s.Hc);
+  }
+  if (tall) {                                   // spodek obrazu do papíru
+    const fh = Math.min(140, h * .3), gr = g.createLinearGradient(0, y + h - fh, 0, y + h);
+    gr.addColorStop(0, 'rgba(244,244,242,0)'); gr.addColorStop(1, PAPER);
+    g.fillStyle = gr; g.fillRect(0, y + h - fh, s.W, fh + 1);
+  }
+}
+function timeAt(s) {
+  const r = s.el.getBoundingClientRect(), p = clamp(-r.top / Math.max(1, s.el.offsetHeight - s.pin.offsetHeight));
+  const m = s.map; let j = 0; while (j < m.length - 2 && p > m[j + 1][0]) j++;
+  const [p0, t0] = m[j], [p1, t1] = m[j + 1];
+  return t0 + (t1 - t0) * clamp((p - p0) / Math.max(1e-6, p1 - p0));
+}
+function captions(s) {
+  for (const k of s.caps) {
+    const d = Math.abs(s.t - k.at), o = 1 - smooth(0.022, 0.06, d);
+    const os = o.toFixed(2), vs = o > 0.01 ? 'visible' : 'hidden', tr = `translate3d(0,${((k.at - s.t) * 220).toFixed(0)}px,0)`;
+    if (os !== k.o) k.c.style.opacity = k.o = os;
+    if (vs !== k.v) k.c.style.visibility = k.v = vs;
+    if (o > 0.01 && tr !== k.tr) k.c.style.transform = k.tr = tr;
+  }
+}
+const prog = document.getElementById('prog');
+let raf = 0;
+function tick() { if (!raf) raf = requestAnimationFrame(step); }
+function step(now) {
+  raf = 0; let moving = false;
+  for (const s of stages) {
+    const r = s.el.getBoundingClientRect();
+    if (r.top < innerHeight * 2.5 && r.bottom > -innerHeight) load(s);
+    if (r.bottom < -50 || r.top > innerHeight + 50) continue;
+    const w = timeAt(s);
+    if (s.raw === undefined || Math.abs(w - s.raw) * (s.n - 1) > 1e-3) { s.raw = w; s.moved = now; }
+    const rest = now - s.moved > 250;
+    s.want = rest ? Math.round(w * (s.n - 1)) / (s.n - 1) : w;
+    if (!rest) moving = true;
+    const d = s.want - s.t, gap = Math.abs(d) * (s.n - 1);
+    const dt = Math.min(64, s.last ? now - s.last : 16.7); s.last = now;
+    const OM = window.__om || 10;
+    let F = s.t * (s.n - 1), W = s.want * (s.n - 1), v = s.v || 0;
+    if (Math.abs(d) > .25) { F = W; v = 0; }
+    else for (let left = dt / 1000; left > 1e-6; left -= .008) {
+      const h = Math.min(.008, left); v += (OM * OM * (W - F) - 2 * OM * v) * h; F += v * h;
+    }
+    if (Math.abs(W - F) < .01 && Math.abs(v) < .3) { F = W; v = 0; }
+    s.v = v; const t1 = F / (s.n - 1);
+    s.slow = Math.abs(t1 - s.t) * (s.n - 1) < 1.2; s.t = t1;
+    if (gap > .3) s.dirn = d > 0 ? 1 : -1;
+    if (s.t !== s.want || v) moving = true;
+    size(s); feed(s); draw(s); captions(s);
+  }
+  const pv = `scaleX(${clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(3)})`;
+  if (pv !== prog.dataset.v) { prog.dataset.v = pv; prog.style.transform = pv; }
+  if (moving) tick(); else for (const s of stages) s.last = 0;
+}
+addEventListener('scroll', tick, { passive: true });
+addEventListener('resize', () => { setVh(); tick(); });
+if (document.fonts) document.fonts.ready.then(() => { for (const s of stages) { s.W = 0; s.dirty = true; } tick(); });
+if (window.visualViewport) visualViewport.addEventListener('resize', setVh);
+setVh();
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  const el = document.querySelector(a.getAttribute('href')); if (!el) return;
+  e.preventDefault(); scrollTo({ top: el === stages[0].el ? 0 : el.offsetTop - 60, behavior: 'smooth' });
+}));
+window.__P = { stages, tick };
+tick();
+
+/* ---------- kalkulačka: auto × služby → cena, čas, nejbližší pracovní den v 8:00 ---------- */
+const form = document.getElementById('kalk'), out = { sum: document.getElementById('sum'), cas: document.getElementById('cas'), term: document.getElementById('term') };
+const DNY = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'];
+const kc = v => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+function hodiny(min) {
+  const h = Math.round(min / 30) / 2;
+  if (h <= 1) return 'asi 1 hodinu';
+  const t = String(h).replace('.', ',');
+  return 'asi ' + t + (h < 5 && h === Math.floor(h) ? ' hodiny' : ' hodin');
+}
+function termin(min) {
+  const d = new Date(); d.setHours(0, 0, 0, 0);
+  let add = 1; if (min > 180) add = 2;             // delší práce: auto ráno přivézt, volný den dál
+  while (add > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) add--; }
+  return DNY[d.getDay()] + ' ' + d.getDate() + '. ' + (d.getMonth() + 1) + '. v 8:00';
+}
+function calc() {
+  const m = +form.querySelector('input[name=auto]:checked').value;
+  const sel = [...form.querySelectorAll('input[name=s]:checked')];
+  const base = sel.reduce((a, i) => a + +i.value, 0), min = sel.reduce((a, i) => a + +i.dataset.min, 0) * m;
+  out.sum.textContent = kc(Math.round(base * m / 10) * 10);
+  out.cas.textContent = sel.length ? hodiny(min) : '—';
+  out.term.textContent = sel.length ? termin(min) : '—';
+}
+form.addEventListener('change', calc); calc();
+})();
+</script>
+</body>
+</html>
