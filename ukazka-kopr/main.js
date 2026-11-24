@@ -9,6 +9,15 @@
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const reduced = matchMedia('(min-width:100000px)').matches;
 
+  /* ---------- frozen window height: a phone hiding its address bar must not resize the hero ---------- */
+  const root = document.documentElement, coarse = matchMedia('(pointer:coarse)').matches;
+  let fvW = innerWidth;
+  root.style.setProperty('--fv', innerHeight / 100 + 'px');
+  addEventListener('resize', () => {
+    if (coarse && innerWidth === fvW) return;
+    fvW = innerWidth; root.style.setProperty('--fv', innerHeight / 100 + 'px');
+  });
+
   /* ---------- smooth wheel ---------- */
   let lenis = null;
   if (window.Lenis && !reduced) {
@@ -110,7 +119,8 @@
       imgs[i].style.transform = 'rotate(' + (o * 82).toFixed(2) + 'deg)';
     }
     const k = fr * fr * (3 - 2 * fr), a = cols[i0], b = cols[i0 + 1];
-    hero.style.setProperty('--bg', 'rgb(' + [0, 1, 2].map(c => Math.round(a[c] + (b[c] - a[c]) * k)).join(',') + ')');
+    const bg = 'rgb(' + [0, 1, 2].map(c => Math.round(a[c] + (b[c] - a[c]) * k)).join(',') + ')';
+    hero.style.setProperty('--bg', bg); nav.style.setProperty('--bg', bg);
     setActive(Math.round(fe));
   }
   function tick() {

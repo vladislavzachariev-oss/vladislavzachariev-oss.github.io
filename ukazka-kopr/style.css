@@ -21,6 +21,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* ---------- nav ---------- */
 .nav{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
   padding:clamp(12px,1.7vw,20px) var(--pad);transition:background-color .4s}
+/* 24. 11.: a plate swinging past the top used to run under the menu links; a band of the dish colour fades it out under the bar */
+.nav::before{content:"";position:absolute;z-index:-1;inset:0 0 -34px;background:linear-gradient(var(--bg) 62%,rgba(0,0,0,0));pointer-events:none;transition:opacity .3s}
+.nav.is-solid::before{opacity:0}
 .nav.is-solid{background:rgba(255,253,248,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .brand{display:flex;align-items:center;gap:8px;text-decoration:none;font:700 21px/1 var(--disp);letter-spacing:-.01em}
 .brand__mark{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
@@ -30,7 +33,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @media (max-width:700px){.nav__links a:not(.nav__cta){display:none}}
 
 /* ---------- hero: the turntable ---------- */
-.hero{position:relative;height:470vh;background:var(--bg)}
+.hero{position:relative;height:470vh;height:calc(var(--fv,1svh) * 470);background:var(--bg)}
 .pin{position:sticky;top:0;height:calc(100lvh + max(72px,12vh));overflow:hidden;background:var(--bg)}
 .stage{position:relative;height:100svh}
 .plates{position:absolute;inset:0;pointer-events:none}
@@ -69,6 +72,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @media (max-aspect-ratio:4/5){
   .copy{left:var(--pad);right:var(--pad);width:auto;top:auto;bottom:0;height:var(--ch,46svh);justify-content:flex-start;padding:0 0 64px}
   .copy__h{margin-bottom:8px}
+  /* 24. 11.: the plate leaving sideways ran under the first lines of text; it fades out above the words */
+  .copy{isolation:isolate}
+  .copy::before{content:"";position:absolute;z-index:-1;left:calc(-1 * var(--pad));right:calc(-1 * var(--pad));top:-28px;bottom:0;background:linear-gradient(rgba(0,0,0,0),var(--bg) 28px);pointer-events:none}
   .dishes{height:auto;flex:1}
   .dish__name{margin:.1em 0 .14em -.045em}
   .dish__desc{max-width:34ch;font-size:16.5px}
