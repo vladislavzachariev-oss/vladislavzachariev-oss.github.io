@@ -330,9 +330,9 @@ function karta(f, k, z){
        + (z.x?'':'<button type="button" class="pm" aria-expanded="'+(!!pmOtev[k])+'">Poslat ukázku e-mailem</button>'):'')+'</div>'
     + (f.ukazka && pmOtev[k] && !z.x ? '<div class="pmf"><input class="pme" type="email" inputmode="email" autocomplete="off" placeholder="e-mail firmy" value="'+esc(pmMail[k]||z.m||"")+'" aria-label="E-mail firmy '+esc(f.jmeno)+'">'
        + '<label><input type="checkbox" class="pmc"> Firma o ukázku požádala a hovor mám nahraný.</label>'
-       + '<button type="button" class="pmo">Odeslat ukázku</button></div>' : '')
+       + '<button type="button" class="pmo">Připravit ukázku k odeslání</button></div>' : '')
     + (z.x===2 ? '<div class="odesl">✓ Ukázka odešla e-mailem na '+esc(z.m)+'</div>'
-       : z.x===1 ? '<div class="odesl ceka">Ukázka odejde e-mailem na '+esc(z.m)+' do pár minut</div>' : '')
+       : z.x===1 ? '<div class="odesl ceka">Ukázka na '+esc(z.m)+' je připravená, odešle ji Vladislav</div>' : '')
     + '<div class="res">'+VYSL.map(function(v){return '<button type="button" data-v="'+v[0]+'" aria-pressed="'+(z.v===v[0])+'">'+v[1]+'</button>'}).join("")+'</div>'
     + '<input class="po" placeholder="'+(z.v==="ano"?ANO_P:"Poznámka: kdy znovu, důvod ne, SMS nebo e-mail")+'" value="'+esc(z.p||"")+'" aria-label="Poznámka k '+esc(f.jmeno)+'">'
     + (z.t?'<div class="cas">zapsáno '+esc(z.t)+'</div>':'')
@@ -385,7 +385,7 @@ document.getElementById("firmy").addEventListener("click",function(e){
     if(f) kopirujText(smsText(f), "Zkopírováno, vlož to do odpovědi na jejich SMS");
     return;
   }
-  // „pošlete“ v nahraném hovoru → ukázku pošle Jarvis e-mailem do pár minut (Z 25. 11. 2026: „udělej 1“)
+  // „pošlete“ v nahraném hovoru → Jarvis připraví koncept, odešle ho Z (Z 25. 11. 2026: „poslední krok budu dělat já“)
   if(e.target.closest(".pm")){ pmOtev[k] = !pmOtev[k]; rozbal[k] = 1; kresli();
     var q = [].filter.call(document.querySelectorAll(".f"),function(x){return x.dataset.k===k})[0];
     if(q && q.querySelector(".pme")) q.querySelector(".pme").focus();
@@ -395,11 +395,11 @@ document.getElementById("firmy").addEventListener("click",function(e){
     if(!jm){ toast("Nejdřív napiš své jméno a příjmení"); document.getElementById("nast").open = true; document.getElementById("jmeno").focus(); return; }
     var mail = li.querySelector(".pme").value.trim();
     if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(mail)){ toast("Zkontroluj e-mail firmy"); li.querySelector(".pme").focus(); return; }
-    if(!li.querySelector(".pmc").checked){ toast("Odešle se jen, když o ni firma požádala a hovor máš nahraný"); return; }
+    if(!li.querySelector(".pmc").checked){ toast("Připraví se jen, když o ni firma požádala a hovor máš nahraný"); return; }
     var zz = store[k]||{};
     zz.m = mail; zz.x = 1; zz.j = jm; zz.t = ted(); zz.d = new Date().toDateString(); store[k] = zz;
     pmOtev[k] = false; zmena(k); kresli();
-    toast("Ukázka odejde e-mailem do pár minut");
+    toast("Ukázka připravená, odešle ji Vladislav");
     return;
   }
   if(e.target.closest(".pmf")) return;
