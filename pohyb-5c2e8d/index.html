@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Pohyb kamery</title>
+<style>
+:root{--bg:#0b0c0e;--panel:#131417;--card:#1a1b1f;--line:#2a2c31;--ink:#ececee;--mute:#9b9da5;--acc:#f3f3f4;--accInk:#0b0c0e;--path:#e2a654;--now:#ffffff}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 384px;height:100vh;height:100dvh}
+.view{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:#000}
+.stage{position:relative;flex:1;min-height:0;display:grid;place-items:center;overflow:hidden}
+.stage canvas{display:block;touch-action:none;outline:1px solid #26282d}
+.tag{position:absolute;left:14px;top:12px;font-size:13px;color:#d6d7db;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:6px;pointer-events:none;max-width:calc(100% - 28px)}
+.tip{position:absolute;left:14px;bottom:12px;font-size:12.5px;color:#b9bbc2;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:6px;pointer-events:none;max-width:calc(100% - 28px)}
+.load{position:absolute;inset:auto 18% 50% 18%;height:2px;background:rgba(255,255,255,.12)}
+.load i{display:block;height:100%;background:#fff;transform-origin:0 50%;transform:scaleX(var(--load,0));transition:transform .2s}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.play{width:44px;height:44px;flex:none;border-radius:8px;border:0;background:var(--acc);color:var(--accInk);display:grid;place-items:center}
+.play svg{width:18px;height:18px}
+.time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--mute);min-width:84px}
+.track{position:relative;flex:1;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:0;height:100%;pointer-events:none}
+.ticks span{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--path)}
+.ticks span::after{content:"";position:absolute;left:50%;top:15px;width:1px;height:8px;background:var(--path)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:#3a3c42}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:#3a3c42}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-7px;border:0}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0}
+.track input{position:relative;z-index:1;margin-top:14px}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mute);white-space:nowrap}
+.chk input{width:16px;height:16px;accent-color:#fff}
+.side{overflow:auto;background:var(--panel);border-left:1px solid var(--line);padding:18px 18px 40px}
+h1{font-size:19px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+.lead{color:var(--mute);font-size:13.5px;margin:0 0 14px}
+section{border-top:1px solid var(--line);padding:16px 0 4px}
+h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:0 0 10px}
+.note{font-size:12.5px;color:var(--mute);margin:6px 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:9px 12px;font-size:14px;line-height:1.2}
+.btn:hover{border-color:#44464d}
+.btn.main{background:var(--acc);color:var(--accInk);border-color:var(--acc);font-weight:600}
+.btn.on{border-color:#fff;box-shadow:inset 0 0 0 1px #fff}
+.btn.sm{padding:6px 9px;font-size:13px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:9px 6px;font-size:14px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--acc);color:var(--accInk);font-weight:600}
+.lbl{display:flex;justify-content:space-between;font-size:13.5px;margin:12px 0 0}
+.lbl b{font-weight:500;font-variant-numeric:tabular-nums}
+.keys{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:8px}
+.keys li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.keys li.sel{border-color:#fff}
+.keys img{display:block;width:64px;border-radius:4px;background:#000;cursor:pointer}
+.keys .k1{font-size:13.5px}
+.keys .k2{font-size:12px;color:var(--mute);margin:1px 0 6px}
+.keys .row{gap:6px}
+#graf{height:150px}#mapa{height:260px}
+canvas.pl{display:block;width:100%;border-radius:8px;background:#0e0f11;border:1px solid var(--line)}
+canvas.ez{width:200px;height:200px;touch-action:none;cursor:grab;flex:none}
+.ezw{display:flex;gap:12px;align-items:flex-start;margin-top:8px}
+.ezw .note{margin:0}
+textarea{width:100%;min-height:76px;resize:vertical;background:var(--card);border:1px solid var(--line);border-radius:7px;padding:9px 10px;font-size:14px}
+.link{width:100%;margin-top:8px;font-size:12px;color:var(--mute);word-break:break-all;background:var(--card);border:1px solid var(--line);border-radius:7px;padding:8px 10px;max-height:5.2em;overflow:hidden}
+.ok{font-size:13px;color:#fff;margin-top:6px;min-height:1.3em}
+.nogl .stage::after{content:"Tenhle prohlížeč neumí 3D (WebGL). Otevři stránku v Chromu nebo Safari.";position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center}
+@media (max-width:900px){
+  .app{display:block;height:auto}
+  .view{position:sticky;top:0;z-index:3;height:60vh;height:60svh}
+  .side{border-left:0;border-top:1px solid var(--line);padding:16px 16px 60px}
+  .tip{display:none}
+  canvas.ez{width:170px;height:170px}
+}
+@media (max-width:900px) and (orientation:landscape) and (max-height:520px){   /* telefon naležato: panel vedle, ne pod */
+  .app{display:grid;grid-template-columns:minmax(0,1fr) 320px;height:100vh;height:100dvh}
+  .view{position:relative;height:auto}
+  .side{border-top:0;border-left:1px solid var(--line);padding:14px 14px 40px}
+  .bar{padding:6px 10px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="view">
+    <div class="stage" id="stage">
+      <canvas id="c" aria-label="3D náhled auta"></canvas>
+      <div class="tag" id="tag">Načítám auto…</div>
+      <div class="tip" id="tip">Táhni myší = kolem auta · kolečko = blíž · pravé tlačítko = posun pohledu</div>
+      <div class="load" id="load"><i></i></div>
+    </div>
+    <div class="bar">
+      <button class="play" id="play" aria-label="Přehrát"><svg viewBox="0 0 20 20" id="ico"><path d="M5 3l12 7-12 7z" fill="currentColor"/></svg></button>
+      <div class="time" id="time">0,0 / 7,0 s</div>
+      <div class="track"><div class="ticks" id="ticks"></div><input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Čas pohybu"></div>
+      <label class="chk"><input type="checkbox" id="loop" checked> Dokola</label>
+    </div>
+  </div>
+
+  <aside class="side">
+    <h1>Pohyb kamery</h1>
+    <p class="lead">Nastav záběry, kamera mezi nimi poletí plynule. Odkaz pošli Jarvisovi a pohyb udělá stejně v Blenderu i na webu.</p>
+
+    <section>
+      <h2>Začni ze vzoru</h2>
+      <div class="row">
+        <button class="btn" data-vzor="kolem">Kolem auta</button>
+        <button class="btn" data-vzor="kruh">Celé kolečko</button>
+        <button class="btn" data-vzor="prilet">Přiblížení zepředu</button>
+        <button class="btn" data-vzor="stroj">Takhle ne: stroj</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Záběry</h2>
+      <p class="note" id="keysNote">Natoč pohled v okně vlevo a přidej ho. Kamera projede záběry v pořadí a nikde nezastaví.</p>
+      <ul class="keys" id="keys"></ul>
+      <button class="btn main" id="add">+ Přidat tento pohled</button>
+    </section>
+
+    <section>
+      <h2>Objektiv tohoto pohledu</h2>
+      <div class="lbl"><span>Ohnisko</span><b id="lensV">45 mm</b></div>
+      <input type="range" id="lens" min="14" max="135" step="1" value="45" aria-label="Ohnisko">
+      <p class="note">14–24 mm široký a dramatický, 35–50 mm jako oko, 85 mm a víc stlačí tvar a rozmaže pozadí.</p>
+      <div class="lbl"><span>Náklon obrazu</span><b id="rollV">0°</b></div>
+      <input type="range" id="roll" min="-20" max="20" step="0.5" value="0" aria-label="Náklon obrazu">
+      <div class="lbl"><span>Formát</span></div>
+      <div class="seg" id="fmt" style="margin-top:6px"><button data-a="9:16" aria-pressed="true">Na výšku 9:16</button><button data-a="16:9" aria-pressed="false">Na šířku 16:9</button></div>
+    </section>
+
+    <section>
+      <h2>Pohyb</h2>
+      <div class="lbl" style="margin-top:0"><span>Dráha</span></div>
+      <div class="seg" id="path" style="margin-top:6px"><button data-p="kolem" aria-pressed="true">Kolem auta</button><button data-p="rovne" aria-pressed="false">Rovně</button></div>
+      <p class="note">Kolem auta: kamera obíhá ve stejné vzdálenosti. Rovně: jede po přímce, auto bokem „ujíždí“.</p>
+      <div class="lbl"><span>Délka</span><b id="durV">7 s</b></div>
+      <input type="range" id="dur" min="2" max="20" step="0.5" value="7" aria-label="Délka pohybu">
+      <div class="lbl"><span>Rozjezd a dojezd</span><b id="ezV">Plynule</b></div>
+      <div class="row" id="ezp" style="margin-top:8px">
+        <button class="btn sm" data-e="plynule">Plynule</button>
+        <button class="btn sm" data-e="rozjezd">Rozjezd</button>
+        <button class="btn sm" data-e="dojezd">Dojezd</button>
+        <button class="btn sm" data-e="svih">Švih</button>
+        <button class="btn sm" data-e="stroj">Stroj</button>
+      </div>
+      <div class="ezw"><canvas class="ez" id="ez"></canvas>
+        <p class="note">Vodorovně čas, svisle kus dráhy. Kde je čára strmá, kamera jede rychle; kde je plochá, zpomalí. Tečky jdou táhnout.</p></div>
+      <div class="lbl"><span>Ruka kameramana</span><b id="rukaV">0</b></div>
+      <input type="range" id="ruka" min="0" max="1.5" step="0.05" value="0" aria-label="Ruka kameramana">
+      <p class="note">0 = stativ. Víc = drobné živé chvění, jako když kameru drží člověk.</p>
+    </section>
+
+    <section>
+      <h2>Rychlost kamery</h2>
+      <canvas class="pl" id="graf" height="150"></canvas>
+      <p class="note">Svisle km/h, vodorovně sekundy, čísla nahoře jsou záběry. Hladká křivka bez zubů = plynulý pohyb.</p>
+    </section>
+
+    <section>
+      <h2>Pohled shora</h2>
+      <canvas class="pl" id="mapa" height="260"></canvas>
+      <p class="note">Oranžová čára je dráha kamery, bílá tečka kamera teď a kam se dívá.</p>
+    </section>
+
+    <section>
+      <h2>Ovládání posunem, jako Oryzo</h2>
+      <label class="chk" style="color:var(--ink);font-size:14px"><input type="checkbox" id="posun"> Pohyb řídí kolečko nebo prst</label>
+      <p class="note">Tak se pohyb chová na webu: posun nastaví cíl a obraz k němu měkce dojíždí (stejný vzorec jako Oryzo a Igloo).</p>
+      <div class="lbl"><span>Měkkost dojezdu</span><b id="kV">12</b></div>
+      <input type="range" id="k" min="3" max="24" step="1" value="12" aria-label="Měkkost dojezdu">
+      <p class="note">Menší číslo = delší a měkčí dojezd. Oryzo má 12.</p>
+    </section>
+
+    <section>
+      <h2>Poslat Jarvisovi</h2>
+      <textarea id="pozn" placeholder="Co má pohyb dělat, slovy (nepovinné). Třeba: pomalu kolem, u zadního světla zpomalit."></textarea>
+      <p class="note" id="popis"></p>
+      <button class="btn main" id="copy">Zkopírovat odkaz</button>
+      <div class="ok" id="ok"></div>
+      <div class="link" id="link"></div>
+    </section>
+  </aside>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { PRESETY, bezier, priprav, fovV, zabal, rozbal, dobeh, kamera } from './pohyb.js?v=1';
+
+const $ = id => document.getElementById(id);
+const R = Math.PI / 180;
+const cz = (x, k = 1) => (+x).toFixed(k).replace('.', ',').replace(/,0+$/, '');
+const cs = (x, k = 1) => (+x).toFixed(k).replace('.', ',');      // pevný počet míst: čísla neposkakují
+const B = v => new THREE.Vector3(v[0], v[2], -v[1]);            // Blender (Z nahoru) → three (Y nahoru)
+const NAZVY = { plynule: 'Plynule', rozjezd: 'Rozjezd', dojezd: 'Dojezd', svih: 'Švih', stroj: 'Stroj' };
+const coarse = matchMedia('(pointer:coarse)').matches;
+if (coarse) $('tip').textContent = '1 prst = kolem auta · 2 prsty = blíž a posun';
+
+/* ---------- vzory: z polohy kamery a cíle (three, metry; předek auta míří k +Z, řidič na straně +X) ---------- */
+function zPolohy(c, t, lens, roll = 0) {
+  const dx = c[0] - t[0], dy = c[1] - t[1], dz = c[2] - t[2], d = Math.hypot(dx, dy, dz);
+  return { az: Math.atan2(dx, dz) / R, el: Math.asin(dy / d) / R, d, tx: t[0], ty: t[1], tz: t[2], lens, roll };
+}
+// na výšku je záběr užší: ohnisko kratší, ať se auto vejde jako v editu na TikTok
+const kl = (az, el, d, lens, t = [0, 0.6, 0]) => ({ az, el, d, tx: t[0], ty: t[1], tz: t[2], lens: M && M.aspect === '16:9' ? lens : Math.round(lens * 0.7), roll: 0 });
+const VZORY = {
+  kolem: () => ({ v: 1, dur: 7, path: 'kolem', ease: PRESETY.plynule, ruka: 0.35, aspect: M ? M.aspect : '9:16',
+    keys: [kl(32, 5, 6.4, 45), kl(95, 9, 7.0, 50), kl(158, 13, 6.4, 45)] }),
+  kruh: () => ({ v: 1, dur: 12, path: 'kolem', ease: PRESETY.plynule, ruka: 0.25, aspect: M ? M.aspect : '9:16',
+    keys: [0, 90, 180, 270, 360].map((a, i) => kl(a, i % 2 ? 9 : 6, 7.2, 45)) }),
+  prilet: () => ({ v: 1, dur: 6, path: 'kolem', ease: PRESETY.dojezd, ruka: 0.3, aspect: M ? M.aspect : '9:16',
+    keys: [kl(-38, 4, 9.5, 35, [0, 0.55, 0.8]), kl(-12, 2.5, 5.2, 28, [0, 0.5, 1.6]), kl(14, 3, 3.4, 24, [0.15, 0.5, 2.0])] }),
+  stroj: () => ({ v: 1, dur: 4, path: 'rovne', ease: PRESETY.stroj, ruka: 0, aspect: M ? M.aspect : '9:16',
+    pozn: 'Takhle to bylo v editech: kamera jede bokem po přímce stálou rychlostí.',
+    keys: [zPolohy([5.6, 1.0, 2.6], [0, 0.6, 1.4], M && M.aspect === '16:9' ? 50 : 35), zPolohy([5.6, 1.0, -2.6], [0, 0.6, -1.4], M && M.aspect === '16:9' ? 50 : 35)] }),
+};
+
+/* ---------- stav ---------- */
+let M = null, P = null;
+const ui = { lens: 45, roll: 0, sel: -1, T: 0, playing: false, rezim: 'uprava', posun: false, k: 12, cil: 0, v: 0, tah: null };
+const asp = () => M.aspect === '16:9' ? 16 / 9 : 9 / 16;
+
+/* ---------- renderer a scéna (studio ze stránky 911, změřené 15. 11.) ---------- */
+const canvas = $('c'), stageEl = $('stage');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 2, powerPreference: 'high-performance' }); }
+catch (e) { document.documentElement.classList.add('nogl'); $('tag').textContent = 'Bez 3D'; throw e; }
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.setClearColor(0x000000, 1);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 9 / 16, 0.02, 80);
+
+function studio() {
+  const s = new THREE.Scene(); s.background = new THREE.Color(0x000000);
+  const lf = (w, h, k, pos, at) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(k), side: THREE.DoubleSide }));
+    m.position.copy(B(pos)); m.lookAt(B(at)); s.add(m);
+  };
+  lf(7.0, 3.0, 3.2, [0, 0, 4.2], [0, 0, 0]);
+  lf(9.0, 2.2, 0.9, [-5.5, 0, 1.7], [0, 0, 0.7]);
+  lf(9.0, 2.2, 0.9, [5.5, 0, 1.7], [0, 0, 0.7]);
+  lf(8.0, 0.3, 14, [-3.6, 0, 3.0], [0, 0, 0.8]);
+  lf(8.0, 0.3, 14, [3.6, 0, 3.0], [0, 0, 0.8]);
+  lf(4.5, 1.6, 1.4, [0, -7.0, 1.9], [0, -1, 0.6]);
+  lf(4.5, 1.6, 1.4, [0, 7.0, 1.9], [0, 1, 0.6]);
+  lf(30, 0.6, 0.05, [0, 0, 0.02], [0, 0, 5]);
+  return s;
+}
+const ENV = new THREE.PMREMGenerator(renderer).fromScene(studio(), 0.015).texture;
+scene.environment = ENV;
+function envOn(m, k) { m.envMap = ENV; m.envMapIntensity = k; m.needsUpdate = true; }
+function radial(stops) {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), k = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  for (const [o, col] of stops) k.addColorStop(o, col);
+  g.fillStyle = k; g.fillRect(0, 0, 256, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.3, metalness: 0, transparent: true, opacity: 0.8, depthWrite: false });
+envOn(floorMat, 0.08);
+floorMat.alphaMap = radial([[0, '#fff'], [0.3, '#fff'], [1, '#000']]);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(16, 96), floorMat);
+floor.rotation.x = -Math.PI / 2; floor.renderOrder = -2; scene.add(floor);
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 5.2), new THREE.MeshBasicMaterial({
+  map: radial([[0, 'rgba(0,0,0,.92)'], [0.55, 'rgba(0,0,0,.75)'], [1, 'rgba(0,0,0,0)']]), transparent: true, depthWrite: false, toneMapped: false }));
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.002; shadow.renderOrder = -1; scene.add(shadow);
+
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/');
+const gltf = await new Promise((ok, no) => new GLTFLoader().setDRACOLoader(draco).load('turbos.glb?v=1', ok,
+  e => { if (e.total) $('load').style.setProperty('--load', (e.loaded / e.total).toFixed(3)); }, no));
+const car = gltf.scene; scene.add(car);
+car.traverse(o => {
+  if (!o.isMesh) return;
+  const m = o.material, n = m.name;
+  if (n === 'invisible_all') { o.visible = false; return; }
+  if (n === 'windows' || n === 'kryt_svetel') {
+    o.material = new THREE.MeshPhysicalMaterial({ color: n === 'windows' ? 0x0c0d10 : 0xffffff, roughness: 0.02, metalness: 0,
+      transparent: true, opacity: n === 'windows' ? 0.62 : 0.12, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true });
+    envOn(o.material, n === 'windows' ? 2.2 : 1.6); o.renderOrder = 2; return;
+  }
+  if (n === 'body_main') { m.clearcoat = 1; m.clearcoatRoughness = 0.03; }
+  envOn(m, n === 'body_main' ? 1.4 : 1);
+  if (n.startsWith('ui_')) { m.toneMapped = false; m.emissiveIntensity = 0.9; }
+});
+{ // díly se stejným materiálem do jednoho tělesa: méně kreslení, plynulejší na slabém procesoru
+  car.updateMatrixWorld(true);
+  const groups = new Map();
+  car.traverse(o => {
+    if (!o.isMesh || !o.visible || o.material.transparent) return;
+    const g = o.geometry, sig = o.material.uuid + '|' + Object.keys(g.attributes).sort().join(',') + '|' + (g.index ? 1 : 0);
+    if (!groups.has(sig)) groups.set(sig, []); groups.get(sig).push(o);
+  });
+  for (const list of groups.values()) {
+    if (list.length < 2) continue;
+    const geos = list.map(o => { const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); for (const k of Object.keys(g.morphAttributes)) delete g.morphAttributes[k]; return g; });
+    const mg = mergeGeometries(geos, false); if (!mg) continue;
+    const mesh = new THREE.Mesh(mg, list[0].material);
+    for (const o of list) { o.parent.remove(o); o.geometry.dispose(); }
+    for (const g of geos) g.dispose();
+    car.add(mesh);
+  }
+}
+const mirror = new THREE.Group(); mirror.scale.y = -1; const carM = car.clone(true); mirror.add(carM); scene.add(mirror);
+const INSIDE = /leather|upholstery|monitor|^ui_|rug|belts|carbon_int|dynamics|bl_pl_M_int|chrom_int|pl_leather|interior|perforated|LOGO1|Mirror|black_metal/;
+carM.traverse(o => { if (o.isMesh && (o.material.transparent || INSIDE.test(o.material.name))) o.visible = false; });
+scene.traverse(o => { o.updateMatrix(); o.matrixAutoUpdate = false; });
+scene.updateMatrixWorld(true); scene.matrixWorldAutoUpdate = false;
+const box = new THREE.Box3().setFromObject(car);
+$('load').remove();
+
+/* ---------- ovládání myší a prstem ---------- */
+const controls = new OrbitControls(cam, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.09;
+controls.minDistance = 0.4; controls.maxDistance = 30; controls.maxPolarAngle = Math.PI / 2 + 0.1;
+controls.rotateSpeed = 0.7; controls.zoomSpeed = 0.8;
+controls.addEventListener('start', () => { if (ui.rezim !== 'uprava') doUpravy(); });
+
+let dirty = true, posledni = null;
+function velikost() {
+  const r = stageEl.getBoundingClientRect(), A = asp();
+  let w = r.width - 24, h = w / A;
+  if (h > r.height - 24) { h = r.height - 24; w = h * A; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.setSize(Math.max(40, Math.floor(w)), Math.max(40, Math.floor(h)));
+  cam.aspect = A; dirty = true;
+}
+function natoc(p) {          // kamera podle pózy {cam, tgt, lens, roll}
+  cam.position.set(p.cam[0], p.cam[1], p.cam[2]); cam.up.set(0, 1, 0);
+  cam.lookAt(p.tgt[0], p.tgt[1], p.tgt[2]); cam.rotateZ(p.roll * R);
+  cam.fov = fovV(p.lens, cam.aspect); cam.updateProjectionMatrix();
+}
+function polozit(T) { posledni = P.poza(T); natoc(posledni); dirty = true; }
+function zKlice(k) { return { cam: kamera(k), tgt: [k.tx, k.ty, k.tz], lens: k.lens, roll: k.roll }; }
+function doUpravy(p = posledni) {
+  ui.playing = false; ui.rezim = 'uprava'; ikona();
+  if (p) { controls.target.set(p.tgt[0], p.tgt[1], p.tgt[2]); cam.position.set(p.cam[0], p.cam[1], p.cam[2]); ui.lens = Math.round(p.lens); ui.roll = Math.round(p.roll * 2) / 2; }
+  syncObjektiv(); dirty = true; stitek();
+}
+function pohledTed() {
+  const p = cam.position, t = controls.target;
+  return zPolohy([p.x, p.y, p.z], [t.x, t.y, t.z], ui.lens, ui.roll);
+}
+function rozbalAz(k, ref) { if (ref) k.az += 360 * Math.round((ref.az - k.az) / 360); return k; }
+
+/* ---------- náhledy záběrů ---------- */
+const thumbs = [];
+function nahled(k) {
+  const W = 128, H = Math.round(W / asp()), c = document.createElement('canvas'); c.width = W; c.height = H;
+  natoc(zKlice(k)); renderer.render(scene, cam);
+  c.getContext('2d').drawImage(renderer.domElement, 0, 0, W, H);
+  return c.toDataURL('image/jpeg', 0.72);
+}
+function nahledy(jen) {
+  const pos = cam.position.clone(), q = cam.quaternion.clone(), fov = cam.fov;
+  M.keys.forEach((k, i) => { if (jen === undefined || jen === i) thumbs[i] = nahled(k); });
+  cam.position.copy(pos); cam.quaternion.copy(q); cam.fov = fov; cam.updateProjectionMatrix();
+  renderer.render(scene, cam); dirty = true;
+}
+
+/* ---------- seznam záběrů ---------- */
+const cas = T => cs(T, 1) + ' s';
+function seznam() {
+  const ul = $('keys'); ul.innerHTML = '';
+  M.keys.forEach((k, i) => {
+    const li = document.createElement('li'); if (i === ui.sel) li.className = 'sel';
+    li.innerHTML = `<img alt="Záběr ${i + 1}" src="${thumbs[i] || ''}">
+      <div><div class="k1">Záběr ${i + 1}<span style="color:var(--mute)"> · v čase ${cas(P.prijezdy[i])}</span></div>
+      <div class="k2">${strana(k.az)} · výška ${cz(k.el, 0)}° · ${cz(k.d, 1)} m · ${cz(k.lens, 0)} mm</div>
+      <div class="row"><button class="btn sm" data-a="jit">Ukázat</button><button class="btn sm" data-a="nahradit">Nahradit tímto pohledem</button>
+      <button class="btn sm" data-a="nahoru" aria-label="Posunout výš"${i ? '' : ' disabled'}>↑</button>
+      <button class="btn sm" data-a="dolu" aria-label="Posunout níž"${i < M.keys.length - 1 ? '' : ' disabled'}>↓</button>
+      <button class="btn sm" data-a="smazat"${M.keys.length > 1 ? '' : ' disabled'}>Smazat</button></div></div>`;
+    li.querySelector('img').onclick = () => akce('jit', i);
+    li.querySelectorAll('button').forEach(b => b.onclick = () => akce(b.dataset.a, i));
+    ul.appendChild(li);
+  });
+  $('keysNote').textContent = M.keys.length < 2
+    ? 'Natoč pohled v okně a přidej aspoň dva záběry. Kamera mezi nimi poletí plynule.'
+    : 'Kamera projede záběry v tomto pořadí a nikde nezastaví. Čas u záběru = kdy jím projede.';
+}
+function strana(az) {
+  const a = ((az % 360) + 360) % 360;
+  const S = ['zepředu', 'zepředu z boku řidiče', 'z boku řidiče', 'zezadu z boku řidiče', 'zezadu', 'zezadu z boku spolujezdce', 'z boku spolujezdce', 'zepředu z boku spolujezdce'];
+  return S[Math.round(a / 45) % 8];
+}
+function akce(a, i) {
+  const K = M.keys;
+  if (a === 'jit') { ui.sel = i; ui.T = P.prijezdy[i]; doUpravy(zKlice(K[i])); seznam(); casovka(); return; }
+  if (a === 'nahradit') { K[i] = rozbalAz(pohledTed(), K[i - 1] || K[i + 1]); ui.sel = i; zmena(i); return; }
+  if (a === 'smazat') { K.splice(i, 1); thumbs.splice(i, 1); ui.sel = -1; zmena(null); return; }
+  const j = a === 'nahoru' ? i - 1 : i + 1;
+  [K[i], K[j]] = [K[j], K[i]]; [thumbs[i], thumbs[j]] = [thumbs[j], thumbs[i]];
+  for (let n = 1; n < K.length; n++) rozbalAz(K[n], K[n - 1]);
+  ui.sel = j; zmena(null);
+}
+$('add').onclick = () => {
+  const k = rozbalAz(pohledTed(), M.keys[M.keys.length - 1]);
+  M.keys.push(k); ui.sel = M.keys.length - 1; zmena(ui.sel);
+};
+
+/* ---------- objektiv, formát, pohyb ---------- */
+function syncObjektiv() { $('lens').value = ui.lens; $('lensV').textContent = ui.lens + ' mm'; $('roll').value = ui.roll; $('rollV').textContent = cz(ui.roll, 1) + '°'; }
+$('lens').oninput = e => { if (ui.rezim !== 'uprava') doUpravy(); ui.lens = +e.target.value; syncObjektiv(); dirty = true; };
+$('roll').oninput = e => { if (ui.rezim !== 'uprava') doUpravy(); ui.roll = +e.target.value; syncObjektiv(); dirty = true; };
+function seg(id, attr, val) { $(id).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset[attr] === val)); }
+$('fmt').onclick = e => { const b = e.target.closest('button'); if (!b) return; M.aspect = b.dataset.a; seg('fmt', 'a', M.aspect); velikost(); nahledy(); zmena(null, true); };
+$('path').onclick = e => { const b = e.target.closest('button'); if (!b) return; M.path = b.dataset.p; seg('path', 'p', M.path); zmena(null); };
+$('dur').oninput = e => { M.dur = +e.target.value; $('durV').textContent = cz(M.dur, 1) + ' s'; zmena(null); };
+$('ruka').oninput = e => { M.ruka = +e.target.value; $('rukaV').textContent = cz(M.ruka, 2); zmena(null); };
+$('ezp').onclick = e => { const b = e.target.closest('button'); if (!b) return; M.ease = PRESETY[b.dataset.e].slice(); zmena(null); };
+$('k').oninput = e => { ui.k = +e.target.value; $('kV').textContent = ui.k; };
+$('pozn').oninput = e => { M.pozn = e.target.value.trim(); adresa(); };
+document.querySelectorAll('[data-vzor]').forEach(b => b.onclick = () => nacti(VZORY[b.dataset.vzor]()));
+
+function nazevEase() {
+  for (const [k, v] of Object.entries(PRESETY)) if (v.every((x, i) => Math.abs(x - M.ease[i]) < 1e-3)) return NAZVY[k];
+  return 'Vlastní';
+}
+
+/* ---------- editor průběhu (cubic-bezier) ---------- */
+const ez = $('ez'), ezc = ez.getContext('2d');
+const EZ = { pad: 18, y0: -0.25, y1: 1.25, drag: -1 };
+function ezXY(x, y) { const w = ez.clientWidth, h = ez.clientHeight, p = EZ.pad; return [p + x * (w - 2 * p), p + (EZ.y1 - y) / (EZ.y1 - EZ.y0) * (h - 2 * p)]; }
+function ezInv(px, py) { const w = ez.clientWidth, h = ez.clientHeight, p = EZ.pad; return [(px - p) / (w - 2 * p), EZ.y1 - (py - p) / (h - 2 * p) * (EZ.y1 - EZ.y0)]; }
+function kresliEz() {
+  const d = devicePixelRatio || 1, w = ez.clientWidth, h = ez.clientHeight;
+  if (ez.width !== Math.round(w * d)) { ez.width = Math.round(w * d); ez.height = Math.round(h * d); }
+  ezc.setTransform(d, 0, 0, d, 0, 0); ezc.clearRect(0, 0, w, h);
+  ezc.fillStyle = '#0e0f11'; ezc.fillRect(0, 0, w, h);
+  const [ax, ay] = ezXY(0, 0), [bx, by] = ezXY(1, 1);
+  ezc.strokeStyle = '#2a2c31'; ezc.lineWidth = 1; ezc.strokeRect(ax, by, bx - ax, ay - by);
+  ezc.setLineDash([3, 4]); ezc.beginPath(); ezc.moveTo(ax, ay); ezc.lineTo(bx, by); ezc.stroke(); ezc.setLineDash([]);
+  const [x1, y1, x2, y2] = M.ease, f = bezier(x1, y1, x2, y2);
+  const [p1x, p1y] = ezXY(x1, y1), [p2x, p2y] = ezXY(x2, y2);
+  ezc.strokeStyle = '#6b6e76'; ezc.beginPath(); ezc.moveTo(ax, ay); ezc.lineTo(p1x, p1y); ezc.moveTo(bx, by); ezc.lineTo(p2x, p2y); ezc.stroke();
+  ezc.strokeStyle = '#e2a654'; ezc.lineWidth = 2.2; ezc.beginPath();
+  for (let i = 0; i <= 80; i++) { const x = i / 80, [px, py] = ezXY(x, f(x)); i ? ezc.lineTo(px, py) : ezc.moveTo(px, py); }
+  ezc.stroke();
+  for (const [px, py] of [[p1x, p1y], [p2x, p2y]]) { ezc.fillStyle = '#fff'; ezc.beginPath(); ezc.arc(px, py, 7, 0, 7); ezc.fill(); }
+  if (P && M.dur) { const x = Math.min(1, ui.T / M.dur), [px, py] = ezXY(x, f(x)); ezc.fillStyle = '#e2a654'; ezc.beginPath(); ezc.arc(px, py, 4, 0, 7); ezc.fill(); }
+}
+ez.addEventListener('pointerdown', e => {
+  const r = ez.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  const [x1, y1, x2, y2] = M.ease, a = ezXY(x1, y1), b = ezXY(x2, y2);
+  const da = Math.hypot(mx - a[0], my - a[1]), db = Math.hypot(mx - b[0], my - b[1]);
+  EZ.drag = Math.min(da, db) < 28 ? (da < db ? 0 : 1) : -1;
+  if (EZ.drag >= 0) { ez.setPointerCapture(e.pointerId); e.preventDefault(); }
+});
+ez.addEventListener('pointermove', e => {
+  if (EZ.drag < 0) return;
+  const r = ez.getBoundingClientRect();
+  let [x, y] = ezInv(e.clientX - r.left, e.clientY - r.top);
+  x = Math.min(1, Math.max(0, x)); y = Math.min(EZ.y1, Math.max(EZ.y0, y));
+  M.ease[EZ.drag * 2] = Math.round(x * 1000) / 1000; M.ease[EZ.drag * 2 + 1] = Math.round(y * 1000) / 1000;
+  zmena(null);
+});
+ez.addEventListener('pointerup', () => EZ.drag = -1);
+ez.addEventListener('pointercancel', () => EZ.drag = -1);
+
+/* ---------- graf rychlosti a mapa shora ---------- */
+let vz = null;          // vzorky dráhy: [{T, cam, tgt, v}]
+function vzorky() {
+  const N = 240, out = [];
+  for (let i = 0; i <= N; i++) { const T = i / N * M.dur, p = P.poza(T); out.push({ T, cam: p.cam, tgt: p.tgt }); }
+  for (let i = 0; i <= N; i++) {
+    const a = out[Math.max(0, i - 1)], b = out[Math.min(N, i + 1)], dt = b.T - a.T;
+    out[i].v = dt ? Math.hypot(b.cam[0] - a.cam[0], b.cam[1] - a.cam[1], b.cam[2] - a.cam[2]) / dt : 0;
+  }
+  vz = out;
+}
+function prip(cv) {
+  const d = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight, g = cv.getContext('2d');
+  if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
+  g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h); return [g, w, h];
+}
+function kresliGraf() {
+  const [g, w, h] = prip($('graf')), L = 34, Rr = 10, T0 = 22, Bm = 22;
+  const vmax = Math.max(0.5, ...vz.map(s => s.v)) * 1.12;
+  const X = T => L + T / M.dur * (w - L - Rr), Y = v => h - Bm - v / vmax * (h - Bm - T0);
+  g.font = '11px system-ui,sans-serif'; g.fillStyle = '#7c7f87'; g.strokeStyle = '#26282d'; g.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) { const v = vmax / 1.12 * i / 4, y = Y(v); g.beginPath(); g.moveTo(L, y); g.lineTo(w - Rr, y); g.stroke(); g.fillText(cz(v * 3.6, 0), 2, y + 4); }
+  for (let s = 0; s <= M.dur + 1e-6; s += M.dur > 10 ? 2 : 1) g.fillText(cz(s, 0), X(s) - 3, h - 6);
+  g.beginPath(); g.moveTo(X(0), Y(0)); vz.forEach(s => g.lineTo(X(s.T), Y(s.v))); g.lineTo(X(M.dur), Y(0)); g.closePath();
+  g.fillStyle = 'rgba(226,166,84,.16)'; g.fill();
+  g.beginPath(); vz.forEach((s, i) => i ? g.lineTo(X(s.T), Y(s.v)) : g.moveTo(X(s.T), Y(s.v))); g.strokeStyle = '#e2a654'; g.lineWidth = 2; g.stroke();
+  g.fillStyle = '#e2a654'; P.prijezdy.forEach((t, i) => { g.fillText(String(i + 1), X(t) - 3, 13); });
+  const x = X(Math.min(ui.T, M.dur)); g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.moveTo(x, T0 - 4); g.lineTo(x, h - Bm); g.stroke();
+}
+function kresliMapu() {
+  const [g, w, h] = prip($('mapa'));
+  const pts = vz.map(s => s.cam).concat([[box.min.x, 0, box.min.z], [box.max.x, 0, box.max.z]]);
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  for (const p of pts) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[2]); z1 = Math.max(z1, p[2]); }
+  const pad = 22, s = Math.min((w - 2 * pad) / (x1 - x0 || 1), (h - 2 * pad) / (z1 - z0 || 1));
+  const ox = (w - (x1 - x0) * s) / 2, oy = (h - (z1 - z0) * s) / 2;
+  const X = x => ox + (x - x0) * s, Y = z => oy + (z1 - z) * s;     // předek (+Z) nahoře
+  const cx0 = X(box.min.x), cx1 = X(box.max.x), cy0 = Y(box.max.z), cy1 = Y(box.min.z), rr = Math.min(10, (cx1 - cx0) / 3);
+  g.fillStyle = '#2b2d33'; g.beginPath(); g.roundRect(cx0, cy0, cx1 - cx0, cy1 - cy0, rr); g.fill();
+  g.font = '11px system-ui,sans-serif'; g.textAlign = 'center';
+  g.beginPath(); vz.forEach((p, i) => i ? g.lineTo(X(p.cam[0]), Y(p.cam[2])) : g.moveTo(X(p.cam[0]), Y(p.cam[2])));
+  g.strokeStyle = '#e2a654'; g.lineWidth = 2; g.stroke();
+  M.keys.forEach((k, i) => {
+    const c = kamera(k); g.fillStyle = '#131417'; g.strokeStyle = '#e2a654'; g.lineWidth = 1.5;
+    g.beginPath(); g.arc(X(c[0]), Y(c[2]), 8, 0, 7); g.fill(); g.stroke();
+    g.fillStyle = '#e2a654'; g.fillText(String(i + 1), X(c[0]), Y(c[2]) + 4);
+  });
+  const c = cam.position, t = ui.rezim === 'uprava' ? controls.target : (posledni ? { x: posledni.tgt[0], z: posledni.tgt[2] } : controls.target);
+  g.strokeStyle = '#fff'; g.lineWidth = 1.2; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(c.x), Y(c.z)); g.lineTo(X(t.x), Y(t.z)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(X(c.x), Y(c.z), 5, 0, 7); g.fill();
+  // popisky navrch s tmavým obrysem, ať je čára nepřekryje
+  g.lineWidth = 3.5; g.strokeStyle = '#0e0f11'; g.fillStyle = '#9b9da5'; g.lineJoin = 'round';
+  const pop = (t, x, y, al) => { g.textAlign = al; g.strokeText(t, x, y); g.fillText(t, x, y); };
+  pop('předek', (cx0 + cx1) / 2, cy0 - 6, 'center'); pop('řidič', cx1 + 5, cy0 + 12, 'start');
+  g.textAlign = 'start';
+}
+
+/* ---------- časová osa ---------- */
+function znacky() {
+  $('ticks').innerHTML = P.prijezdy.map((t, i) => `<span style="left:${(M.dur ? t / M.dur : 0) * 100}%">${i + 1}</span>`).join('');
+}
+function casovka() {
+  $('time').textContent = `${cs(ui.T, 1)} / ${cs(M.dur, 1)} s`;
+  $('scrub').value = Math.round((M.dur ? ui.T / M.dur : 0) * 1000);
+}
+function ikona() {
+  $('ico').innerHTML = ui.playing ? '<path d="M5 3h3.6v14H5zM11.4 3H15v14h-3.6z" fill="currentColor"/>' : '<path d="M5 3l12 7-12 7z" fill="currentColor"/>';
+  $('play').setAttribute('aria-label', ui.playing ? 'Pozastavit' : 'Přehrát');
+}
+function stitek() {
+  $('tag').textContent = ui.posun ? 'Posun: kolečkem nebo prstem po obraze'
+    : ui.rezim === 'uprava' ? 'Úprava pohledu: natoč a přidej záběr' : (ui.playing ? 'Přehrávám pohyb' : 'Náhled pohybu');
+}
+$('play').onclick = () => {
+  if (ui.posun) { $('posun').checked = false; posunOnOff(false); }
+  if (M.keys.length < 2) return;
+  if (ui.rezim === 'uprava') { ui.rezim = 'nahled'; if (ui.T >= M.dur - 1e-3) ui.T = 0; }
+  else if (!ui.playing && ui.T >= M.dur - 1e-3) ui.T = 0;
+  ui.playing = !ui.playing; ikona(); stitek(); polozit(ui.T);
+};
+$('scrub').oninput = e => {
+  ui.playing = false; ikona(); ui.rezim = 'nahled'; ui.T = +e.target.value / 1000 * M.dur; ui.cil = ui.T; stitek(); polozit(ui.T); casovka();
+};
+document.addEventListener('keydown', e => { if (e.code === 'Space' && !/TEXTAREA|INPUT/.test(document.activeElement.tagName)) { e.preventDefault(); $('play').click(); } });
+
+/* ---------- posun jako Oryzo: cíl z kolečka / prstu, obraz dojíždí x += (cíl − x)(1 − e^(−k·dt)) ---------- */
+function posunOnOff(on) {
+  ui.posun = on; controls.enabled = !on; ui.v = 0;
+  if (on) { ui.playing = false; ikona(); ui.rezim = 'nahled'; ui.cil = ui.T; polozit(ui.T); }
+  stitek();
+}
+$('posun').onchange = e => posunOnOff(e.target.checked);
+const doCasu = px => px / (stageEl.clientHeight * 2.5) * M.dur;     // 2,5 výšky okna posunu = celý pohyb
+stageEl.addEventListener('wheel', e => {
+  if (!ui.posun) return; e.preventDefault();
+  const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
+  ui.cil = Math.min(M.dur, Math.max(0, ui.cil + doCasu(dy))); ui.v = 0;
+}, { passive: false });
+stageEl.addEventListener('pointerdown', e => {
+  if (!ui.posun) return; ui.tah = { y: e.clientY, h: [[performance.now(), e.clientY]] }; ui.v = 0; stageEl.setPointerCapture(e.pointerId);
+});
+stageEl.addEventListener('pointermove', e => {
+  if (!ui.posun || !ui.tah) return;
+  const dy = ui.tah.y - e.clientY; ui.tah.y = e.clientY;
+  ui.cil = Math.min(M.dur, Math.max(0, ui.cil + doCasu(dy)));
+  ui.tah.h.push([performance.now(), e.clientY]); if (ui.tah.h.length > 8) ui.tah.h.shift();
+});
+const pust = () => {
+  if (!ui.tah) return;
+  const h = ui.tah.h, now = performance.now(), recent = h.filter(([t]) => now - t < 120);
+  if (recent.length > 1) { const [ta, ya] = recent[0], [tb, yb] = recent[recent.length - 1]; if (tb > ta) ui.v = doCasu((ya - yb) / ((tb - ta) / 1000)); }
+  ui.tah = null;
+};
+stageEl.addEventListener('pointerup', pust); stageEl.addEventListener('pointercancel', pust);
+
+/* ---------- změna pohybu → přepočet, adresa, kresby ---------- */
+function adresa() {
+  const h = '#m=' + zabal(M);
+  $('link').textContent = location.href.split('#')[0] + h;
+  clearTimeout(adresa.t);           // Safari povolí jen 100 replaceState za 30 s → zapsat až po doběhnutí tahu
+  adresa.t = setTimeout(() => { try { history.replaceState(null, '', h); } catch (e) {} }, 350);
+  $('popis').textContent = `${M.keys.length} ${M.keys.length === 1 ? 'záběr' : M.keys.length < 5 ? 'záběry' : 'záběrů'} · ${M.path === 'kolem' ? 'kolem auta' : 'rovně'} · ${cz(M.dur, 1)} s · ${nazevEase()} · ruka ${cz(M.ruka, 2)} · ${M.aspect}`;
+}
+function zmena(novyNahled, beze = false) {
+  P = priprav(M);
+  if (novyNahled !== null && novyNahled !== undefined) nahledy(novyNahled);
+  if (ui.T > M.dur) ui.T = M.dur;
+  vzorky(); seznam(); znacky(); casovka(); kresliEz(); kresliGraf(); kresliMapu(); adresa();
+  $('ezV').textContent = nazevEase();
+  document.querySelectorAll('#ezp button').forEach(b => b.classList.toggle('on', NAZVY[b.dataset.e] === nazevEase()));
+  if (ui.rezim !== 'uprava') polozit(ui.T);
+  dirty = true;
+}
+function nacti(m) {
+  M = { v: 1, dur: m.dur, path: m.path, ease: m.ease.slice(), ruka: m.ruka || 0, aspect: m.aspect || '9:16', pozn: m.pozn || '', keys: m.keys.map(k => ({ ...k })) };
+  for (let n = 1; n < M.keys.length; n++) rozbalAz(M.keys[n], M.keys[n - 1]);
+  seg('fmt', 'a', M.aspect); seg('path', 'p', M.path);
+  $('dur').value = M.dur; $('durV').textContent = cz(M.dur, 1) + ' s';
+  $('ruka').value = M.ruka; $('rukaV').textContent = cz(M.ruka, 2);
+  $('pozn').value = M.pozn;
+  velikost();
+  ui.sel = -1; ui.T = 0; ui.playing = false;
+  thumbs.length = 0; P = priprav(M); nahledy();
+  doUpravy(zKlice(M.keys[0]));
+  zmena(null);
+}
+
+$('copy').onclick = async () => {
+  adresa();
+  let ok = false;
+  try { await navigator.clipboard.writeText($('link').textContent); ok = true; } catch (e) {}
+  if (!ok) { const r = document.createRange(); r.selectNodeContents($('link')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  $('ok').textContent = ok ? 'Zkopírováno. Pošli mi odkaz do Telegramu nebo sem do terminálu.' : 'Odkaz je označený níž, zkopíruj ho a pošli mi ho.';
+};
+
+/* ---------- start ---------- */
+let start;
+try { start = location.hash.startsWith('#m=') ? rozbal(location.hash.slice(3)) : null; } catch (e) { start = null; }
+M = { aspect: (start && start.aspect) || (innerWidth > innerHeight && innerWidth > 900 ? '16:9' : '9:16') };
+nacti(start || VZORY.kolem());
+addEventListener('resize', () => { velikost(); kresliEz(); kresliGraf(); kresliMapu(); });
+window.__probe = { hotovo: true, get zabery() { return M.keys.length; }, get T() { return +ui.T.toFixed(3); }, get cil() { return +ui.cil.toFixed(3); }, get rezim() { return ui.rezim; } };
+
+let last = performance.now(), mapT = 0;
+function krok(now) {
+  requestAnimationFrame(krok);
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (document.hidden) return;
+  if (ui.posun) {
+    if (!ui.tah && ui.v) { ui.cil = Math.min(M.dur, Math.max(0, ui.cil + ui.v * dt)); ui.v *= Math.exp(-2 * dt); if (Math.abs(ui.v) < 1e-3) ui.v = 0; }
+    const T = dobeh(ui.T, ui.cil, ui.k, dt);
+    if (Math.abs(T - ui.T) > 1e-5) { ui.T = T; polozit(T); casovka(); }
+  } else if (ui.playing) {
+    ui.T += dt;
+    if (ui.T >= M.dur) { if ($('loop').checked) ui.T %= M.dur; else { ui.T = M.dur; ui.playing = false; ikona(); stitek(); } }
+    polozit(ui.T); casovka();
+  } else if (ui.rezim === 'uprava') {
+    const moved = controls.update();
+    cam.rotateZ(ui.roll * R);
+    const fov = fovV(ui.lens, cam.aspect);
+    if (Math.abs(fov - cam.fov) > 1e-6) { cam.fov = fov; cam.updateProjectionMatrix(); dirty = true; }
+    if (moved) dirty = true;
+  }
+  if (dirty) {
+    renderer.render(scene, cam); dirty = false;
+    if (now - mapT > 33) { mapT = now; kresliMapu(); if (ui.rezim !== 'uprava') { kresliGraf(); kresliEz(); } }
+  }
+}
+requestAnimationFrame(krok);
+</script>
+</body>
+</html>
